@@ -4,5 +4,5 @@ include 'application:order-service'
 include 'application:user-service'
 include 'application:concert-service'
 include 'application:gateway-service'
-findProject(':application:gateway-service')?.name = 'gateway-service'
+include 'component:jpa'
 
