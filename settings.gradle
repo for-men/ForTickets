@@ -4,5 +4,9 @@ include 'application:order-service'
 include 'application:user-service'
 include 'application:concert-service'
 include 'application:gateway-service'
+
+
 include 'component:jpa'
+include 'component:exception'
+include 'component:common'
 
