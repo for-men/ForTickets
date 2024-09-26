@@ -4,5 +4,5 @@ jar { enabled = false }
 
 
 dependencies {
-
+    implementation project(":component:jpa")
 }
