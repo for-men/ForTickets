@@ -1,0 +1,58 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.10'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+bootJar {
+    enabled = false
+}
+
+group = 'com'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// 현재의 root 프로젝트와 앞으로 추가될 서브 모듈에 대한 설정
+allprojects {
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+
+    repositories {
+        mavenCentral()
+    }
+
+}
+
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    // 모든 서브 모듈에서 사용될 공통 의존성들을 추가함
+    dependencies {
+        implementation "org.projectlombok:lombok"
+        annotationProcessor "org.projectlombok:lombok"
+    }
+
+    ext {
+        set('springCloudVersion', "2023.0.0")
+        set('eurekaClientVersion', "4.1.0")
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
+    // 모든 서브 모듈에서 Junit을 사용하기 위한 설정
+    test {
+        useJUnitPlatform()
+    }
+}

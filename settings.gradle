@@ -1,0 +1,6 @@
+rootProject.name = 'ForTickets'
+
+include 'application:order-service'
+include 'application:user-service'
+include 'application:concert-service'
+
