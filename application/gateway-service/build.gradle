@@ -1,21 +1,9 @@
-plugins {
-    id 'java'
-}
-
-group = 'com.fortickets.gatewayservice'
-version = '0.0.1-SNAPSHOT'
-
-repositories {
-    mavenCentral()
-}
+bootJar { enabled = true }
+jar { enabled = false }
 
 dependencies {
 
     //gateway
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
-
-}
-
-test {
-    useJUnitPlatform()
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }

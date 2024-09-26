@@ -1,2 +1,5 @@
 server:
-  port: 12041
+  port: 12031
+spring:
+  main:
+    web-application-type: reactive
