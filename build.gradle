@@ -8,7 +8,7 @@ bootJar {
     enabled = false
 }
 
-group = 'com'
+group = 'com.fortickets'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -30,6 +30,7 @@ allprojects {
 
 subprojects {
 
+    // apply plugin: Gradle에 특정 기능을 추가하는 플러그인을 적용
     apply plugin: 'java'
     // api 사용하기 위해 추가
     apply plugin: 'java-library'
