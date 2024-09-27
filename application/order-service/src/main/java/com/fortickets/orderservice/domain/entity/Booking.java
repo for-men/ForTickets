@@ -1,6 +1,6 @@
 package com.fortickets.orderservice.domain.entity;
 
-import com.fortickets.common.status.BookingStatus;
+import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "booking")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Booking {
+public class Booking extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_id")

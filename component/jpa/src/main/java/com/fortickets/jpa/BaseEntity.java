@@ -16,6 +16,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
+    @Column(name = "is_deleted")
+    protected Boolean isDeleted = false;
+
     @Column(name = "created_at", updatable = false)
     @CreatedDate
     protected LocalDateTime createdAt;
@@ -34,21 +37,20 @@ public abstract class BaseEntity {
     protected String updatedBy;
     protected String deletedBy;
 
-    protected Boolean deletedYn = false;
 
     public void delete(String email) {
-        this.deletedYn = true;
+        this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
         this.deletedBy = email;
     }
 
     public void setDeletedYnFalse() {
-        this.deletedYn = false;
+        this.isDeleted = false;
         this.deletedAt = null;
         this.deletedBy = null;
     }
 
     public Boolean isDeleted() {
-        return this.deletedYn;
+        return this.isDeleted;
     }
 }
