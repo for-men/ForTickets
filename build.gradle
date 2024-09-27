@@ -4,11 +4,8 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
-bootJar {
-    enabled = false
-}
 
-group = 'com'
+group = 'com.fortickets'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -30,14 +27,38 @@ allprojects {
 
 subprojects {
 
+    // apply plugin: Gradle에 특정 기능을 추가하는 플러그인을 적용
     apply plugin: 'java'
+    // api 사용하기 위해 추가
+    apply plugin: 'java-library'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
 
     // 모든 서브 모듈에서 사용될 공통 의존성들을 추가함
     dependencies {
-        implementation "org.projectlombok:lombok"
-        annotationProcessor "org.projectlombok:lombok"
+        // lombok
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+
+        // mapStruct
+        implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+        annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+        // Test
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+        // module
+        if (project.name != 'gateway-service') {
+            // spring web mvc
+            implementation 'org.springframework.boot:spring-boot-starter'
+            implementation 'org.springframework.boot:spring-boot-starter-web'
+        }
+        if (project.name != 'common') {
+            api project(':component:common')
+            runtimeOnly project(':component:common')
+        }
+
     }
 
     ext {
