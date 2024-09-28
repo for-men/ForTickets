@@ -4,5 +4,16 @@ jar { enabled = false }
 
 
 dependencies {
+    // jwt추가
+    implementation 'io.jsonwebtoken:jjwt:0.12.6'
+    // 스프링 시큐리티 (패스워드 인코더)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // validation 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // 엔티티 사용을 위한 jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // postgresql
+    runtimeOnly 'org.postgresql:postgresql'
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
 }
