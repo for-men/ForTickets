@@ -58,7 +58,17 @@ subprojects {
             api project(':component:common')
             runtimeOnly project(':component:common')
         }
-
+        if (project.path.startsWith(':application:')) {
+            if (project.name == 'eureka') {
+                //eureka server
+                implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+            } else {
+                //eureka client
+                implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+            }
+            //openFeign
+            implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+        }
     }
 
     ext {
