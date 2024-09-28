@@ -4,6 +4,10 @@ jar { enabled = false }
 
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation project(":component:jpa")
+    // postgresql
+    runtimeOnly 'org.postgresql:postgresql'
 
+    // docker compose support
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 }

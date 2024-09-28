@@ -1,0 +1,11 @@
+bootJar { enabled = false }
+jar { enabled = true }
+
+
+dependencies {
+
+    // api: 해당 모듈뿐만 아니라, 이 모듈을 참조하는 다른 모듈에서도 사용 가능
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
