@@ -1,2 +1,9 @@
+spring:
+  application:
+    name: concert-service
 server:
   port: 12001
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:12041/eureka/
