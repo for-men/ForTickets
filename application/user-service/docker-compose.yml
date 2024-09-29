@@ -1,0 +1,13 @@
+services:
+
+  postgres:
+    image: 'postgres:16.4'
+    environment:
+      - 'POSTGRES_DB=fortickets'
+      - 'POSTGRES_PASSWORD=1234'
+      - 'POSTGRES_USER=forman'
+    ports:
+      - '54322:5432'
+    volumes:
+      - ../db/user-service:/var/lib/postgresql/data
+

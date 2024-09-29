@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: eureka-server
+  profiles:
+    default: dev
+server:
+  port: 12041
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:12041/eureka/
+  instance:
+    hostname: localhost
