@@ -4,7 +4,7 @@ spring:
   # db 설정
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:54320/fortickets
+    url: jdbc:postgresql://localhost:54323/fortickets
     username: forman
     password: 1234
   jpa:
@@ -27,7 +27,7 @@ spring:
         timeout: 1m
       file: application/concert-service/docker-compose.yml
 server:
-  port: 12001
+  port: 12031
 
 # auditing entity scan을 위한 base package 설정
 base-package:
@@ -37,4 +37,4 @@ base-package:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:12041/eureka/
+      defaultZone: http://localhost:12001/eureka/

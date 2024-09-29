@@ -37,4 +37,4 @@ base-package:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:12041/eureka/
+      defaultZone: http://localhost:12001/eureka/
