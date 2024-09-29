@@ -26,9 +26,9 @@ spring:
             - RewritePath=/order-service/(?<segment>.*), /${segment}
 
 server:
-  port: 12031
+  port: 12011
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:12041/eureka/
+      defaultZone: http://localhost:12001/eureka/

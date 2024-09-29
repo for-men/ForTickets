@@ -25,7 +25,7 @@ spring:
         timeout: 1m
       file: application/order-service/docker-compose.yml
 server:
-  port: 12011
+  port: 12041
 
 # auditing entity scan을 위한 base package 설정
 base-package:
@@ -34,4 +34,4 @@ base-package:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:12041/eureka/
+      defaultZone: http://localhost:12001/eureka/

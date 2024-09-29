@@ -7,7 +7,7 @@ services:
       - 'POSTGRES_PASSWORD=1234'
       - 'POSTGRES_USER=forman'
     ports:
-      - '54321:5432'
+      - '54324:5432'
     volumes:
       - ../db/order-service:/var/lib/postgresql/data
 
