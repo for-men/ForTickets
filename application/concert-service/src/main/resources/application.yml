@@ -4,7 +4,7 @@ spring:
   # db 설정
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:54320/fortickets
+    url: jdbc:postgresql://localhost:54323/fortickets
     username: forman
     password: 1234
   jpa:

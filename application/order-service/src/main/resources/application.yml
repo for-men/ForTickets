@@ -3,7 +3,7 @@ spring:
     name: order-service
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:54321/fortickets
+    url: jdbc:postgresql://localhost:54324/fortickets
     username: forman
     password: 1234
   jpa:
