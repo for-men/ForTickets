@@ -5,13 +5,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
@@ -27,14 +26,12 @@ public class JwtUtil {
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
     private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
-
+    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     @Value("${spring.application.name}")
     private String issuer;
-
     @Value("${service.jwt.secret-key}") // Base64 Encode 한 SecretKey
     private String secretKey;
     private Key key;
-    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @PostConstruct
     public void init() {
@@ -50,14 +47,14 @@ public class JwtUtil {
         log.info("JWT Claims - userId: {}, email: {}, role: {}", userId, email, role);
 
         return BEARER_PREFIX +
-                Jwts.builder()
-                        .claim(USER_ID_KEY, userId) // 사용자 식별자값(ID)
-                        .claim("email", email)
-                        .claim(AUTHORIZATION_KEY, role)
-                        .issuer(issuer)
-                        .setIssuedAt(date) // 발급일
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
-                        .signWith(key, signatureAlgorithm)
-                        .compact();
+            Jwts.builder()
+                .claim(USER_ID_KEY, userId) // 사용자 식별자값(ID)
+                .claim("email", email)
+                .claim(AUTHORIZATION_KEY, role)
+                .issuer(issuer)
+                .setIssuedAt(date) // 발급일
+                .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
+                .signWith(key, signatureAlgorithm)
+                .compact();
     }
 }

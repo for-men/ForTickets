@@ -1,12 +1,13 @@
 package com.fortickets.userservice.application.service;
 
-import com.fortickets.userservice.application.dto.LoginReq;
-import com.fortickets.userservice.application.dto.SignUpReq;
+import com.fortickets.userservice.application.dto.requset.LoginReq;
+import com.fortickets.userservice.application.dto.requset.SignUpReq;
 import com.fortickets.userservice.application.security.JwtUtil;
 import com.fortickets.userservice.application.security.UserDetailsImpl;
 import com.fortickets.userservice.domain.entity.User;
 import com.fortickets.userservice.domain.entity.UserRoleEnum;
 import com.fortickets.userservice.domain.repository.UserRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,8 +16,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -85,10 +84,10 @@ public class AuthService {
         try {
             // 사용자 인증 처리
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            req.getEmail(),
-                            req.getPassword()
-                    )
+                new UsernamePasswordAuthenticationToken(
+                    req.getEmail(),
+                    req.getPassword()
+                )
             );
 
             // 인증 성공 시 사용자 정보 가져오기

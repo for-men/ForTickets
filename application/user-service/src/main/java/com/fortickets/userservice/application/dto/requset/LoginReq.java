@@ -1,4 +1,4 @@
-package com.fortickets.userservice.application.dto;
+package com.fortickets.userservice.application.dto.requset;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -2,6 +2,8 @@ bootJar { enabled = true }
 jar { enabled = false }
 
 dependencies {
+    // jwt추가
+    implementation 'io.jsonwebtoken:jjwt:0.12.6'
 
     //gateway
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
