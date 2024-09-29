@@ -1,9 +1,39 @@
 spring:
   application:
     name: user-service
+  # db 설정
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:54322/fortickets
+    username: forman
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        show_sql: true # sql 로깅
+        format_sql: true # SQL 문 정렬하여 출력
+        highlight_sql: true # SQL 문 색 부여
+  # docker compose lifecycle 설정
+  docker:
+    compose:
+      lifecycle-management: start_only # start_only, start_and_stop 옵션이 있으며, 스프링 종료 시 컨테이너 종료 여부를 결정할 수 있음
+      start:
+        command: up
+      stop:
+        command: down
+        timeout: 1m
+      file: application/user-service/docker-compose.yml
 server:
   port: 12021
 
+# auditing entity scan을 위한 base package 설정
+base-package:
+  jpa: "com.fortickets.userservice"
+
+# euereka client 등록
 eureka:
   client:
     service-url:
