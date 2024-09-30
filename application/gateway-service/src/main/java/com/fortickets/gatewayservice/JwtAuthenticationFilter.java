@@ -100,7 +100,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
      * @return
      */
     private boolean isAuthorizationPassRequest(String path) {
-        return path.startsWith("/api/auth/login") || path.startsWith("/api/auth/sign-up");
+        return path.startsWith("/auth/login") || path.startsWith("/auth/sign-up");
     }
 
     /**
