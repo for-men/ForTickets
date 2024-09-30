@@ -1,11 +1,40 @@
-server:
-  port: 12031
 spring:
+  application:
+    name: gateway-service
   main:
     web-application-type: reactive
   security:
     csrf:
       enabled: false  # CSRF 보호 비활성화
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/**
+          filters:
+            - RewritePath=/user-service/(?<segment>.*), /${segment}
+        - id: concert-service
+          uri: lb://concert-service
+          predicates:
+            - Path=/concert-service/**
+          filters:
+            - RewritePath=/concert-service/(?<segment>.*), /${segment}
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/order-service/**
+          filters:
+            - RewritePath=/order-service/(?<segment>.*), /${segment}
+
+server:
+  port: 12011
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:12001/eureka/
 
 service:
   jwt:

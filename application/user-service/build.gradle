@@ -16,4 +16,9 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    //아래는 주창님이 추가하신 내역들 postgresql은 중복으로 삭제
+    implementation project(":component:jpa")
+    // docker compose support
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 }
