@@ -1,6 +1,6 @@
 package com.fortickets.userservice.presentation.controller;
 
-import com.fortickets.userservice.application.dto.response.UserInfoRes;
+import com.fortickets.userservice.application.dto.response.GetUserRes;
 import com.fortickets.userservice.application.security.UserDetailsImpl;
 import com.fortickets.userservice.application.service.UserService;
 import lombok.AllArgsConstructor;
@@ -20,10 +20,10 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<UserInfoRes> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<GetUserRes> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         String email = userDetails.getUser().getEmail();
 
-        UserInfoRes userInfo = userService.getUserInfo(email);
+        GetUserRes userInfo = userService.getUserInfo(email);
         return ResponseEntity.ok(userInfo);
     }
 }

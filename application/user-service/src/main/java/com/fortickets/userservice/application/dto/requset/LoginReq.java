@@ -1,16 +1,8 @@
 package com.fortickets.userservice.application.dto.requset;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+public record LoginReq(
+    String email,
+    String password
+) {
 
-
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-public class LoginReq {
-
-    private String email;
-
-    private String password;
 }

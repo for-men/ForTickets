@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserInfoRes {
+public class GetUserRes {
 
     private Long userId;
     private String nickname;
@@ -14,7 +14,7 @@ public class UserInfoRes {
     private String profileImage;
 
     // 생성자
-    public UserInfoRes(Long userId, String nickname, String email, String phone, String profileImage) {
+    public GetUserRes(Long userId, String nickname, String email, String phone, String profileImage) {
         this.userId = userId;
         this.nickname = nickname;
         this.email = email;

@@ -32,11 +32,11 @@ public class AuthService {
     // 회원가입
     @Transactional
     public void signUp(SignUpReq req) {
-        String nickname = req.getNickname();
-        String email = req.getEmail();
-        String password = passwordEncoder.encode(req.getPassword());
-        String phone = req.getPhone();
-        String profileImage = req.getProfileImage();
+        String nickname = req.nickname();
+        String email = req.email();
+        String password = passwordEncoder.encode(req.password());
+        String phone = req.phone();
+        String profileImage = req.profileImage();
 
         // 회원 중복 확인
         Optional<User> checkEmail = userRepository.findByEmail(email);
@@ -53,7 +53,7 @@ public class AuthService {
 
         // 판매자
         if (req.isSeller()) {
-            if (!SELLER_TOKEN.equals(req.getSellerToken())) {
+            if (!SELLER_TOKEN.equals(req.sellerToken())) {
                 throw new IllegalArgumentException("코드가 틀려 등록이 불가능합니다.");
             }
             isSeller = true;
@@ -62,7 +62,7 @@ public class AuthService {
 
         // 관리자
         if (req.isManager()) {
-            if (!MANAGER_TOKEN.equals(req.getManagerToken())) {
+            if (!MANAGER_TOKEN.equals(req.managerToken())) {
                 throw new IllegalArgumentException("코드가 틀려 등록이 불가능합니다.");
             }
             isManager = true;
@@ -77,7 +77,7 @@ public class AuthService {
     // 로그인
     public String login(LoginReq req) {
 
-        if (req.getEmail() == null || req.getEmail().isEmpty() || req.getPassword() == null || req.getPassword().isEmpty()) {
+        if (req.email() == null || req.email().isEmpty() || req.password() == null || req.password().isEmpty()) {
             throw new RuntimeException("이메일 또는 비밀번호가 비어있습니다.");
         }
 
@@ -85,8 +85,8 @@ public class AuthService {
             // 사용자 인증 처리
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                    req.getEmail(),
-                    req.getPassword()
+                    req.email(),
+                    req.password()
                 )
             );
 

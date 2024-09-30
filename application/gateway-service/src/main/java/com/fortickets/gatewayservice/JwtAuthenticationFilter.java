@@ -40,6 +40,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
         }
         // ToDo 해더에서 jwt 가져오기
         String token = getJwtTokenFromHeader(exchange);
+
         // ToDo 토큰 검증s
         try {
             if (token == null) {
@@ -54,18 +55,28 @@ public class JwtAuthenticationFilter implements GlobalFilter {
             addHeadersToRequest(exchange, userId, email, role);
             return chain.filter(exchange);
 
-        } catch (ExpiredJwtException e) {
-            return exchange.getResponse().writeWith(Mono.just(excepctionMessage(exchange, "토큰이 만료되었습니다.")));
-        } catch (UnsupportedJwtException e) {
-            return exchange.getResponse().writeWith(Mono.just(excepctionMessage(exchange, "지원되지 않는 형식의 JWT입니다.")));
-        } catch (MalformedJwtException e) {
-            return exchange.getResponse().writeWith(Mono.just(excepctionMessage(exchange, "JWT의 구조가 손상되었거나 올바르지 않습니다.")));
-        } catch (SignatureException e) {
-            return exchange.getResponse().writeWith(Mono.just(excepctionMessage(exchange, "JWT 서명이 유효하지 않습니다.")));
-        } catch (IllegalArgumentException e) {
-            return exchange.getResponse().writeWith(Mono.just(excepctionMessage(exchange, "입력값이 잘못되었습니다.")));
+        } catch (Exception e) {
+            return handleJwtException(exchange, e);
         }
+    }
 
+    private Mono<Void> handleJwtException(ServerWebExchange exchange, Exception e) {
+        String message;
+
+        if (e instanceof ExpiredJwtException) {
+            message = "토큰이 만료되었습니다.";
+        } else if (e instanceof UnsupportedJwtException) {
+            message = "지원되지 않는 형식의 JWT입니다.";
+        } else if (e instanceof MalformedJwtException) {
+            message = "JWT의 구조가 손상되었거나 올바르지 않습니다.";
+        } else if (e instanceof SignatureException) {
+            message = "JWT 서명이 유효하지 않습니다.";
+        } else if (e instanceof IllegalArgumentException) {
+            message = "입력값이 잘못되었습니다.";
+        } else {
+            message = "알 수 없는 오류 발생.";
+        }
+        return exchange.getResponse().writeWith(Mono.just(exceptionMessage(exchange, message)));
     }
 
     /**
@@ -89,7 +100,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
      * @return
      */
     private boolean isAuthorizationPassRequest(String path) {
-        return path.startsWith("/auth/login") || path.startsWith("/auth/sign-up");
+        return path.startsWith("/api/auth/login") || path.startsWith("/api/auth/sign-up");
     }
 
     /**
@@ -134,7 +145,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
             .build();
     }
 
-    private DataBuffer excepctionMessage(ServerWebExchange exchange, String message) {
+    private DataBuffer exceptionMessage(ServerWebExchange exchange, String message) {
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
 
         // 응답의 Content-Type을 JSON으로 설정
