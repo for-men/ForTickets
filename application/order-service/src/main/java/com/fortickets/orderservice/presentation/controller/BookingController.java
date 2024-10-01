@@ -37,8 +37,8 @@ public class BookingController {
     }
 
     /**
-     * 예매 내역 조회 (관리자용)
-     * 모든 예매 조회 가능
+     * 예매 내역 조회
+     * @ROLE : SELLER, MANAGER
      */
     @GetMapping
     public CommonResponse<Page<GetBookingRes>> getBooking(
@@ -55,12 +55,13 @@ public class BookingController {
     @GetMapping("/seller/{sellerId}")
     public CommonResponse<Page<GetBookingRes>> getBookingBySeller(
         @RequestHeader("X-User-Id") Long userId,
+        @RequestHeader("X-User-Role") String role,
         @PathVariable Long sellerId,
         @RequestParam(required = false, name = "nickname") String nickname,
         @RequestParam(required = false, name = "concert-name") String concertName,
         Pageable pageable
     ) {
-        var getBookingRes = bookingService.getBookingBySeller(userId, sellerId, nickname, concertName, pageable);
+        var getBookingRes = bookingService.getBookingBySeller(userId, sellerId, role, nickname, concertName, pageable);
         return CommonResponse.success(getBookingRes);
     }
 }

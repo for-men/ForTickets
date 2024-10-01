@@ -1,6 +1,7 @@
 package com.fortickets.orderservice.application.client;
 
 import com.fortickets.orderservice.application.dto.response.GetUserRes;
+import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,5 +16,5 @@ public interface UserClient {
     GetUserRes getUser(@PathVariable Long userId);
 
     @GetMapping("/users/{nickname}/nickname")
-    GetUserRes searchNickname(@PathVariable String nickname);
+    List<GetUserRes> searchNickname(@PathVariable String nickname);
 }

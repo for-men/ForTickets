@@ -57,35 +57,50 @@ public class BookingService {
     }
 
 
-    public Page<GetBookingRes> getBooking(Long userId, Long requestId, String role, String nickname, String concertName, Pageable pageable) {
+    public Page<GetBookingRes> getBooking(String nickname, String concertName, Pageable pageable) {
         // TODO: role String에서 변경 필요
-        if (!role.equals("MANAGER")) {
-            if (!userId.equals(requestId)) {
-                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-            }
-        }
+        List<GetUserRes> userList = new ArrayList<>();
         // TODO: 검색 조건 null 체크 하려면 QueryDSL 필요
         // 닉네임으로 사용자 조회
-        GetUserRes user = userClient.searchNickname(nickname);
-        // 공연명으로 공연 조회
-        GetConcertRes concert = concertClient.searchConcertName(concertName);
+        // 검색 조건에 없으면 조회할 필요 없음
+        if (nickname != null) {
+            userList = userClient.searchNickname(nickname);
+        }
+        // userId, 공연명으로 공연 조회
+        // 요청 Id를 체크해야 하기 때문에
+        List<GetConcertRes> concertList = concertClient.searchConcertName(concertName);
 
-        Page<Booking> bookingList = bookingRepository.findByUserIdAndConcertId(user.userId(), concert.concertId(), pageable);
+        Page<Booking> bookingList = bookingRepository.findByUserIdInAndConcertIdIn(
+            userList.stream().map(GetUserRes::userId).toList(),
+            concertList.stream().map(GetConcertRes::concertId).toList(), pageable);
+
         return bookingList.map(bookingMapper::toGetBookingRes);
     }
 
-    public Page<GetBookingRes> getBookingBySeller(Long userId, Long sellerId, String nickname, String concertName, Pageable pageable) {
+    public Page<GetBookingRes> getBookingBySeller(Long userId, Long sellerId, String role, String nickname, String concertName, Pageable pageable) {
         // 판매자와 요청자가 같은지 확인
-        if (!userId.equals(sellerId)) {
-            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        if (!role.equals("MANAGER")) {
+            if (!userId.equals(sellerId)) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
+        List<GetUserRes> userList = new ArrayList<>();
+        // TODO: 검색 조건 null 체크 하려면 QueryDSL 필요
+        // 닉네임으로 사용자 조회
+        // 검색 조건에 없으면 조회할 필요 없음
+        if (nickname != null) {
+            userList = userClient.searchNickname(nickname);
         }
 
-        // 닉네임으로 사용자 조회
-        GetUserRes user = userClient.searchNickname(nickname);
-        // 공연명으로 공연 조회
-        GetConcertRes concert = concertClient.searchConcertName(concertName);
+        // userId, 공연명으로 공연 조회
+        // seller는 고정. concertname은 null일 수 있음
+        List<GetConcertRes> concertList = concertClient.searchConcert(sellerId, concertName);
 
-        return null;
+        Page<Booking> bookingList = bookingRepository.findByUserIdInAndConcertIdIn(
+            userList.stream().map(GetUserRes::userId).toList(),
+            concertList.stream().map(GetConcertRes::concertId).toList(), pageable);
+
+        return bookingList.map(bookingMapper::toGetBookingRes);
     }
 }
 
