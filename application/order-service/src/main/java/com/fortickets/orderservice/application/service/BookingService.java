@@ -67,7 +67,7 @@ public class BookingService {
         return bookingList.map(bookingMapper::toGetBookingRes);
     }
 
-    public Object getBookingBySeller(String nickname, String concertName, Pageable pageable) {
+    public Page<GetBookingRes> getBookingBySeller(String nickname, String concertName, Pageable pageable) {
         return null;
     }
 }

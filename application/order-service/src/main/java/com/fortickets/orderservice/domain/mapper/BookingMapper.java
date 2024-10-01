@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Mapper(componentModel = SPRING)
 public interface BookingMapper {
 
-    Booking toBooking(CreateBookingReq createBookingReq);
-
     CreateBookingRes toCreateBookingRes(Booking booking);
 
     GetBookingRes toGetBookingRes(Booking booking);
