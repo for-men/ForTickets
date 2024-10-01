@@ -27,6 +27,7 @@ public class Booking extends BaseEntity {
     private Long id;
 
     private Long paymentId;
+    private Long concertId;
     private Long scheduleId;
     private Long userId;
     private Long price;
@@ -37,8 +38,9 @@ public class Booking extends BaseEntity {
         this.status = status;
     }
 
-    public Booking(Long scheduleId, Long userId, Long price, String seat) {
+    public Booking(Long scheduleId, Long concertId, Long userId, Long price, String seat) {
         this.scheduleId = scheduleId;
+        this.concertId = concertId;
         this.userId = userId;
         this.price = price;
         this.seat = seat;

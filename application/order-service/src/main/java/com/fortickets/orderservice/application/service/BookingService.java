@@ -5,15 +5,18 @@ import com.fortickets.exception.GlobalException;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
+import com.fortickets.orderservice.application.dto.res.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
-import com.fortickets.orderservice.application.dto.response.GetScheduleRes;
+import com.fortickets.orderservice.application.dto.response.GetUserRes;
 import com.fortickets.orderservice.domain.entity.Booking;
 import com.fortickets.orderservice.domain.mapper.BookingMapper;
 import com.fortickets.orderservice.domain.repository.BookingRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +31,12 @@ public class BookingService {
 
     @Transactional
     public List<CreateBookingRes> createBooking(CreateBookingReq createBookingReq) {
+        // TODO : 대기열
         // TODO: 로그인한 사용자와 요청한 사용자가 같은지 확인
         // TODO: 관리자인 경우
 
         // TODO: 존재하는 스케줄인지 확인
         var schedule = concertClient.getSchedule(createBookingReq.scheduleId());
-        if (schedule == null) {
-            throw new GlobalException(ErrorCase.NOT_EXIST_SCHEDULE);
-        }
 
         // 이미 예약된 좌석인지 확인
         // 하나라도 예약된 좌석이 있으면 예외처리
@@ -45,7 +46,7 @@ public class BookingService {
                 .ifPresent(booking -> {
                     throw new GlobalException(ErrorCase.ALREADY_BOOKED_SEAT);
                 });
-            var booking = new Booking(createBookingReq.scheduleId(), createBookingReq.userId(), createBookingReq.price(), seat);
+            var booking = createBookingReq.toEntity(seat);
             bookings.add(booking);
         });
 
@@ -56,7 +57,18 @@ public class BookingService {
     }
 
 
-    public GetBookingRes getBooking() {
+    public Page<GetBookingRes> getBooking(String nickname, String concertName, Pageable pageable) {
+        // 닉네임으로 사용자 조회
+        GetUserRes user = userClient.searchNickname(nickname);
+        // 공연명으로 공연 조회
+        GetConcertRes concert = concertClient.searchConcertName(concertName);
+
+        Page<Booking> bookingList = bookingRepository.findByUserIdAndConcertId(user.userId(), concert.concertId(), pageable);
+        return bookingList.map(bookingMapper::toGetBookingRes);
+    }
+
+    public Object getBookingBySeller(String nickname, String concertName, Pageable pageable) {
         return null;
     }
 }
+
