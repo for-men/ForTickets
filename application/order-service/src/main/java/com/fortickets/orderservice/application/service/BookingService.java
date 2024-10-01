@@ -8,6 +8,7 @@ import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.res.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
+import com.fortickets.orderservice.application.dto.response.GetScheduleRes;
 import com.fortickets.orderservice.application.dto.response.GetUserRes;
 import com.fortickets.orderservice.domain.entity.Booking;
 import com.fortickets.orderservice.domain.mapper.BookingMapper;
@@ -36,7 +37,7 @@ public class BookingService {
         // TODO: 관리자인 경우
 
         // TODO: 존재하는 스케줄인지 확인
-        var schedule = concertClient.getSchedule(createBookingReq.scheduleId());
+        GetScheduleRes schedule = concertClient.getSchedule(createBookingReq.scheduleId());
 
         // 이미 예약된 좌석인지 확인
         // 하나라도 예약된 좌석이 있으면 예외처리
@@ -46,7 +47,7 @@ public class BookingService {
                 .ifPresent(booking -> {
                     throw new GlobalException(ErrorCase.ALREADY_BOOKED_SEAT);
                 });
-            var booking = createBookingReq.toEntity(seat);
+            Booking booking = createBookingReq.toEntity(seat);
             bookings.add(booking);
         });
 
@@ -66,10 +67,10 @@ public class BookingService {
         if (nickname != null) {
             userList = userClient.searchNickname(nickname);
         }
-        // userId, 공연명으로 공연 조회
-        // 요청 Id를 체크해야 하기 때문에
+        // 공연명으로 공연 조회
         List<GetConcertRes> concertList = concertClient.searchConcertName(concertName);
 
+        // 사용자, 공연명으로 예약 조회 null일 경우는 메서드에서 처리함
         Page<Booking> bookingList = bookingRepository.findByUserIdInAndConcertIdIn(
             userList.stream().map(GetUserRes::userId).toList(),
             concertList.stream().map(GetConcertRes::concertId).toList(), pageable);
@@ -102,5 +103,11 @@ public class BookingService {
 
         return bookingList.map(bookingMapper::toGetBookingRes);
     }
+
+    public Page<GetBookingRes> getBookingByUser(Long userId, Pageable pageable) {
+        Page<Booking> bookingList = bookingRepository.findByUserId(userId, pageable);
+        return bookingList.map(bookingMapper::toGetBookingRes);
+    }
+
 }
 

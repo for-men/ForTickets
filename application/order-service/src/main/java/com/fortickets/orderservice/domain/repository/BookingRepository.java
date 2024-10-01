@@ -14,4 +14,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
      @Query("SELECT b FROM Booking b WHERE (:userIds IS NULL OR b.userId IN :userIds) AND (:concertIds IS NULL OR b.concertId IN :concertIds)")
      Page<Booking> findByUserIdInAndConcertIdIn(List<Long> userIds, List<Long> concertIds, Pageable pageable);
+
+     Page<Booking> findByUserId(Long userId, Pageable pageable);
+
 }

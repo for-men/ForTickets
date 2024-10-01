@@ -47,9 +47,7 @@ public class BookingController {
         @RequestParam(required = false, name = "concert-name", defaultValue = "sample") String concertName,
         Pageable pageable
     ) {
-        // 헤더 값 가져와야 됨
-        var getBookingRes = bookingService.getBooking(nickname, concertName, pageable);
-        return CommonResponse.success(getBookingRes);
+        return CommonResponse.success(bookingService.getBooking(nickname, concertName, pageable));
     }
 
     @GetMapping("/seller/{sellerId}")
@@ -61,7 +59,14 @@ public class BookingController {
         @RequestParam(required = false, name = "concert-name") String concertName,
         Pageable pageable
     ) {
-        var getBookingRes = bookingService.getBookingBySeller(userId, sellerId, role, nickname, concertName, pageable);
-        return CommonResponse.success(getBookingRes);
+        return CommonResponse.success(bookingService.getBookingBySeller(userId, sellerId, role, nickname, concertName, pageable));
+    }
+
+    @GetMapping("/me/{userId}")
+    public CommonResponse<Page<GetBookingRes>> getBookingByUser(
+        @PathVariable Long userId,
+        Pageable pageable
+    ) {
+        return CommonResponse.success(bookingService.getBookingByUser(userId, pageable));
     }
 }
