@@ -57,7 +57,14 @@ public class BookingService {
     }
 
 
-    public Page<GetBookingRes> getBooking(String nickname, String concertName, Pageable pageable) {
+    public Page<GetBookingRes> getBooking(Long userId, Long requestId, String role, String nickname, String concertName, Pageable pageable) {
+        // TODO: role String에서 변경 필요
+        if (!role.equals("MANAGER")) {
+            if (!userId.equals(requestId)) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
+        // TODO: 검색 조건 null 체크 하려면 QueryDSL 필요
         // 닉네임으로 사용자 조회
         GetUserRes user = userClient.searchNickname(nickname);
         // 공연명으로 공연 조회
@@ -67,7 +74,17 @@ public class BookingService {
         return bookingList.map(bookingMapper::toGetBookingRes);
     }
 
-    public Page<GetBookingRes> getBookingBySeller(String nickname, String concertName, Pageable pageable) {
+    public Page<GetBookingRes> getBookingBySeller(Long userId, Long sellerId, String nickname, String concertName, Pageable pageable) {
+        // 판매자와 요청자가 같은지 확인
+        if (!userId.equals(sellerId)) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
+
+        // 닉네임으로 사용자 조회
+        GetUserRes user = userClient.searchNickname(nickname);
+        // 공연명으로 공연 조회
+        GetConcertRes concert = concertClient.searchConcertName(concertName);
+
         return null;
     }
 }

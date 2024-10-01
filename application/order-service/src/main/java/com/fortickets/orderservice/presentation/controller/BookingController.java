@@ -42,8 +42,9 @@ public class BookingController {
      */
     @GetMapping
     public CommonResponse<Page<GetBookingRes>> getBooking(
-        @RequestParam(required = false, name = "nickname") String nickname,
-        @RequestParam(required = false, name = "concert-name") String concertName,
+        // TODO: default value qeurydsl 적용 후 삭제
+        @RequestParam(required = false, name = "nickname", defaultValue = "sample") String nickname,
+        @RequestParam(required = false, name = "concert-name", defaultValue = "sample") String concertName,
         Pageable pageable
     ) {
         // 헤더 값 가져와야 됨
@@ -51,13 +52,15 @@ public class BookingController {
         return CommonResponse.success(getBookingRes);
     }
 
-    @GetMapping("/seller")
+    @GetMapping("/seller/{sellerId}")
     public CommonResponse<Page<GetBookingRes>> getBookingBySeller(
+        @RequestHeader("X-User-Id") Long userId,
+        @PathVariable Long sellerId,
         @RequestParam(required = false, name = "nickname") String nickname,
         @RequestParam(required = false, name = "concert-name") String concertName,
         Pageable pageable
     ) {
-        var getBookingRes = bookingService.getBookingBySeller(nickname, concertName, pageable);
+        var getBookingRes = bookingService.getBookingBySeller(userId, sellerId, nickname, concertName, pageable);
         return CommonResponse.success(getBookingRes);
     }
 }
