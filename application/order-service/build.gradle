@@ -5,7 +5,6 @@ jar { enabled = false }
 
 dependencies {
     implementation project(":component:jpa")
-    implementation project(":component:exception")
     // postgresql
     runtimeOnly 'org.postgresql:postgresql'
 

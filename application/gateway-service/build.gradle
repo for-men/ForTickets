@@ -3,6 +3,7 @@ jar { enabled = false }
 
 dependencies {
 
+    implementation project(":component:exception")
     //gateway
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

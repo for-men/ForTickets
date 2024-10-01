@@ -37,8 +37,7 @@ public class BookingService {
         // TODO: 관리자인 경우
 
         // TODO: 존재하는 스케줄인지 확인
-        GetScheduleRes schedule = concertClient.getSchedule(createBookingReq.scheduleId());
-
+//        GetScheduleRes schedule = concertClient.getSchedule(createBookingReq.scheduleId());
         // 이미 예약된 좌석인지 확인
         // 하나라도 예약된 좌석이 있으면 예외처리
         List<Booking> bookings = new ArrayList<>();
