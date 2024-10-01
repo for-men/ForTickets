@@ -37,4 +37,11 @@ public class AuthController {
             .header(JwtUtil.AUTHORIZATION_HEADER, token) // Authorization 헤더에 토큰 추가
             .body("로그인을 성공하였습니다.");
     }
+
+    // 로그아웃
+//    @PostMapping("/logout")
+//    public ResponseEntity<String> logout(String accessToken) {
+//        authService.logout(accessToken);
+//        return ResponseEntity.ok("로그아웃을 성공하였습니다.");
+//    }
 }

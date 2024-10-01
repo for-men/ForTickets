@@ -24,8 +24,10 @@ public class JwtUtil {
     public static final String USER_ID_KEY = "userId";
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
-    // 토큰 만료시간
-    private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+    // access 토큰 만료시간
+    private final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; // 60분
+    // refresh 토큰 만료시간
+    private final long REFRESH_TOKEN_TIME = 24 * 60 * 60 * 1000L; // 24시간
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     @Value("${spring.application.name}")
     private String issuer;
@@ -40,7 +42,7 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(Long userId, String email, UserRoleEnum role) {
+    public String createAccessToken(Long userId, String email, UserRoleEnum role) {
         Date date = new Date();
 
         // JWT Claims 확인 로그 추가
@@ -53,8 +55,21 @@ public class JwtUtil {
                 .claim(AUTHORIZATION_KEY, role)
                 .issuer(issuer)
                 .setIssuedAt(date) // 발급일
-                .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
+                .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME)) // 만료 시간
                 .signWith(key, signatureAlgorithm)
+                .compact();
+    }
+
+    // 리프레시 토큰 생성
+    public String createRefreshToken(Long userId) {
+        Date date = new Date();
+
+        return BEARER_PREFIX +
+            Jwts.builder()
+                .claim(USER_ID_KEY, userId) // 사용자 식별자값(ID)
+                .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME)) // 만료 시간
+                .setIssuedAt(date) // 발급일
+                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                 .compact();
     }
 }

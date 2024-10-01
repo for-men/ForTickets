@@ -99,7 +99,7 @@ public class AuthService {
             UserRoleEnum role = userDetails.getUser().getRole();
 
             // JWT 토큰 생성
-            return jwtUtil.createToken(userId, username, role);
+            return jwtUtil.createAccessToken(userId, username, role);
         } catch (AuthenticationException e) {
             throw new RuntimeException("잘못된 이메일 혹은 비밀번호를 입력했습니다.");
         }

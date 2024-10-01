@@ -12,9 +12,9 @@ public class UserService {
 
     private UserRepository userRepository;
 
-    public GetUserRes getUserInfo(String email) {
-        // 사용자 조회
-        User user = userRepository.findByEmail(email)
+    // 현재 로그인한 사용자 정보 조회
+    public GetUserRes getUserInfo(Long userId) {
+        User user = userRepository.findByUserId(userId)
             .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         return new GetUserRes(user.getUserId(), user.getNickname(), user.getEmail(), user.getPhone(), user.getProfileImage());
     }
