@@ -1,4 +1,4 @@
-package com.fortickets.orderservice.domain.entity;
+package com.fortickets.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

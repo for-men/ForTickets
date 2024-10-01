@@ -29,8 +29,10 @@ public enum ErrorCase {
   DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, 2002, "중복된 Email 입니다."),
 
   /* Concert 3000번대 */
+  NOT_EXIST_SCHEDULE(HttpStatus.NOT_FOUND, 3000, "존재하지 않는 스케줄입니다."),
 
   /* Order 4000번대 */
+  ALREADY_BOOKED_SEAT(HttpStatus.BAD_REQUEST, 4000, "이미 예약된 좌석입니다."),
   ;
 
 

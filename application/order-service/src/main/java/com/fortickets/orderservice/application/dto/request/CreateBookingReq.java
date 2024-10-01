@@ -1,7 +1,13 @@
 package com.fortickets.orderservice.application.dto.request;
 
-public record CreateBookingReq (
 
+import java.util.List;
+
+public record CreateBookingReq (
+    Long scheduleId,
+    Long userId,
+    Long price,
+    List<String> seat
 ){
 
 }
