@@ -1,6 +1,7 @@
 package com.fortickets.orderservice.presentation.controller;
 
 import com.fortickets.common.CommonResponse;
+import com.fortickets.common.CommonResponse.CommonEmptyRes;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.res.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
@@ -10,7 +11,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -70,10 +73,7 @@ public class BookingController {
      * 사용자 예매 내역 조회
      */
     @GetMapping("/me/{userId}")
-    public CommonResponse<Page<GetBookingRes>> getBookingByUser(
-        @PathVariable Long userId,
-        Pageable pageable
-    ) {
+    public CommonResponse<Page<GetBookingRes>> getBookingByUser(@PathVariable Long userId, Pageable pageable) {
         return CommonResponse.success(bookingService.getBookingByUser(userId, pageable));
     }
 
@@ -81,9 +81,27 @@ public class BookingController {
      * 예매 단건 조회 (예매 상세 조회)
      */
     @GetMapping("/{bookingId}")
-    public CommonResponse<GetConcertDetailRes> getBookingById(
-        @PathVariable Long bookingId
-    ) {
+    public CommonResponse<GetConcertDetailRes> getBookingById(@PathVariable Long bookingId) {
         return CommonResponse.success(bookingService.getBookingById(bookingId));
+    }
+
+    /**
+     * 예매 취소
+     */
+    @PatchMapping("/{bookingId}")
+    public CommonResponse<CommonEmptyRes> cancelBooking(@PathVariable Long bookingId) {
+        bookingService.cancelBooking(bookingId);
+        return CommonResponse.success();
+    }
+
+    /**
+     * 예매 내역 삭제
+     */
+    @DeleteMapping("/{bookingId}")
+    public CommonResponse<CommonEmptyRes> deleteBooking(
+        @RequestHeader("X-User-email") String email,
+        @PathVariable Long bookingId) {
+        bookingService.deleteBooking(email, bookingId);
+        return CommonResponse.success();
     }
 }

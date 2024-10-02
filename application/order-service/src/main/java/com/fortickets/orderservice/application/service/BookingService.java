@@ -1,5 +1,6 @@
 package com.fortickets.orderservice.application.service;
 
+import com.fortickets.common.BookingStatus;
 import com.fortickets.common.ErrorCase;
 import com.fortickets.exception.GlobalException;
 import com.fortickets.orderservice.application.client.ConcertClient;
@@ -14,6 +15,9 @@ import com.fortickets.orderservice.application.dto.response.GetUserRes;
 import com.fortickets.orderservice.domain.entity.Booking;
 import com.fortickets.orderservice.domain.mapper.BookingMapper;
 import com.fortickets.orderservice.domain.repository.BookingRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +42,7 @@ public class BookingService {
     @Transactional
     public List<CreateBookingRes> createBooking(CreateBookingReq createBookingReq) {
         // TODO : 대기열
-        // TODO: 로그인한 사용자와 요청한 사용자가 같은지 확인
-        // TODO: 관리자인 경우
+        // TODO: 헤더에서 userId 가져오기
 
         // TODO: 존재하는 스케줄인지 확인
 //        GetScheduleRes schedule = concertClient.getSchedule(createBookingReq.scheduleId());
@@ -75,9 +78,9 @@ public class BookingService {
         List<GetConcertRes> concertList = concertClient.searchConcertName(concertName);
 
         // 사용자, 공연명으로 예약 조회 null일 경우는 메서드에서 처리함
-        Page<Booking> bookingList = bookingRepository.findByUserIdInAndConcertIdIn(
+        Page<Booking> bookingList = bookingRepository.findByBookingSearch(
             userList.stream().map(GetUserRes::userId).toList(),
-            concertList.stream().map(GetConcertRes::concertId).toList(), pageable);
+            concertList.stream().map(GetConcertRes::concertId).toList(), BookingStatus.PENDING, pageable);
 
         // GetConcertRes를 concertId 기준으로 찾기 위한 Map 생성
         Map<Long, GetConcertRes> concertMap = concertList.stream()
@@ -113,9 +116,9 @@ public class BookingService {
         List<GetConcertRes> concertList = concertClient.searchConcert(sellerId, concertName);
 
         // 사용자, 공연명으로 예약 조회 null일 경우는 메서드에서 처리함
-        Page<Booking> bookingList = bookingRepository.findByUserIdInAndConcertIdIn(
+        Page<Booking> bookingList = bookingRepository.findByBookingSearch(
             userList.stream().map(GetUserRes::userId).toList(),
-            concertList.stream().map(GetConcertRes::concertId).toList(), pageable);
+            concertList.stream().map(GetConcertRes::concertId).toList(), BookingStatus.PENDING, pageable);
 
         // GetConcertRes를 concertId 기준으로 찾기 위한 Map 생성
         Map<Long, GetConcertRes> concertMap = concertList.stream()
@@ -147,6 +150,36 @@ public class BookingService {
         GetScheduleRes getScheduleRes = concertClient.getSchedule(booking.getScheduleId());
 
         return bookingMapper.toGetConcertDetailRes(booking, getScheduleRes);
+    }
+
+    @Transactional
+    public void cancelBooking(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
+        // TODO: 예약 취소 가능한지 확인
+        GetScheduleRes scheduleRes = concertClient.getSchedule(booking.getScheduleId());
+
+        // 공연이 끝났는지 체크 필요
+        if (!possibleCancel(scheduleRes.concertDate(), scheduleRes.concertTime())) {
+            throw new GlobalException(ErrorCase.CANNOT_CANCEL_BOOKING);
+        }
+
+        // TODO: 결제 취소 요청
+        // paymentService.cancelPayment(booking.getPaymentId());
+
+        // 예약 취소
+        booking.cancel();
+    }
+
+    @Transactional
+    public void deleteBooking(String email, Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
+        booking.delete(email);
+    }
+
+    private boolean possibleCancel(LocalDate localDate, LocalTime localTime) {
+        return LocalDateTime.of(localDate, localTime).isAfter(LocalDateTime.now());
     }
 }
 

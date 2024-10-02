@@ -46,4 +46,8 @@ public class Booking extends BaseEntity {
         this.seat = seat;
         this.status = BookingStatus.PENDING;
     }
+
+    public void cancel() {
+        this.status = BookingStatus.CANCELED;
+    }
 }
