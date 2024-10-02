@@ -4,11 +4,24 @@ jar { enabled = false }
 
 
 dependencies {
-    implementation project(":component:jpa")
-    implementation project(":component:exception")
+
+    // jwt추가
+    compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+    // 스프링 시큐리티 (패스워드 인코더)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // validation 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     // postgresql
     runtimeOnly 'org.postgresql:postgresql'
 
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    //아래는 주창님이 추가하신 내역들 postgresql은 중복으로 삭제
+    implementation project(":component:exception")
+    implementation project(":component:jpa")
     // docker compose support
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 }
