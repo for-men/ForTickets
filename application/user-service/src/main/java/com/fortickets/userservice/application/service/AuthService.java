@@ -1,6 +1,6 @@
 package com.fortickets.userservice.application.service;
 
-
+import org.springframework.beans.factory.annotation.Value;
 import com.fortickets.userservice.application.dto.requset.LoginReq;
 import com.fortickets.userservice.application.dto.requset.SignUpReq;
 import com.fortickets.userservice.application.security.JwtUtil;
@@ -27,8 +27,11 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    private final String SELLER_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
-    private final String MANAGER_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
+    @Value("${service.access.seller-code}")
+    private  String SELLER_CODE;
+
+    @Value("${service.access.manager-code}")
+    private  String MANAGER_CODE;
 
     // 회원가입
     @Transactional
@@ -54,7 +57,7 @@ public class AuthService {
 
         // 판매자
         if (req.isSeller()) {
-            if (!SELLER_TOKEN.equals(req.sellerToken())) {
+            if (!SELLER_CODE.equals(req.sellerToken())) {
                 throw new IllegalArgumentException("코드가 틀려 등록이 불가능합니다.");
             }
             isSeller = true;
@@ -63,7 +66,7 @@ public class AuthService {
 
         // 관리자
         if (req.isManager()) {
-            if (!MANAGER_TOKEN.equals(req.managerToken())) {
+            if (!MANAGER_CODE.equals(req.managerToken())) {
                 throw new IllegalArgumentException("코드가 틀려 등록이 불가능합니다.");
             }
             isManager = true;
