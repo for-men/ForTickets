@@ -1,5 +1,7 @@
 package com.fortickets.userservice.application.service;
 
+import com.fortickets.common.ErrorCase;
+import com.fortickets.exception.GlobalException;
 import com.fortickets.userservice.application.dto.requset.UpdateUserReq;
 import com.fortickets.userservice.application.dto.response.GetUserRes;
 import com.fortickets.userservice.application.mapper.UserMapper;
@@ -23,7 +25,7 @@ public class UserService {
     // 현재 로그인한 사용자 정보 조회
     public GetUserRes getUserInfo(Long userId) {
         User user = userRepository.findByUserId(userId)
-            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+            .orElseThrow(() -> new GlobalException(ErrorCase.USER_NOT_FOUND));
         return userMapper.userToGetUserRes(user);
     }
 
@@ -39,14 +41,14 @@ public class UserService {
     @Transactional
     public void updateUserInfo(Long userId, UpdateUserReq req) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+            .orElseThrow(() -> new GlobalException(ErrorCase.USER_NOT_FOUND));
         // 닉네임 중복 확인 (현재 사용자 제외)
         if (userRepository.existsByNicknameAndUserIdNot(req.nickname(), userId)) {
-            throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
+            throw new GlobalException(ErrorCase.DUPLICATE_NICKNAME);
         }
         // 전화번호 중복 확인 (현재 사용자 제외)
         if (userRepository.existsByPhoneAndUserIdNot(req.phone(), userId)) {
-            throw new IllegalArgumentException("중복된 전화번호가 존재합니다.");
+            throw new GlobalException(ErrorCase.DUPLICATE_PHONE);
         }
         // 비밀번호 인코딩
         String encodedPassword = passwordEncoder.encode(req.password());

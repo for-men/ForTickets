@@ -5,6 +5,7 @@ import com.fortickets.userservice.application.dto.requset.UpdateUserReq;
 import com.fortickets.userservice.application.dto.response.GetUserRes;
 import com.fortickets.userservice.application.security.UserDetailsImpl;
 import com.fortickets.userservice.application.service.UserService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,7 @@ public class UserController {
     // 사용자 정보 수정
     @PutMapping
     public CommonResponse<String> updateUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @RequestBody UpdateUserReq req) {
+        @Valid  @RequestBody UpdateUserReq req) {
         Long userId = userDetails.getUser().getUserId();
         userService.updateUserInfo(userId, req);
         return CommonResponse.success("회원정보 수정을 성공하였습니다.");

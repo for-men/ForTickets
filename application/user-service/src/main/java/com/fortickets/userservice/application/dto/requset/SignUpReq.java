@@ -27,7 +27,7 @@ public record SignUpReq(
         message = "전화번호는 10자리 또는 11자리 숫자여야 합니다.")
     String phone,
 
-    @Pattern(regexp = "^(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|png)$",
+    @Pattern(regexp = "^(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|png)$|^$",
         message = "프로필 이미지는 유효한 URL이어야 하며, jpg, png 형식의 파일이어야 합니다.")
     String profileImage,
 

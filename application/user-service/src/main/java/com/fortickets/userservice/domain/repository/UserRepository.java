@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     Optional<User> findByUserId(Long userId);
+    Optional<User> findByNickname(String nickname);
+    Optional<User> findByPhone(String phone);
 
     // 닉네임 중복 확인 (현재 사용자 제외)
     boolean existsByNicknameAndUserIdNot(String nickname, Long userId);

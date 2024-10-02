@@ -1,5 +1,7 @@
 package com.fortickets.userservice.application.service;
 
+import com.fortickets.common.ErrorCase;
+import com.fortickets.exception.GlobalException;
 import org.springframework.beans.factory.annotation.Value;
 import com.fortickets.userservice.application.dto.requset.LoginReq;
 import com.fortickets.userservice.application.dto.requset.SignUpReq;
@@ -45,7 +47,19 @@ public class AuthService {
         // 회원 중복 확인
         Optional<User> checkEmail = userRepository.findByEmail(email);
         if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+            throw new GlobalException(ErrorCase.DUPLICATE_EMAIL); // 중복된 사용자 예외 처리
+        }
+
+        // 닉네임 중복 확인
+        Optional<User> checkNickname = userRepository.findByNickname(nickname);
+        if (checkNickname.isPresent()) {
+            throw new GlobalException(ErrorCase.DUPLICATE_NICKNAME); // 중복된 닉네임 예외 처리
+        }
+
+        // 전화번호 중복 확인
+        Optional<User> checkPhone = userRepository.findByPhone(phone);
+        if (checkPhone.isPresent()) {
+            throw new GlobalException(ErrorCase.DUPLICATE_PHONE); // 중복된 전화번호 예외 처리
         }
 
         // 사용자 ROLE 확인
@@ -58,7 +72,7 @@ public class AuthService {
         // 판매자
         if (req.isSeller()) {
             if (!SELLER_CODE.equals(req.sellerToken())) {
-                throw new IllegalArgumentException("코드가 틀려 등록이 불가능합니다.");
+                throw new GlobalException(ErrorCase.INVALID_SELLER_CODE); // 잘못된 판매자 코드 예외 처리
             }
             isSeller = true;
             role = UserRoleEnum.SELLER;
@@ -67,7 +81,7 @@ public class AuthService {
         // 관리자
         if (req.isManager()) {
             if (!MANAGER_CODE.equals(req.managerToken())) {
-                throw new IllegalArgumentException("코드가 틀려 등록이 불가능합니다.");
+                throw new GlobalException(ErrorCase.INVALID_MANAGER_CODE); // 잘못된 관리자 코드 예외 처리
             }
             isManager = true;
             role = UserRoleEnum.MANAGER;
@@ -82,7 +96,7 @@ public class AuthService {
     public String login(LoginReq req) {
 
         if (req.email() == null || req.email().isEmpty() || req.password() == null || req.password().isEmpty()) {
-            throw new RuntimeException("이메일 또는 비밀번호가 비어있습니다.");
+            throw new GlobalException(ErrorCase.EMPTY_EMAIL_OR_PASSWORD);
         }
 
         try {
@@ -105,7 +119,7 @@ public class AuthService {
             // JWT 토큰 생성
             return jwtUtil.createAccessToken(userId, username, role);
         } catch (AuthenticationException e) {
-            throw new RuntimeException("잘못된 이메일 혹은 비밀번호를 입력했습니다.");
+            throw new GlobalException(ErrorCase.INVALID_EMAIL_OR_PASSWORD);
         }
     }
 }

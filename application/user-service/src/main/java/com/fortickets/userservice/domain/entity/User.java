@@ -36,7 +36,7 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String phone;
 
-    @Column(nullable = true, unique = true)
+    @Column(nullable = true)
     private String profileImage;
 
     @Column(nullable = false)

@@ -1,6 +1,8 @@
 spring:
   application:
     name: user-service
+  config:
+    import: "classpath:application-credentials.yml"
   # db 설정
   datasource:
     driver-class-name: org.postgresql.Driver
