@@ -5,7 +5,10 @@ jar { enabled = false }
 
 dependencies {
     // jwt추가
-    implementation 'io.jsonwebtoken:jjwt:0.12.6'
+    compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
     // 스프링 시큐리티 (패스워드 인코더)
     implementation 'org.springframework.boot:spring-boot-starter-security'
     // validation 의존성

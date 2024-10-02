@@ -95,7 +95,7 @@ public class AuthService {
             User user = userDetails.getUser();
 
             Long userId = userDetails.getUser().getUserId();
-            String username = userDetails.getUsername(); // 실제로는 email
+            String username = userDetails.getUsername(); // 메서드는 getUsername 이지만 return값은 email 입니다.
             UserRoleEnum role = userDetails.getUser().getRole();
 
             // JWT 토큰 생성

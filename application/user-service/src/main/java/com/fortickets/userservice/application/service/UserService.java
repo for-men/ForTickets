@@ -1,21 +1,58 @@
 package com.fortickets.userservice.application.service;
 
+import com.fortickets.userservice.application.dto.requset.UpdateUserReq;
 import com.fortickets.userservice.application.dto.response.GetUserRes;
+import com.fortickets.userservice.application.mapper.UserMapper;
 import com.fortickets.userservice.domain.entity.User;
 import com.fortickets.userservice.domain.repository.UserRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
 public class UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder; // PasswordEncoder 추가
+    private final UserMapper userMapper;
 
     // 현재 로그인한 사용자 정보 조회
     public GetUserRes getUserInfo(Long userId) {
         User user = userRepository.findByUserId(userId)
             .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        return new GetUserRes(user.getUserId(), user.getNickname(), user.getEmail(), user.getPhone(), user.getProfileImage());
+        return userMapper.userToGetUserRes(user);
+    }
+
+    // 전체 사용자의 정보 조회
+    public List<GetUserRes> getAllUsersInfo() {
+        List<User> users = userRepository.findAll(); // 모든 사용자 조회
+        return users.stream()
+            .map(userMapper::userToGetUserRes)
+            .collect(Collectors.toList());
+    }
+
+    // 사용자 정보 수정
+    @Transactional
+    public void updateUserInfo(Long userId, UpdateUserReq req) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        // 닉네임 중복 확인 (현재 사용자 제외)
+        if (userRepository.existsByNicknameAndUserIdNot(req.nickname(), userId)) {
+            throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
+        }
+        // 전화번호 중복 확인 (현재 사용자 제외)
+        if (userRepository.existsByPhoneAndUserIdNot(req.phone(), userId)) {
+            throw new IllegalArgumentException("중복된 전화번호가 존재합니다.");
+        }
+        // 비밀번호 인코딩
+        String encodedPassword = passwordEncoder.encode(req.password());
+        // 사용자 정보 업데이트
+        userMapper.updateUserReqToUser(user, req, encodedPassword);
+        // 업데이트 된 정보를 저장
+        userRepository.save(user);
     }
 }

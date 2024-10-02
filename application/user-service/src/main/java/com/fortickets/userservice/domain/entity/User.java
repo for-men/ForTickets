@@ -51,4 +51,16 @@ public class User {
         this.profileImage = profileImage;
         this.role = role;
     }
+
+    public void updateUserInfo(String nickname, String password, String phone, String profileImage) {
+        this.nickname = nickname;
+        this.password = password;
+        this.phone = phone;
+        this.profileImage = profileImage;
+    }
+
+    // 비밀번호 설정 메서드 추가
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

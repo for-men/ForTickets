@@ -9,24 +9,28 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Key;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Slf4j(topic = "JWT 인가")
+@Slf4j(topic = "JWT에서 정보 추출")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Value("${service.jwt.secret-key}") // Base64 Encode 한 SecretKey
     private String secretKey;
-    private Key key;
+    private SecretKey key;
     private final UserDetailsServiceImpl userDetailsService;
 
     @PostConstruct
@@ -49,22 +53,38 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         // 토큰이 존재하고, 유효한지 확인, 유효하지 않으면 로그를 남기고 필터 체인을 중단
         if (StringUtils.hasText(tokenValue)) {
             try {
-                // JWT 검증 필터에서 검증된 토큰만 이 필터로 들어올 것입니다.
-                // 따라서, 단순히 유효성 검증을 하지 않습니다.
+                // 게이트웨이에서 이미 검증된 토큰이므로 추가 검증 없이 클레임 추출
+                Claims claims = extractClaimsFromToken(tokenValue);
+                log.info("Extracted Claims: {}", claims); // 추출된 사용자 정보 로그
 
-                // JWT 토큰에서 Claims 추출
-                Claims info = extractClaimsFromToken(tokenValue);
-                log.info("Extracted Claims: {}", info); // 추출된 사용자 정보 로그
+                // 이메일을 클레임에서 직접 추출
+                String email = claims.get(JwtUtil.USER_EMAIL, String.class); // USER_EMAIL을 사용하여 이메일 추출
+                if (email == null || email.isEmpty()) {
+                    log.error("Email is null or empty");
+                    res.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드 설정
+                    return;
+                }
 
-                // 사용자 정보를 기반으로 인증을 설정
-                setAuthentication(info.getSubject());
+                // 역할 추출 및 접두어 추가
+                String role = claims.get(JwtUtil.USER_ROLE, String.class); // USER_ROLE을 사용하여 역할 추출
+                log.info("Extracted Role from Claims: {}", role); // 역할을 로그로 출력
+                if (role != null && !role.isEmpty()) {
+                    role = "ROLE_" + role; // 접두어 추가
+                } else {
+                    log.error("Role is null or empty");
+                    res.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드 설정
+                    return;
+                }
+
+                // 인증 설정
+                setAuthentication(email, role); // 역할을 포함하여 인증 설정
+
             } catch (Exception e) {
                 log.error(e.getMessage());
                 res.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드 설정
                 return;
             }
         }
-
         // 인증이 완료된 후, 다음 필터로 요청을 전달
         filterChain.doFilter(req, res);
     }
@@ -80,36 +100,39 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // JWT 토큰에서 Claims 추출
     private Claims extractClaimsFromToken(String token) {
-        return Jwts.parser()
-            .setSigningKey(key)
+        return Jwts.parserBuilder()
+            .setSigningKey(key) // 서명 검증에 사용될 키 설정
             .build()
             .parseClaimsJws(token)
-            .getBody();
+            .getBody(); // 클레임 부분을 가져옴
     }
 
     // 인증 처리
-    // 사용자 아이디를 사용하여 인증 객체를 생성하고, 이를 Spring Security의 SecurityContext에 설정
-    public void setAuthentication(String username) {
-        if (username == null || username.isEmpty()) {
-            log.error("Username is null or empty");
+    public void setAuthentication(String email, String role) {
+        if (email == null || email.isEmpty()) {
+            log.error("email is null or empty");
             return;
         }
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        Authentication authentication = createAuthentication(username);
+        Authentication authentication = createAuthentication(email, role); // 역할 포함
         context.setAuthentication(authentication);
 
         SecurityContextHolder.setContext(context);
     }
 
     // 인증 객체 생성
-    private Authentication createAuthentication(String username) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+    private Authentication createAuthentication(String email, String role) { // 역할 추가
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         if (userDetails == null) {
-            log.error("UserDetails is null for username: {}", username);
+            log.error("UserDetails is null for email: {}", email);
             return null;
         }
 
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        // 역할 추가
+        List<GrantedAuthority> authorities = new ArrayList<>(userDetails.getAuthorities());
+        authorities.add(new SimpleGrantedAuthority(role)); // 역할을 권한에 추가
+
+        return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
     }
 }
