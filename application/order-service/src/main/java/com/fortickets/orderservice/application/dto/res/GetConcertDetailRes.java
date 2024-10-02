@@ -1,7 +1,8 @@
 package com.fortickets.orderservice.application.dto.res;
 
 import com.fortickets.common.BookingStatus;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public record GetConcertDetailRes(
     Long userId,
@@ -14,8 +15,8 @@ public record GetConcertDetailRes(
     Integer runtime,
     String stageName,
     String location,
-    Date concertDate,
-    Date concertTime
+    LocalDate concertDate,
+    LocalTime concertTime
 ) {
 
 }
