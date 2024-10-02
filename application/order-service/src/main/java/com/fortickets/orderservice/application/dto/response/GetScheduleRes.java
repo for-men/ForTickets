@@ -4,8 +4,7 @@ public record GetScheduleRes (
     Long id,
     Long concertId,
     String concertName,
-    Integer runtime,
-
+    Integer runtime
 ){
 
 }
