@@ -1,4 +1,4 @@
-package com.fortickets.concertservice.domain;
+package com.fortickets.concertservice.domain.entity;
 
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;

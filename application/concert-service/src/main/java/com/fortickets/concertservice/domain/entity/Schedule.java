@@ -1,4 +1,4 @@
-package com.fortickets.concertservice.domain;
+package com.fortickets.concertservice.domain.entity;
 
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Table(name = "schedule")
