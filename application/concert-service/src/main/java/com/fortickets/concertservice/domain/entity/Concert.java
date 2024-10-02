@@ -15,10 +15,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "concert")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Concert extends BaseEntity {
   @Id
