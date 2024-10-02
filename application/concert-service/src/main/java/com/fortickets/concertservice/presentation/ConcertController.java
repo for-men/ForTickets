@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/concert")
+@RequestMapping("/concerts")
 public class ConcertController {
   private final ConcertService concertService;
 
@@ -25,6 +25,7 @@ public class ConcertController {
     var createConcertRes = concertService.createConcert(createConcertReq,userId);
     return CommonResponse.success(createConcertRes);
   }
+
 
 
 }
