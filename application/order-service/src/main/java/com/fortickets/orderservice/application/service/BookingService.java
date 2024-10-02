@@ -15,8 +15,12 @@ import com.fortickets.orderservice.domain.mapper.BookingMapper;
 import com.fortickets.orderservice.domain.repository.BookingRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,11 +78,24 @@ public class BookingService {
             userList.stream().map(GetUserRes::userId).toList(),
             concertList.stream().map(GetConcertRes::concertId).toList(), pageable);
 
-        return bookingList.map(bookingMapper::toGetBookingRes);
+        // GetConcertRes를 concertId 기준으로 찾기 위한 Map 생성
+        Map<Long, GetConcertRes> concertMap = concertList.stream()
+            .collect(Collectors.toMap(GetConcertRes::concertId, Function.identity()));
+
+
+        // Booking의 concertId와 매칭되는 GetConcertRes를 찾아 매핑
+        List<GetBookingRes> getBookingResList = bookingList.getContent().stream()
+            .map(booking -> {
+                GetConcertRes concertRes = concertMap.get(booking.getConcertId());
+                return bookingMapper.toGetBookingRes(booking, concertRes);
+            }).toList();
+
+        return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
 
     public Page<GetBookingRes> getBookingBySeller(Long userId, Long sellerId, String role, String nickname, String concertName, Pageable pageable) {
         // 판매자와 요청자가 같은지 확인
+        // TODO: role String에서 변경 필요
         if (!role.equals("MANAGER")) {
             if (!userId.equals(sellerId)) {
                 throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
@@ -91,22 +108,40 @@ public class BookingService {
         if (nickname != null) {
             userList = userClient.searchNickname(nickname);
         }
-
-        // userId, 공연명으로 공연 조회
-        // seller는 고정. concertname은 null일 수 있음
+        // 공연명으로 공연 조회
         List<GetConcertRes> concertList = concertClient.searchConcert(sellerId, concertName);
 
+        // 사용자, 공연명으로 예약 조회 null일 경우는 메서드에서 처리함
         Page<Booking> bookingList = bookingRepository.findByUserIdInAndConcertIdIn(
             userList.stream().map(GetUserRes::userId).toList(),
             concertList.stream().map(GetConcertRes::concertId).toList(), pageable);
 
-        return bookingList.map(bookingMapper::toGetBookingRes);
+        // GetConcertRes를 concertId 기준으로 찾기 위한 Map 생성
+        Map<Long, GetConcertRes> concertMap = concertList.stream()
+            .collect(Collectors.toMap(GetConcertRes::concertId, Function.identity()));
+
+        // Booking의 concertId와 매칭되는 GetConcertRes를 찾아 매핑
+        List<GetBookingRes> getBookingResList = bookingList.getContent().stream()
+            .map(booking -> {
+                GetConcertRes concertRes = concertMap.get(booking.getConcertId());
+                return bookingMapper.toGetBookingRes(booking, concertRes);
+            }).toList();
+
+        return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
 
     public Page<GetBookingRes> getBookingByUser(Long userId, Pageable pageable) {
         Page<Booking> bookingList = bookingRepository.findByUserId(userId, pageable);
-        return bookingList.map(bookingMapper::toGetBookingRes);
+        // TODO: 성능 개선 필요 (한번에 받아와서 처리 가능할 듯?)
+        List<GetBookingRes> getBookingResList = bookingList.getContent().stream().map(booking -> {
+            GetConcertRes concertRes = concertClient.getConcert(booking.getConcertId());
+            return bookingMapper.toGetBookingRes(booking, concertRes);
+        }).toList();
+        return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
 
+    public GetBookingRes getBookingById(Long bookingId) {
+        return null;
+    }
 }
 

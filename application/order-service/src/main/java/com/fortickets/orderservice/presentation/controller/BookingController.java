@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/booking")
+@RequestMapping("/bookings")
 @RequiredArgsConstructor
 public class BookingController {
 
@@ -37,8 +37,8 @@ public class BookingController {
     }
 
     /**
-     * 예매 내역 조회
-     * @ROLE : SELLER, MANAGER
+     * 관리자 예매 내역 조회
+     * @ROLE :MANAGER
      */
     @GetMapping
     public CommonResponse<Page<GetBookingRes>> getBooking(
@@ -50,6 +50,9 @@ public class BookingController {
         return CommonResponse.success(bookingService.getBooking(nickname, concertName, pageable));
     }
 
+    /**
+     * 판매자 예매 내역 조회
+     */
     @GetMapping("/seller/{sellerId}")
     public CommonResponse<Page<GetBookingRes>> getBookingBySeller(
         @RequestHeader("X-User-Id") Long userId,
@@ -62,11 +65,24 @@ public class BookingController {
         return CommonResponse.success(bookingService.getBookingBySeller(userId, sellerId, role, nickname, concertName, pageable));
     }
 
+    /**
+     * 사용자 예매 내역 조회
+     */
     @GetMapping("/me/{userId}")
     public CommonResponse<Page<GetBookingRes>> getBookingByUser(
         @PathVariable Long userId,
         Pageable pageable
     ) {
         return CommonResponse.success(bookingService.getBookingByUser(userId, pageable));
+    }
+
+    /**
+     * 예매 단건 조회
+     */
+    @GetMapping("/{bookingId}")
+    public CommonResponse<GetBookingRes> getBookingById(
+        @PathVariable Long bookingId
+    ) {
+        return CommonResponse.success(bookingService.getBookingById(bookingId));
     }
 }

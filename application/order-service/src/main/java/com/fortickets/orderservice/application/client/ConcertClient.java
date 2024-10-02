@@ -16,10 +16,13 @@ public interface ConcertClient {
     @GetMapping("/schedules/{scheduleId}")
     GetScheduleRes getSchedule(@PathVariable Long scheduleId);
 
-    @GetMapping("/concerts/{concertName}")
+    @GetMapping("/concerts/{concertId}")
+    GetConcertRes getConcert(@PathVariable Long concertId);
+
+    @GetMapping("/concerts/{concertName}/search")
     List<GetConcertRes> searchConcertName(@PathVariable String concertName);
 
-    @GetMapping("/concerts/{userId}/{concertName}")
+    @GetMapping("/concerts/{userId}/{concertName}/search")
     List<GetConcertRes> searchConcert(@PathVariable Long userId, @PathVariable String concertName);
 
 }

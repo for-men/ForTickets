@@ -8,7 +8,9 @@ public record GetBookingRes (
     Long userId,
     Long price,
     BookingStatus status,
-    String seat
+    String seat,
+    String concertName,
+    Integer runtime
 ){
 
 }
