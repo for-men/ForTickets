@@ -1,6 +1,8 @@
 spring:
   application:
     name: user-service
+  config:
+    import: "classpath:application-credentials.yml"
   # db 설정
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -26,6 +28,7 @@ spring:
         command: down
         timeout: 1m
       file: application/user-service/docker-compose.yml
+
 server:
   port: 12021
 
