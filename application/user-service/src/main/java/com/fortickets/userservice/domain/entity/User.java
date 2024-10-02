@@ -1,5 +1,6 @@
 package com.fortickets.userservice.domain.entity;
 
+import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,10 +58,5 @@ public class User {
         this.password = password;
         this.phone = phone;
         this.profileImage = profileImage;
-    }
-
-    // 비밀번호 설정 메서드 추가
-    public void setPassword(String password) {
-        this.password = password;
     }
 }
