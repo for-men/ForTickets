@@ -11,8 +11,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,12 +37,11 @@ public class Concert extends BaseEntity {
   private int runtime;
 
   @Column(nullable = false)
-  @Temporal(TemporalType.DATE)
-  private Date startDate;
+  private LocalDate startDate;
 
   @Column(nullable = false)
   @Temporal(TemporalType.DATE)
-  private Date endDate;
+  private LocalDate endDate;
 
   @Column(nullable = false)
   private Long price;
@@ -55,11 +54,11 @@ public class Concert extends BaseEntity {
 
 
 
-  public static Concert of(Long userId, String concertName, int runtime, Date startDate, Date endDate, Long price, String concertImage) {
+  public static Concert of(Long userId, String concertName, int runtime, LocalDate startDate, LocalDate endDate, Long price, String concertImage) {
     return new Concert(userId,concertName,runtime,startDate,endDate,price,concertImage);
   }
 
-  private Concert(Long userId, String concertName, int runtime, Date startDate, Date endDate, Long price, String concertImage) {
+  private Concert(Long userId, String concertName, int runtime, LocalDate startDate, LocalDate endDate, Long price, String concertImage) {
     this.userId = userId;
     this.concertName = concertName;
     this.runtime = runtime;

@@ -10,9 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "schedule")
@@ -33,11 +32,9 @@ public class Schedule extends BaseEntity {
   private Stage stage;
 
   @Column(name = "concert_date", nullable = false)
-  @Temporal(TemporalType.DATE)
-  private Date concertDate;
+  private LocalDate concertDate;
 
   @Column(name = "concert_time", nullable = false)
-  @Temporal(TemporalType.TIME)
-  private Date concertTime;
+  private LocalTime concertTime;
 
 }

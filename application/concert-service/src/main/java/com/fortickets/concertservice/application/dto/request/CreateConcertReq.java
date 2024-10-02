@@ -1,13 +1,13 @@
 package com.fortickets.concertservice.application.dto.request;
 
 import com.fortickets.concertservice.domain.entity.Concert;
-import java.sql.Date;
+import java.time.LocalDate;
 
 public record CreateConcertReq (
     String concertName,
     int runTime,
-    Date startDate,
-    Date endDate,
+    LocalDate startDate,
+    LocalDate endDate,
     Long price,
     String concertImage
 ){
