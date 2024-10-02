@@ -2,6 +2,7 @@ package com.fortickets.orderservice.presentation.controller;
 
 import com.fortickets.common.CommonResponse;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
+import com.fortickets.orderservice.application.dto.res.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.service.BookingService;
@@ -77,10 +78,10 @@ public class BookingController {
     }
 
     /**
-     * 예매 단건 조회
+     * 예매 단건 조회 (예매 상세 조회)
      */
     @GetMapping("/{bookingId}")
-    public CommonResponse<GetBookingRes> getBookingById(
+    public CommonResponse<GetConcertDetailRes> getBookingById(
         @PathVariable Long bookingId
     ) {
         return CommonResponse.success(bookingService.getBookingById(bookingId));

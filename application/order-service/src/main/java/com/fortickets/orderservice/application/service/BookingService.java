@@ -5,6 +5,7 @@ import com.fortickets.exception.GlobalException;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
+import com.fortickets.orderservice.application.dto.res.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.res.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
@@ -140,8 +141,12 @@ public class BookingService {
         return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
 
-    public GetBookingRes getBookingById(Long bookingId) {
-        return null;
+    public GetConcertDetailRes getBookingById(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
+        GetScheduleRes getScheduleRes = concertClient.getSchedule(booking.getScheduleId());
+
+        return bookingMapper.toGetConcertDetailRes(booking, getScheduleRes);
     }
 }
 
