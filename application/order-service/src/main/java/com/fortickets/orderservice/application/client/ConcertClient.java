@@ -29,4 +29,7 @@ public interface ConcertClient {
     @GetMapping("/concerts/{userId}/{concertName}/search")
     List<GetConcertRes> searchConcert(@PathVariable Long userId, @PathVariable String concertName);
 
+    // userId로 Concert 정보 조회
+    @GetMapping("/concerts/{userId}/seller")
+    List<GetConcertRes> getConcertBySeller(@PathVariable Long userId);
 }

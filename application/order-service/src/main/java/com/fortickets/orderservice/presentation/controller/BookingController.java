@@ -59,14 +59,13 @@ public class BookingController {
      */
     @GetMapping("/seller/{sellerId}")
     public CommonResponse<Page<GetBookingRes>> getBookingBySeller(
-        @RequestHeader("X-User-Id") Long userId,
-        @RequestHeader("X-User-Role") String role,
         @PathVariable Long sellerId,
         @RequestParam(required = false, name = "nickname") String nickname,
         @RequestParam(required = false, name = "concert-name") String concertName,
         Pageable pageable
     ) {
-        return CommonResponse.success(bookingService.getBookingBySeller(userId, sellerId, role, nickname, concertName, pageable));
+        // role, userid securitycontext에서 가져오기
+        return CommonResponse.success(bookingService.getBookingBySeller(1L, sellerId, "MANAGER", nickname, concertName, pageable));
     }
 
     /**
@@ -99,9 +98,10 @@ public class BookingController {
      */
     @DeleteMapping("/{bookingId}")
     public CommonResponse<CommonEmptyRes> deleteBooking(
-        @RequestHeader("X-User-email") String email,
+//        @RequestHeader("X-User-email") String email,
         @PathVariable Long bookingId) {
-        bookingService.deleteBooking(email, bookingId);
+        // TODO: email securitycontext에서 가져오기
+        bookingService.deleteBooking("joo-chang@admin.com", bookingId);
         return CommonResponse.success();
     }
 }

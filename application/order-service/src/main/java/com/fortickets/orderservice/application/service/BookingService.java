@@ -68,14 +68,17 @@ public class BookingService {
     public Page<GetBookingRes> getBooking(String nickname, String concertName, Pageable pageable) {
         // TODO: role String에서 변경 필요
         List<GetUserRes> userList = new ArrayList<>();
+        List<GetConcertRes> concertList = new ArrayList<>();
         // TODO: 검색 조건 null 체크 하려면 QueryDSL 필요
         // 닉네임으로 사용자 조회
         // 검색 조건에 없으면 조회할 필요 없음
         if (nickname != null) {
-            userList = userClient.searchNickname(nickname);
+//            userList = userClient.searchNickname(nickname);
         }
-        // 공연명으로 공연 조회
-        List<GetConcertRes> concertList = concertClient.searchConcertName(concertName);
+        if (concertName != null) {
+            // 공연명으로 공연 조회
+//            concertList = concertClient.searchConcertName(concertName);
+        }
 
         // 사용자, 공연명으로 예약 조회 null일 경우는 메서드에서 처리함
         Page<Booking> bookingList = bookingRepository.findByBookingSearch(
@@ -106,14 +109,19 @@ public class BookingService {
             }
         }
         List<GetUserRes> userList = new ArrayList<>();
+        List<GetConcertRes> concertList = new ArrayList<>();
         // TODO: 검색 조건 null 체크 하려면 QueryDSL 필요
         // 닉네임으로 사용자 조회
         // 검색 조건에 없으면 조회할 필요 없음
         if (nickname != null) {
             userList = userClient.searchNickname(nickname);
         }
-        // 공연명으로 공연 조회
-        List<GetConcertRes> concertList = concertClient.searchConcert(sellerId, concertName);
+        if (concertName != null) {
+            // 공연명으로 공연 조회
+           concertList = concertClient.searchConcert(sellerId, concertName);
+        }else {
+            concertList = concertClient.getConcertBySeller(sellerId);
+        }
 
         // 사용자, 공연명으로 예약 조회 null일 경우는 메서드에서 처리함
         Page<Booking> bookingList = bookingRepository.findByBookingSearch(
