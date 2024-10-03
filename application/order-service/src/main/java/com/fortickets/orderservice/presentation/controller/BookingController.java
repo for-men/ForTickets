@@ -3,7 +3,7 @@ package com.fortickets.orderservice.presentation.controller;
 import com.fortickets.common.CommonResponse;
 import com.fortickets.common.CommonResponse.CommonEmptyRes;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
-import com.fortickets.orderservice.application.dto.res.GetConcertDetailRes;
+import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.service.BookingService;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,8 +46,8 @@ public class BookingController {
     @GetMapping
     public CommonResponse<Page<GetBookingRes>> getBooking(
         // TODO: default value qeurydsl 적용 후 삭제
-        @RequestParam(required = false, name = "nickname", defaultValue = "sample") String nickname,
-        @RequestParam(required = false, name = "concert-name", defaultValue = "sample") String concertName,
+        @RequestParam(required = false, name = "nickname") String nickname,
+        @RequestParam(required = false, name = "concert-name") String concertName,
         Pageable pageable
     ) {
         return CommonResponse.success(bookingService.getBooking(nickname, concertName, pageable));
