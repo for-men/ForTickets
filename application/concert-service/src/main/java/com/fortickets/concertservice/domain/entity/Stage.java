@@ -8,11 +8,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "stage")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Stage extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +28,20 @@ public class Stage extends BaseEntity {
   private String location;
 
   @Column(name = "row", nullable = false)
-  private Integer row;
+  private int row;
 
   @Column(name = "col", nullable = false)
-  private Integer col;
+  private int col;
+
+  public static Stage of(String name, String location, int row, int col) {
+    return new Stage(name, location, row, col);
+  }
+
+  private Stage(String name, String location, int row, int col) {
+    this.name = name;
+    this.location = location;
+    this.row = row;
+    this.col = col;
+  }
 
 }
