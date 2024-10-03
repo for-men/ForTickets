@@ -1,11 +1,13 @@
 package com.fortickets.concertservice.application.service;
 
+import com.fortickets.common.ErrorCase;
 import com.fortickets.concertservice.application.dto.CreateStageRes;
 import com.fortickets.concertservice.application.dto.request.CreateStageReq;
 import com.fortickets.concertservice.application.dto.response.GetStageRes;
 import com.fortickets.concertservice.domain.entity.Stage;
 import com.fortickets.concertservice.domain.mapper.StageMapper;
 import com.fortickets.concertservice.domain.repository.StageRepository;
+import com.fortickets.exception.GlobalException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,12 @@ public class StageService {
   public List<GetStageRes> getAllStage() {
     List<Stage> stages = stageRepository.findAll();
     return stages.stream().map(stage -> stageMapper.toGetStageRes(stage)).toList();
+  }
+
+  public GetStageRes getStage(Long stageId) {
+    Stage stage = stageRepository.findById(stageId)
+        .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_STAGE));
+    return stageMapper.toGetStageRes(stage);
   }
 
 

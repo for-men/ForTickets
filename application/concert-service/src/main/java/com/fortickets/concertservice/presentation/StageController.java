@@ -8,6 +8,7 @@ import com.fortickets.concertservice.application.service.StageService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,11 @@ public class StageController {
   @GetMapping
   public CommonResponse<List<GetStageRes>> getStages() {
     return CommonResponse.success(stageService.getAllStage());
+  }
+
+  @GetMapping("/{stageId}")
+  public CommonResponse<GetStageRes> getStage(@PathVariable("stageId") Long stageId) {
+    return CommonResponse.success(stageService.getStage(stageId));
   }
 
 }
