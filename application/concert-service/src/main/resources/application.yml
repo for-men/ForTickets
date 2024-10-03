@@ -39,3 +39,9 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:12001/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'prometheus'

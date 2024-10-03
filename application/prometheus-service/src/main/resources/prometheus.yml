@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 15s  # 메트릭 수집 주기
+
+scrape_configs:
+  - job_name: 'eureka'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'host.docker.internal:12001' ]  # Eureka Server의 메트릭 엔드포인트
+
+  - job_name: 'gateway-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:12011']  # Gateway 서비스의 메트릭 엔드포인트
+
+  - job_name: 'user-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:12021']  # User 서비스의 메트릭 엔드포인트
+
+  - job_name: 'concert-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:12031']  # Concert 서비스의 메트릭 엔드포인트
+
+  - job_name: 'order-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:12041']  # Order 서비스의 메트릭 엔드포인트
