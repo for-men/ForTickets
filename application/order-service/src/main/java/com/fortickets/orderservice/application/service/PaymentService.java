@@ -5,8 +5,6 @@ import com.fortickets.exception.GlobalException;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
-import com.fortickets.orderservice.application.dto.response.GetBookingRes;
-import com.fortickets.orderservice.application.dto.response.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentRes;
 import com.fortickets.orderservice.application.dto.response.GetUserRes;
@@ -35,10 +33,15 @@ public class PaymentService {
     private final UserClient userClient;
     private final ConcertClient concertClient;
 
+    /**
+     * 결제 생성 (예매 확정 시 결제 생성)
+     * @param createPaymentReq
+     */
     @Transactional
     public void createPayment(CreatePaymentReq createPaymentReq) {
         // 결제 생성
         Payment payment = paymentMapper.toEntity(createPaymentReq);
+        payment.waiting();
         paymentRepository.save(payment);
 
         // 받아온 예매 아이디로 예매 조회
@@ -67,7 +70,6 @@ public class PaymentService {
     public Page<GetPaymentRes> getPaymentByUser(Long userId, Pageable pageable) {
         Page<Payment> paymentList = paymentRepository.findByUserId(userId, pageable);
 
-        //
         List<GetPaymentRes> getPaymentResList = paymentList.getContent().stream().map( payment -> {
             var getConcertRes = concertClient.getConcert(payment.getConcertId());
             return paymentMapper.toGetPaymentUser(payment, getConcertRes);
@@ -79,6 +81,30 @@ public class PaymentService {
     public GetPaymentDetailRes getPayment(Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
-        return null;
+
+        var getScheduleRes = concertClient.getScheduleDetail(payment.getScheduleId());
+        var getUserRes = userClient.getUser(payment.getUserId());
+
+        return paymentMapper.toGetPaymentDetailRes(payment, getScheduleRes, getUserRes);
+    }
+
+    @Transactional
+    public void cancelPayment(Long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+            .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
+
+        payment.cancel();
+
+        // 예매 취소
+        List<Booking> bookingList = bookingRepository.findByPaymentId(paymentId);
+        bookingList.forEach(Booking::cancel);
+    }
+
+    @Transactional
+    public void deletePayment(String email, Long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+            .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
+
+        payment.delete(email);
     }
 }

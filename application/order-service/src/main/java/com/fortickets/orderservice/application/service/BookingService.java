@@ -5,7 +5,9 @@ import com.fortickets.common.ErrorCase;
 import com.fortickets.exception.GlobalException;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
+import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
+import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
 import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
@@ -38,6 +40,7 @@ public class BookingService {
     private final BookingMapper bookingMapper;
     private final UserClient userClient;
     private final ConcertClient concertClient;
+    private final PaymentService paymentService;
 
     @Transactional
     public List<CreateBookingRes> createBooking(CreateBookingReq createBookingReq) {
@@ -64,6 +67,22 @@ public class BookingService {
         return bookings.stream().map(bookingMapper::toCreateBookingRes).toList();
     }
 
+    @Transactional
+    public void confirmBooking(ConfirmBookingReq confirmBookingReq) {
+        List<Booking> bookingList = bookingRepository.findAllById(confirmBookingReq.bookingIds());
+        bookingList.forEach(Booking::confirm);
+
+        CreatePaymentReq createPaymentReq = CreatePaymentReq.builder()
+            .userId(bookingList.get(0).getUserId())
+            .totalPrice(bookingList.stream().mapToLong(Booking::getPrice).sum())
+            .concertId(bookingList.get(0).getConcertId())
+            .scheduleId(bookingList.get(0).getScheduleId())
+            .bookingIds(confirmBookingReq.bookingIds())
+            .build();
+
+        // 결제 생성
+        paymentService.createPayment(createPaymentReq);
+    }
 
     public Page<GetBookingRes> getBooking(String nickname, String concertName, Pageable pageable) {
         // TODO: role String에서 변경 필요
@@ -155,7 +174,7 @@ public class BookingService {
     public GetConcertDetailRes getBookingById(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
             .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
-        GetScheduleRes getScheduleRes = concertClient.getSchedule(booking.getScheduleId());
+        GetScheduleRes getScheduleRes = concertClient.getScheduleDetail(booking.getScheduleId());
 
         return bookingMapper.toGetConcertDetailRes(booking, getScheduleRes);
     }
@@ -165,7 +184,7 @@ public class BookingService {
         Booking booking = bookingRepository.findById(bookingId)
             .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
         // TODO: 예약 취소 가능한지 확인
-        GetScheduleRes scheduleRes = concertClient.getSchedule(booking.getScheduleId());
+        GetScheduleRes scheduleRes = concertClient.getScheduleDetail(booking.getScheduleId());
 
         // 공연이 끝났는지 체크 필요
         if (!possibleCancel(scheduleRes.concertDate(), scheduleRes.concertTime())) {
@@ -189,5 +208,7 @@ public class BookingService {
     private boolean possibleCancel(LocalDate localDate, LocalTime localTime) {
         return LocalDateTime.of(localDate, localTime).isAfter(LocalDateTime.now());
     }
+
+
 }
 

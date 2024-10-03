@@ -1,6 +1,7 @@
 package com.fortickets.orderservice.presentation.controller;
 
 import com.fortickets.common.CommonResponse;
+import com.fortickets.common.CommonResponse.CommonEmptyRes;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
@@ -10,7 +11,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -75,8 +78,19 @@ public class PaymentController {
     /**
      *  결제 취소
      */
+    @PatchMapping("/{paymentId}")
+    public CommonResponse<CommonEmptyRes> cancelPayment(@PathVariable Long paymentId) {
+        paymentService.cancelPayment(paymentId);
+        return CommonResponse.success();
+    }
 
     /**
      * 결제 내역 삭제
      */
+    @DeleteMapping("/{paymentId}")
+    public CommonResponse<CommonEmptyRes> deletePayment(@PathVariable Long paymentId) {
+        // TODO: 이메일 정보 필요
+        paymentService.deletePayment("joochang@admin.com", paymentId);
+        return CommonResponse.success();
+    }
 }

@@ -39,5 +39,11 @@ public class Payment extends BaseEntity {
     private List<Booking> bookings;
 
 
+    public void cancel() {
+        this.status = PaymentStatus.CANCELED;
+    }
 
+    public void waiting() {
+        this.status = PaymentStatus.WAITING;
+    }
 }

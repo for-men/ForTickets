@@ -59,4 +59,8 @@ public class Booking extends BaseEntity {
     public void cancel() {
         this.status = BookingStatus.CANCELED;
     }
+
+    public void confirm() {
+        this.status = BookingStatus.CONFIRMED;
+    }
 }

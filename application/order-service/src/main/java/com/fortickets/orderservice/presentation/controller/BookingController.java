@@ -2,6 +2,7 @@ package com.fortickets.orderservice.presentation.controller;
 
 import com.fortickets.common.CommonResponse;
 import com.fortickets.common.CommonResponse.CommonEmptyRes;
+import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
@@ -37,6 +38,15 @@ public class BookingController {
     public CommonResponse<List<CreateBookingRes>> createBooking(@RequestBody CreateBookingReq createBookingReq) {
         var createBookingRes = bookingService.createBooking(createBookingReq);
         return CommonResponse.success(createBookingRes);
+    }
+
+    /**
+     * 예매 확정
+     */
+    @PatchMapping("/confirm")
+    public CommonResponse<CommonEmptyRes> confirmBooking(@RequestBody ConfirmBookingReq confirmBookingReq) {
+        bookingService.confirmBooking(confirmBookingReq);
+        return CommonResponse.success();
     }
 
     /**
@@ -86,7 +96,7 @@ public class BookingController {
     /**
      * 예매 취소
      */
-    @PatchMapping("/{bookingId}")
+    @PatchMapping("/cancel/{bookingId}")
     public CommonResponse<CommonEmptyRes> cancelBooking(@PathVariable Long bookingId) {
         bookingService.cancelBooking(bookingId);
         return CommonResponse.success();
