@@ -32,6 +32,7 @@ server:
 # auditing entity scan을 위한 base package 설정
 base-package:
   jpa: "com.fortickets.concertservice"
+  exception: "com.fortickets.concertservice"
 
 # euereka client 등록
 eureka:

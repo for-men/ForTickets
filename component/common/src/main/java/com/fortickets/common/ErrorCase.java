@@ -25,12 +25,28 @@ public enum ErrorCase {
   USER_NOT_FOUND(HttpStatus.NOT_FOUND, 2000, "유저를 찾을 수 없습니다."),
   // 로그인 필요 401
   LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, 2001, "로그인이 필요합니다."),
-  //중복된 email 400
-  DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, 2002, "중복된 Email 입니다."),
+  //중복된 email 409 -> 기존 400에서 409로 수정했습니다.
+  DUPLICATE_EMAIL(HttpStatus.CONFLICT, 2002, "중복된 Email 입니다."),
+  // null값 400
+  EMPTY_EMAIL_OR_PASSWORD(HttpStatus.BAD_REQUEST, 2003, "이메일 또는 비밀번호가 비어있습니다."),
+  // 401
+  INVALID_EMAIL_OR_PASSWORD(HttpStatus.UNAUTHORIZED, 2004, "잘못된 이메일 혹은 비밀번호를 입력했습니다."),
+  // 409
+  DUPLICATE_NICKNAME(HttpStatus.CONFLICT, 2005, "중복된 닉네임이 존재합니다."),
+  // 409
+  DUPLICATE_PHONE(HttpStatus.CONFLICT, 2005, "중복된 번호가 존재합니다."),
+  // 400
+  INVALID_SELLER_CODE(HttpStatus.BAD_REQUEST, 2006, "잘못된 판매자 코드입니다."),
+  // 400
+  INVALID_MANAGER_CODE(HttpStatus.BAD_REQUEST, 2007, "잘못된 관리자 코드입니다."),
 
   /* Concert 3000번대 */
+  NOT_EXIST_SCHEDULE(HttpStatus.NOT_FOUND, 3000, "존재하지 않는 스케줄입니다."),
 
   /* Order 4000번대 */
+  ALREADY_BOOKED_SEAT(HttpStatus.BAD_REQUEST, 4000, "이미 예매가 완료된 좌석입니다."),
+  BOOKING_NOT_FOUND(HttpStatus.NOT_FOUND, 4001, "예매를 찾을 수 없습니다."),
+  CANNOT_CANCEL_BOOKING(HttpStatus.BAD_REQUEST, 4002,  "취소할 수 없는 예매입니다."),
   ;
 
 

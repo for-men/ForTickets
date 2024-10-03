@@ -1,4 +1,4 @@
-package com.fortickets.orderservice.domain.entity;
+package com.fortickets.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum BookingStatus {
     PENDING("예매 대기"),
     CONFIRMED("예매 확정"),
-    CANCELLED("예매 취소");
+    CANCELED("예매 취소");
 
     private final String status;
 }

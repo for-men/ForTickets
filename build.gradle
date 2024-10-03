@@ -55,8 +55,7 @@ subprojects {
             implementation 'org.springframework.boot:spring-boot-starter-web'
         }
         if (project.name != 'common') {
-            api project(':component:common')
-            runtimeOnly project(':component:common')
+            implementation project(':component:common')
         }
         if (project.path.startsWith(':application:')) {
             if (project.name == 'eureka') {
@@ -68,6 +67,7 @@ subprojects {
             }
             //openFeign
             implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+            implementation project(':component:exception')
         }
     }
 

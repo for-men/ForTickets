@@ -37,3 +37,6 @@ out/
 .vscode/
 
 db/
+
+### secret-key ###
+**/application-credentials.yml
