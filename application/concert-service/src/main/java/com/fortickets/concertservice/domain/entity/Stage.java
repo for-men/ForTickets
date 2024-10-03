@@ -33,4 +33,15 @@ public class Stage extends BaseEntity {
   @Column(name = "col", nullable = false)
   private int col;
 
+  public static Stage of(String name, String location, int row, int col) {
+    return new Stage(name, location, row, col);
+  }
+
+  private Stage(String name, String location, int row, int col) {
+    this.name = name;
+    this.location = location;
+    this.row = row;
+    this.col = col;
+  }
+
 }
