@@ -1,6 +1,6 @@
 package com.fortickets.concertservice.application.dto.response;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public record GetConcertRes(
     Long concertId,
@@ -8,8 +8,8 @@ public record GetConcertRes(
     String concertName,
     String concertImage,
     int runtime,
-    Date startDate,
-    Date endDate,
+    LocalDate startDate,
+    LocalDate endDate,
     Long price
 ) {
 
