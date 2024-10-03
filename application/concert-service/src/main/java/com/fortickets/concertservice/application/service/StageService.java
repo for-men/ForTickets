@@ -29,7 +29,7 @@ public class StageService {
 
   public List<GetStageRes> getAllStage() {
     List<Stage> stages = stageRepository.findAll();
-    return stages.stream().map(stage -> stageMapper.toGetStageRes(stage)).toList();
+    return stages.stream().map(stageMapper::toGetStageRes).toList();
   }
 
   public GetStageRes getStage(Long stageId) {
