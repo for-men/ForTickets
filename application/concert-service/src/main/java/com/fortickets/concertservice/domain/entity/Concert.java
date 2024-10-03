@@ -25,7 +25,8 @@ import lombok.NoArgsConstructor;
 public class Concert extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long concertId;
+  @Column(name = "concert_id")
+  private Long Id;
 
   @Column(nullable = false,length = 255)
   private String concertName;

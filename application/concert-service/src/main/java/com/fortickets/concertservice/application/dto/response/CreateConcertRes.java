@@ -3,7 +3,7 @@ package com.fortickets.concertservice.application.dto.response;
 import java.time.LocalDate;
 
 public record CreateConcertRes(
-    Long concertId,
+    Long id,
     Long userId,
     String concertName,
     int runtime,

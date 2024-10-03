@@ -1,7 +1,7 @@
-package com.fortickets.concertservice.application.dto;
+package com.fortickets.concertservice.application.dto.response;
 
 public record CreateStageRes(
-    Long stageId,
+    Long id,
     String name,
     String location,
     int row,
