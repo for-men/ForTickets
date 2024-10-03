@@ -2,6 +2,8 @@ package com.fortickets.orderservice.presentation.controller;
 
 import com.fortickets.common.CommonResponse;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
+import com.fortickets.orderservice.application.dto.response.GetBookingRes;
+import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentRes;
 import com.fortickets.orderservice.application.service.PaymentService;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +40,6 @@ public class PaymentController {
     @GetMapping
     public CommonResponse<Page<GetPaymentRes>> getPayments(
         @RequestParam(required = false, name = "nickname") String nickname,
-        @RequestParam(required = false, name = "concert-name") String concertName,
         Pageable pageable
     ) {
         return CommonResponse.success(paymentService.getPayments(nickname, pageable));
@@ -46,15 +48,29 @@ public class PaymentController {
     /**
      *  결제 내역 전체 조회 (Seller)
      */
-
+    @GetMapping("/seller/{sellerId}")
+    public CommonResponse<Page<GetPaymentRes>> getPaymentsBySeller(
+        @RequestParam(required = false, name = "nickname") String nickname,
+        Pageable pageable
+    ) {
+        return CommonResponse.success(paymentService.getPayments(nickname, pageable));
+    }
 
     /**
      * 결제 내역 전체 조회 (User)
      */
+    @GetMapping("/me/{userId}")
+    public CommonResponse<Page<GetPaymentRes>> getBookingByUser(@PathVariable Long userId, Pageable pageable) {
+        return CommonResponse.success(paymentService.getPaymentByUser(userId, pageable));
+    }
 
     /**
      * 결제 단일 조회
      */
+    @GetMapping("/{paymentId}")
+    public CommonResponse<GetPaymentDetailRes> getPayment(@PathVariable Long paymentId) {
+        return CommonResponse.success(paymentService.getPayment(paymentId));
+    }
 
     /**
      *  결제 취소

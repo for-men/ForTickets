@@ -29,6 +29,7 @@ public class Payment extends BaseEntity {
     private Long id;
 
     private Long userId;
+    private Long concertId;
     private Long scheduleId;
     private Long totalPrice;
     private PaymentStatus status;
