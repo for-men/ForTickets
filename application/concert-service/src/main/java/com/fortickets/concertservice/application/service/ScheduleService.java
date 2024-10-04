@@ -4,7 +4,7 @@ import com.fortickets.common.ErrorCase;
 import com.fortickets.concertservice.application.client.BookingClient;
 import com.fortickets.concertservice.application.dto.request.CreateScheduleReq;
 import com.fortickets.concertservice.application.dto.response.CreateScheduleRes;
-import com.fortickets.concertservice.application.dto.response.GetScheduleRes;
+import com.fortickets.concertservice.application.dto.response.GetScheduleSeatRes;
 import com.fortickets.concertservice.domain.entity.Concert;
 import com.fortickets.concertservice.domain.entity.Schedule;
 import com.fortickets.concertservice.domain.entity.Stage;
@@ -44,7 +44,7 @@ public class ScheduleService {
     return scheduleMapper.toCreateScheduleRes(scheduleRepository.save(schedule));
   }
 
-  public GetScheduleRes getSchedule(Long scheduleId) {
+  public GetScheduleSeatRes getSchedule(Long scheduleId) {
     // 스케줄에 대한 공연 정보 가져오기
     // 스케줄에 대한 공연장 정보 가져오기
     Schedule schedule = scheduleRepository.findById(scheduleId)

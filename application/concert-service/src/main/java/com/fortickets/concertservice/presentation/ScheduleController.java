@@ -3,7 +3,7 @@ package com.fortickets.concertservice.presentation;
 import com.fortickets.common.CommonResponse;
 import com.fortickets.concertservice.application.dto.request.CreateScheduleReq;
 import com.fortickets.concertservice.application.dto.response.CreateScheduleRes;
-import com.fortickets.concertservice.application.dto.response.GetScheduleRes;
+import com.fortickets.concertservice.application.dto.response.GetScheduleSeatRes;
 import com.fortickets.concertservice.application.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +27,7 @@ public class ScheduleController {
   }
   // 스케줄 단건조회
   @GetMapping("/{scheduleId}")
-  public CommonResponse<GetScheduleRes> getSchedule(@PathVariable("scheduleId") Long scheduleId){
+  public CommonResponse<GetScheduleSeatRes> getSchedule(@PathVariable("scheduleId") Long scheduleId){
     return CommonResponse.success(scheduleService.getSchedule(scheduleId));
   }
 
