@@ -17,7 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Slf4j(topic = "JWT에서 정보 추출")
+@Slf4j(topic = "Header 에서 정보 추출")
 public class JwtAuthenticationFilterForUserService extends OncePerRequestFilter {
 
     private final UserDetailsServiceImpl userDetailsService;

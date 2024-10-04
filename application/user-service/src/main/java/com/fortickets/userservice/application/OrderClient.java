@@ -6,7 +6,7 @@
 //@FeignClient(name = "order-service", url = "http://localhost:12041") // 주문 서비스의 URL을 설정합니다.
 //public interface OrderClient {
 //
-////    @GetMapping("/booking/hello")
+////    @GetMapping("/bookings/hello")
 ////    String hello();
 //
 //}
