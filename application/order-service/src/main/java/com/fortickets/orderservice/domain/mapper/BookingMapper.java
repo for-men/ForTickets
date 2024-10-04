@@ -5,7 +5,7 @@ import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
-import com.fortickets.orderservice.application.dto.response.GetScheduleRes;
+import com.fortickets.orderservice.application.dto.response.GetScheduleDetailRes;
 import com.fortickets.orderservice.domain.entity.Booking;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,5 +20,5 @@ public interface BookingMapper {
 
     @Mapping(source = "booking.concertId", target = "concertId")
     @Mapping(source = "booking.scheduleId", target = "scheduleId")
-    GetConcertDetailRes toGetConcertDetailRes(Booking booking, GetScheduleRes getScheduleRes);
+    GetConcertDetailRes toGetConcertDetailRes(Booking booking, GetScheduleDetailRes getScheduleDetailRes);
 }

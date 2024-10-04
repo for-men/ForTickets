@@ -12,7 +12,7 @@ import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
-import com.fortickets.orderservice.application.dto.response.GetScheduleRes;
+import com.fortickets.orderservice.application.dto.response.GetScheduleDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetUserRes;
 import com.fortickets.orderservice.domain.entity.Booking;
 import com.fortickets.orderservice.domain.mapper.BookingMapper;
@@ -43,12 +43,12 @@ public class BookingService {
     private final PaymentService paymentService;
 
     @Transactional
-    public List<CreateBookingRes> createBooking(CreateBookingReq createBookingReq) {
+    public List<CreateBookingRes> createBooking(Long userId, CreateBookingReq createBookingReq) {
         // TODO : 대기열
-        // TODO: 헤더에서 userId 가져오기
-
-        // TODO: 존재하는 스케줄인지 확인
-//        GetScheduleRes schedule = concertClient.getSchedule(createBookingReq.scheduleId());
+        if (!userId.equals(createBookingReq.userId())) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
+        var getScheduleRes = concertClient.getScheduleDetail(createBookingReq.scheduleId());
         // 이미 예약된 좌석인지 확인
         // 하나라도 예약된 좌석이 있으면 예외처리
         List<Booking> bookings = new ArrayList<>();
@@ -174,9 +174,9 @@ public class BookingService {
     public GetConcertDetailRes getBookingById(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
             .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
-        GetScheduleRes getScheduleRes = concertClient.getScheduleDetail(booking.getScheduleId());
+        GetScheduleDetailRes getScheduleDetailRes = concertClient.getScheduleDetail(booking.getScheduleId());
 
-        return bookingMapper.toGetConcertDetailRes(booking, getScheduleRes);
+        return bookingMapper.toGetConcertDetailRes(booking, getScheduleDetailRes);
     }
 
     @Transactional
@@ -184,7 +184,7 @@ public class BookingService {
         Booking booking = bookingRepository.findById(bookingId)
             .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
         // TODO: 예약 취소 가능한지 확인
-        GetScheduleRes scheduleRes = concertClient.getScheduleDetail(booking.getScheduleId());
+        GetScheduleDetailRes scheduleRes = concertClient.getScheduleDetail(booking.getScheduleId());
 
         // 공연이 끝났는지 체크 필요
         if (!possibleCancel(scheduleRes.concertDate(), scheduleRes.concertTime())) {
