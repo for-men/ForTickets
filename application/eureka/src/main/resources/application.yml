@@ -13,3 +13,9 @@ eureka:
       defaultZone: http://localhost:12001/eureka/
   instance:
     hostname: localhost
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'prometheus'

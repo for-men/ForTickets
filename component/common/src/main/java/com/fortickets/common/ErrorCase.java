@@ -42,9 +42,12 @@ public enum ErrorCase {
 
   /* Concert 3000번대 */
   NOT_EXIST_SCHEDULE(HttpStatus.NOT_FOUND, 3000, "존재하지 않는 스케줄입니다."),
+  NOT_EXIST_STAGE(HttpStatus.NOT_FOUND, 3001, "존재하지 않는 공연장입니다."),
 
   /* Order 4000번대 */
-  ALREADY_BOOKED_SEAT(HttpStatus.BAD_REQUEST, 4000, "이미 예약된 좌석입니다."),
+  ALREADY_BOOKED_SEAT(HttpStatus.BAD_REQUEST, 4000, "이미 예매가 완료된 좌석입니다."),
+  BOOKING_NOT_FOUND(HttpStatus.NOT_FOUND, 4001, "예매를 찾을 수 없습니다."),
+  CANNOT_CANCEL_BOOKING(HttpStatus.BAD_REQUEST, 4002,  "취소할 수 없는 예매입니다."),
   ;
 
 

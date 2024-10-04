@@ -69,6 +69,12 @@ subprojects {
             implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
             implementation project(':component:exception')
         }
+
+        // actuator
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+        // prometheus
+        runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
     }
 
     ext {
