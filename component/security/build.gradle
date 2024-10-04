@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.fortickets.security'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // jwt
+    // jwt추가
+    compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+    // 페인 클라이언트
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    // 스프링 시큐리티 (패스워드 인코더)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // 기본
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
