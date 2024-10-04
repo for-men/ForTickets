@@ -25,10 +25,10 @@ public class JwtAuthenticationFilterForCommon extends OncePerRequestFilter {
         HttpServletResponse res,
         FilterChain filterChain) throws ServletException, IOException {
 
-        // 요청 URI 가져오기
+//        // 요청 URI 가져오기
 //        String requestURI = req.getRequestURI();
 
-        // /auth/** 경로에 대해서는 필터를 타지 않고 바로 통과시킴
+//        // 토큰이 없이 통과시켜야 할 경로에 대해서는 필터를 타지 않고 바로 통과시킴 ex) /auth/**
 //        if (requestURI.startsWith("/auth")) {
 //            filterChain.doFilter(req, res);
 //            return;

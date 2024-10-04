@@ -30,6 +30,15 @@ public class JwtAuthenticationFilterForUserService extends OncePerRequestFilter 
     protected void doFilterInternal(
         HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
 
+        // 요청 URI 가져오기
+        String requestURI = req.getRequestURI();
+
+        // /auth/** 경로에 대해서는 필터를 타지 않고 바로 통과시킴
+        if (requestURI.startsWith("/auth")) {
+            filterChain.doFilter(req, res);
+            return;
+        }
+
         // 헤더에서 사용자 정보 추출
         String userId = req.getHeader("X-User-Id");
         String email = req.getHeader("X-Email");
