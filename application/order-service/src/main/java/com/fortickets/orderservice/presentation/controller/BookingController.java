@@ -86,6 +86,14 @@ public class BookingController {
     }
 
     /**
+     * 예매 불가 좌석 조회
+     */
+    @GetMapping("/seats/{scheduleId}")
+    public CommonResponse<List<String>> getSeatsByScheduleId(@PathVariable Long scheduleId) {
+        return CommonResponse.success(bookingService.getSeatsByScheduleId(scheduleId));
+    }
+
+    /**
      * 예매 취소
      */
     @PatchMapping("/{bookingId}")
