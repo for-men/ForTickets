@@ -9,4 +9,6 @@ include 'application:eureka'
 include 'component:jpa'
 include 'component:exception'
 include 'component:common'
+include 'component:security'
+findProject(':component:security')?.name = 'security'
 

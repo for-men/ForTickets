@@ -1,4 +1,4 @@
-package com.fortickets.userservice.application.security;
+package com.fortickets.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -36,14 +34,9 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-//    @Bean
-//    public JwtAuthenticationFilterForCommon jwtAuthenticationFilterForCommon() {
-//        return new JwtAuthenticationFilterForCommon();
-//    }
-
     @Bean
-    public JwtAuthenticationFilterForUserService jwtAuthorizationFilterForUserService() {
-        return new JwtAuthenticationFilterForUserService(userDetailsServiceImpl); // 필드 사용
+    public JwtAuthenticationFilterForCommon jwtAuthenticationFilterForCommon() {
+        return new JwtAuthenticationFilterForCommon();
     }
 
     @Bean
@@ -67,8 +60,7 @@ public class SecurityConfig {
         );
 
         // 필터 관리
-//        http.addFilterBefore(jwtAuthenticationFilterForCommon(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(jwtAuthorizationFilterForUserService(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilterForCommon(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
