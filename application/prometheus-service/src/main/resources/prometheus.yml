@@ -26,3 +26,7 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['host.docker.internal:12041']  # Order 서비스의 메트릭 엔드포인트
+
+  - job_name: 'gatling'
+    static_configs:
+      - targets: [ 'localhost:9090' ] # Gatling이 Prometheus 메트릭을 노출하는 포트로 변경
