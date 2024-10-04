@@ -12,3 +12,22 @@ services:
     volumes:
       - ../db/user-service:/var/lib/postgresql/data
 
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - '9411:9411' # Zipkin UI 접근 포트
+
+  user-service:
+    build:
+      context: . # 현재 디렉토리에서 Dockerfile을 빌드
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker # 필요 시 프로필 설정
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/fortickets
+      - SPRING_DATASOURCE_USERNAME=forman
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_ZIPKIN_BASE-URL=http://zipkin:9411 # Zipkin 서버의 URL
+    ports:
+      - '12021:12021' # user-service 포트
+    depends_on:
+      - postgres
+      - zipkin # Zipkin이 user-service보다 먼저 시작되어야 함

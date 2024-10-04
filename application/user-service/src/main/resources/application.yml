@@ -29,6 +29,10 @@ spring:
         timeout: 1m
       file: application/user-service/docker-compose.yml
 
+  # Zipkin 설정
+  zipkin:
+    base-url: http://zipkin:9411 # Zipkin 서버의 URL
+
 server:
   port: 12021
 
