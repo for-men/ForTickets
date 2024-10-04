@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -87,4 +88,15 @@ public class UserController {
 //    public String testHello() {
 //        return userService.callOrderHello(); // UserService의 메서드를 통해 호출
 //    }
+
+    @GetMapping("/users/{userId}")
+    public GetUserRes getUser(@PathVariable Long userId){
+        return userService.getUser(userId);
+    }
+
+    @GetMapping("/users/{nickname}/nickname")
+    public List<GetUserRes> searchNickname(@PathVariable String nickname){
+        return userService.searchNickname(nickname);
+    }
+
 }
