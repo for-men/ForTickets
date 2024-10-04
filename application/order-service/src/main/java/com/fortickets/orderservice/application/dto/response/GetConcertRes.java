@@ -1,4 +1,4 @@
-package com.fortickets.orderservice.application.dto.res;
+package com.fortickets.orderservice.application.dto.response;
 
 public record GetConcertRes(
     Long concertId,

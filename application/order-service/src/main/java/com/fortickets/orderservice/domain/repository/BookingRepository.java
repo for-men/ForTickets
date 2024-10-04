@@ -22,6 +22,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
      Page<Booking> findByUserId(Long userId, Pageable pageable);
 
+     List<Booking> findByPaymentId(Long paymentId);
+
      @Query("SELECT b.seat FROM Booking b "
          + "WHERE b.scheduleId = :scheduleId "
          + "AND (b.status = :pending OR b.status = :confirmed)")
@@ -29,5 +31,4 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
          Long scheduleId,
           BookingStatus pending,
           BookingStatus confirmed);
-
 }

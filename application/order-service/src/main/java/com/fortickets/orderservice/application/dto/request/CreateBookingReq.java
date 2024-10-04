@@ -1,7 +1,6 @@
 package com.fortickets.orderservice.application.dto.request;
 
 
-import com.fortickets.common.BookingStatus;
 import com.fortickets.orderservice.domain.entity.Booking;
 import java.util.List;
 

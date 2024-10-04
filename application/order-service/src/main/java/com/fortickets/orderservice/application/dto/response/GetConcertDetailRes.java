@@ -1,4 +1,4 @@
-package com.fortickets.orderservice.application.dto.res;
+package com.fortickets.orderservice.application.dto.response;
 
 import com.fortickets.common.BookingStatus;
 import java.time.LocalDate;
