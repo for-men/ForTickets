@@ -51,7 +51,7 @@ public class JwtUtil {
         Date date = new Date();
         String authority  = "ROLE_" + role; // 역할에 접두어 추가
         // JWT Claims 확인 로그 추가
-        log.info("JWT Claims - userId: {}, email: {}, role: {}", userId, email, role);
+        log.info("JWT Claims - userId: {}, email: {}, role: {}", userId, email, authority);
 
         return BEARER_PREFIX +
             Jwts.builder()
