@@ -1,7 +1,7 @@
 package com.fortickets.orderservice.application.client;
 
 import com.fortickets.orderservice.application.dto.response.GetConcertRes;
-import com.fortickets.orderservice.application.dto.response.GetScheduleRes;
+import com.fortickets.orderservice.application.dto.response.GetScheduleDetailRes;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public interface ConcertClient {
     // TODO: 내부 API 생성 필요
     // Schedule(concert, stage) 정보 조회
     @GetMapping("/schedules/{scheduleId}")
-    GetScheduleRes getScheduleDetail(@PathVariable Long scheduleId);
+    GetScheduleDetailRes getScheduleDetail(@PathVariable Long scheduleId);
 
     // Concert 정보 조회
     @GetMapping("/concerts/{concertId}")

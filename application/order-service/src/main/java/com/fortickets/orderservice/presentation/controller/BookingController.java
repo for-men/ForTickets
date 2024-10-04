@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,8 +36,10 @@ public class BookingController {
      * 예매 생성
      */
     @PostMapping
-    public CommonResponse<List<CreateBookingRes>> createBooking(@RequestBody CreateBookingReq createBookingReq) {
-        var createBookingRes = bookingService.createBooking(createBookingReq);
+    public CommonResponse<List<CreateBookingRes>> createBooking(
+        @RequestHeader("X-User-id") Long userId,
+        @RequestBody CreateBookingReq createBookingReq) {
+        var createBookingRes = bookingService.createBooking(userId, createBookingReq);
         return CommonResponse.success(createBookingRes);
     }
 

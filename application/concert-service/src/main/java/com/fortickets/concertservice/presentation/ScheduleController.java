@@ -3,6 +3,7 @@ package com.fortickets.concertservice.presentation;
 import com.fortickets.common.CommonResponse;
 import com.fortickets.concertservice.application.dto.request.CreateScheduleReq;
 import com.fortickets.concertservice.application.dto.response.CreateScheduleRes;
+import com.fortickets.concertservice.application.dto.response.GetScheduleDetailRes;
 import com.fortickets.concertservice.application.dto.response.GetScheduleRes;
 import com.fortickets.concertservice.application.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -31,4 +32,8 @@ public class ScheduleController {
     return CommonResponse.success(scheduleService.getSchedule(scheduleId));
   }
 
+  @GetMapping("/schedules/{scheduleId}")
+  public GetScheduleDetailRes getScheduleDetail(@PathVariable Long scheduleId) {
+    return scheduleService.getScheduleDetail(scheduleId);
+  }
 }
