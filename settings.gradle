@@ -14,4 +14,5 @@ include 'component:security'
 findProject(':component:security')?.name = 'security'
 
 include 'application:prometheus-service'
+include 'gatling'
 findProject(':application:prometheus-service')?.name = 'prometheus-service'
