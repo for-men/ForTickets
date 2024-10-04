@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+    // The following line allows to load io.gatling.gradle plugin and directly apply it
+    id 'io.gatling.gradle' version '3.12.0.2'
+}
+
+gatling {
+  enterprise {
+    // Enterprise Cloud (https://cloud.gatling.io/) configuration reference: https://docs.gatling.io/reference/integrations/build-tools/gradle-plugin/
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+    // Gatling 관련 의존성 추가
+    implementation 'io.gatling.highcharts:gatling-charts-highcharts:3.9.2'
+    implementation 'io.gatling:gatling-test-framework:3.9.2'
+}
+
+sourceSets {
+    gatling {
+        java.srcDirs = ['src/gatling/java'] // Java 시뮬레이션 경로 설정
+    }
+}
