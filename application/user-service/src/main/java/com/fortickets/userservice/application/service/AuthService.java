@@ -2,6 +2,7 @@ package com.fortickets.userservice.application.service;
 
 import com.fortickets.common.ErrorCase;
 import com.fortickets.exception.GlobalException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import com.fortickets.userservice.application.dto.requset.LoginReq;
 import com.fortickets.userservice.application.dto.requset.SignUpReq;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -116,8 +118,13 @@ public class AuthService {
             String username = userDetails.getUsername(); // 메서드는 getUsername 이지만 return값은 email 입니다.
             UserRoleEnum role = userDetails.getUser().getRole();
 
+            // JWT 토큰 생성 - 로그를위해 임시
+            String jwtToken = jwtUtil.createAccessToken(userId, username, role);
+
+            log.info("Issued JWT Token: {}", jwtToken); // 발급된 JWT 로그 추가
             // JWT 토큰 생성
-            return jwtUtil.createAccessToken(userId, username, role);
+//            return jwtUtil.createAccessToken(userId, username, role);
+            return jwtToken;
         } catch (AuthenticationException e) {
             throw new GlobalException(ErrorCase.INVALID_EMAIL_OR_PASSWORD);
         }

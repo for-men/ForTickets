@@ -2,6 +2,7 @@ package com.fortickets.userservice.application.service;
 
 import com.fortickets.common.ErrorCase;
 import com.fortickets.exception.GlobalException;
+import com.fortickets.userservice.application.OrderClient;
 import com.fortickets.userservice.application.dto.requset.UpdateUserReq;
 import com.fortickets.userservice.application.dto.response.GetUserRes;
 import com.fortickets.userservice.application.mapper.UserMapper;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class UserService {
+
+//    private final OrderClient orderClient;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder; // PasswordEncoder 추가
@@ -57,4 +60,9 @@ public class UserService {
         // 업데이트 된 정보를 저장
         userRepository.save(user);
     }
+
+    // feignClient test
+//    public String callOrderHello() {
+//        return orderClient.hello(); // OrderClient의 hello 메서드 호출
+//    }
 }

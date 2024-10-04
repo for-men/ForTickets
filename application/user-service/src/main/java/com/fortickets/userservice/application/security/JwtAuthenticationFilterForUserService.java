@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j(topic = "JWT에서 정보 추출")
-public class JwtAuthorizationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilterForUserService extends OncePerRequestFilter {
 
     @Value("${service.jwt.secret-key}") // Base64 Encode 한 SecretKey
     private String secretKey;
@@ -39,7 +39,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public JwtAuthorizationFilter(UserDetailsServiceImpl userDetailsService) {
+    public JwtAuthenticationFilterForUserService(UserDetailsServiceImpl userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -67,16 +67,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
                 // 역할 추출 및 접두어 추가
                 String role = claims.get(JwtUtil.USER_ROLE, String.class); // USER_ROLE을 사용하여 역할 추출
-                log.info("Extracted Role from Claims: {}", role); // 역할을 로그로 출력
-                if (role != null && !role.isEmpty()) {
-                    role = "ROLE_" + role; // 접두어 추가
-                } else {
+                if (role == null && role.isEmpty()) {
                     log.error("Role is null or empty");
                     res.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드 설정
                     return;
                 }
 
-                // 인증 설정
+//                 인증 설정 여기서 헤더에 넣는 작업 추가
                 setAuthentication(email, role); // 역할을 포함하여 인증 설정
 
             } catch (Exception e) {
