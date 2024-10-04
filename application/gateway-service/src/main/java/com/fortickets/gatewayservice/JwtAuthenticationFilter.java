@@ -1,6 +1,5 @@
 package com.fortickets.gatewayservice;
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -16,6 +15,7 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest; // 올바른 패키지
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -46,15 +46,21 @@ public class JwtAuthenticationFilter implements GlobalFilter {
         }
 
         // ToDo 토큰 검증
-        try{
+        try {
             SecretKey key = getSecretKey();
             Claims claims = getUserInfoFromToken(token, key);
 
-            // 검증된 사용자 정보 출력 (선택 사항)
+            // 검증된 사용자 정보 출력
             log.info("JWT 토큰에서 추출한 사용자 정보: userId = {}, email = {}, role = {}",
                 claims.get("userId"), claims.get("email"), claims.get("role"));
 
-            return chain.filter(exchange);
+            Integer userId = claims.get("userId", Integer.class);
+            String email = claims.get("email", String.class);
+            String role = claims.get("role").toString();
+
+            // 헤더에 사용자 정보 추가
+            ServerHttpRequest newRequest = addHeadersToRequest(exchange, userId, email, role);
+            return chain.filter(exchange.mutate().request(newRequest).build());
 
         } catch (ExpiredJwtException e) {
             return unauthorizedResponse(exchange, "토큰이 만료되었습니다.");
@@ -78,7 +84,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
         return null;
     }
 
-    // 회원가입 로그인 필터 통과
+    // 회원가입 및 로그인 필터 통과
     private boolean isAuthorizationPassRequest(String path) {
         return path.startsWith("/auth/login") || path.startsWith("/auth/sign-up");
     }
@@ -88,8 +94,8 @@ public class JwtAuthenticationFilter implements GlobalFilter {
         return Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey));
     }
 
-    // JWT 토큰에서 사용자 정보 추출 및 검증 메서드
-    public Claims getUserInfoFromToken(String token, SecretKey key)throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
+    // JWT 토큰에서 사용자 정보 추출 및 검증
+    public Claims getUserInfoFromToken(String token, SecretKey key) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
@@ -101,5 +107,14 @@ public class JwtAuthenticationFilter implements GlobalFilter {
         byte[] bytes = responseBody.getBytes(StandardCharsets.UTF_8);
         DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(bytes);
         return exchange.getResponse().writeWith(Mono.just(buffer));
+    }
+
+    // 헤더에 사용자 정보 추가
+    private ServerHttpRequest addHeadersToRequest(ServerWebExchange exchange, Integer userId, String email, String role) {
+        return exchange.getRequest().mutate()
+            .header("X-User-Id", userId.toString())
+            .header("X-Email", email)
+            .header("X-Role", role)
+            .build();
     }
 }

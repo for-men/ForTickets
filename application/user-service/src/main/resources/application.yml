@@ -29,10 +29,6 @@ spring:
         timeout: 1m
       file: application/user-service/docker-compose.yml
 
-  # Zipkin 설정
-  zipkin:
-    base-url: http://zipkin:9411 # Zipkin 서버의 URL
-
 server:
   port: 12021
 
@@ -51,3 +47,9 @@ management:
     web:
       exposure:
         include: 'prometheus'
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0

@@ -1,25 +1,16 @@
 package com.fortickets.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j(topic = "Common용")
@@ -27,68 +18,55 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilterForCommon extends OncePerRequestFilter {
 
-    @Value("${service.jwt.secret-key}") // Base64 Encode 한 SecretKey
-    private String secretKey;
-    private SecretKey key;
-
-    @PostConstruct
-    public void init() {
-        byte[] bytes = Base64.getDecoder().decode(secretKey);
-        key = Keys.hmacShaKeyFor(bytes);
-    }
+    // 필터가 실행되지 않도록 할 경로 지정
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-        HttpServletResponse response,
+    protected void doFilterInternal(HttpServletRequest req,
+        HttpServletResponse res,
         FilterChain filterChain) throws ServletException, IOException {
 
-        // 필터가 처음 시작되면 SecretKey 초기화
-        if (key == null) {
-            byte[] decodedKey = Base64.getDecoder().decode(secretKey.getBytes(StandardCharsets.UTF_8));
-            key = Keys.hmacShaKeyFor(decodedKey);
+        // 요청 URI 가져오기
+//        String requestURI = req.getRequestURI();
+
+        // /auth/** 경로에 대해서는 필터를 타지 않고 바로 통과시킴
+//        if (requestURI.startsWith("/auth")) {
+//            filterChain.doFilter(req, res);
+//            return;
+//        }
+
+        // 헤더에서 사용자 정보 추출
+        String userIdHeader = req.getHeader("X-User-Id");
+        String email = req.getHeader("X-Email");
+        String role = req.getHeader("X-Role");
+
+        // 로그 출력
+        log.info("Extracted Headers: userId={}, email={}, role={}", userIdHeader, email, role);
+
+        // 사용자 이름이나 역할이 없으면 401 상태 코드 반환
+        if (userIdHeader == null || userIdHeader.isEmpty() || email == null || email.isEmpty() || role == null || role.isEmpty()) {
+            log.error("userId or email or role is null or empty");
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
 
-        // 헤더에서 토큰 추출
-        String token = getJwtFromHeader(request);
-
-        if (token != null) {
-            // 토큰에서 사용자 정보 추출
-            Claims claims = getClaimsFromToken(token);
-            Long userId = claims.get("userId", Long.class);
-            String email = claims.get("email", String.class);
-            String role = claims.get("role", String.class);
-
-            // 추출 확인 로그
-            log.info("Extracted from token: userId={}, email={}, role={}", userId, email, role);
-
-            // 사용자 정보로 Authentication 객체 생성
-            Authentication authentication = createAuthentication(userId, email, role);
-
-            // SecurityContext에 인증 정보 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        // Long 타입으로 변환
+        Long userId;
+        try {
+            userId = Long.valueOf(userIdHeader); // Long 타입으로 변환
+        } catch (NumberFormatException e) {
+            log.error("Invalid userId format: {}", userIdHeader);
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드 설정
+            return;
         }
+
+        // 사용자 정보로 Authentication 객체 생성
+        Authentication authentication = createAuthentication(userId, email, role);
+
+        // SecurityContext에 인증 정보 저장
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         // 다음 필터로 요청 전달
-        filterChain.doFilter(request, response);
-    }
-
-    // ?
-
-    // JWT 토큰을 요청 헤더에서 가져오는 메서드
-    private String getJwtFromHeader(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7); // "Bearer " 이후의 실제 토큰 값 추출
-        }
-        return null;
-    }
-
-    // 토큰에서 Claims 정보 추출
-    private Claims getClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
+        filterChain.doFilter(req, res);
     }
 
     // Authentication 객체 생성 (사용자 정보와 권한 설정)

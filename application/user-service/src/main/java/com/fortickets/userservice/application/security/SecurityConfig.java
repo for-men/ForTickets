@@ -36,15 +36,15 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-//    @Bean
-//    public JwtAuthenticationFilterForCommon jwtAuthenticationFilterForCommon() {
-//        return new JwtAuthenticationFilterForCommon();
-//    }
-
     @Bean
-    public JwtAuthenticationFilterForUserService jwtAuthorizationFilterForUserService() {
-        return new JwtAuthenticationFilterForUserService(userDetailsServiceImpl); // 필드 사용
+    public JwtAuthenticationFilterForCommon jwtAuthenticationFilterForCommon() {
+        return new JwtAuthenticationFilterForCommon();
     }
+
+//    @Bean
+//    public JwtAuthenticationFilterForUserService jwtAuthorizationFilterForUserService() {
+//        return new JwtAuthenticationFilterForUserService(userDetailsServiceImpl); // 필드 사용
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -67,8 +67,8 @@ public class SecurityConfig {
         );
 
         // 필터 관리
-//        http.addFilterBefore(jwtAuthenticationFilterForCommon(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(jwtAuthorizationFilterForUserService(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilterForCommon(), UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(jwtAuthorizationFilterForUserService(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
