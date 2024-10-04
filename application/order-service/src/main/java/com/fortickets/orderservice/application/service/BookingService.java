@@ -209,6 +209,10 @@ public class BookingService {
         return LocalDateTime.of(localDate, localTime).isAfter(LocalDateTime.now());
     }
 
+    public List<String> getSeatsByScheduleId(Long scheduleId) {
+        BookingStatus pending = BookingStatus.PENDING;
+        BookingStatus confirmed = BookingStatus.CONFIRMED;
+        return bookingRepository.findSeatByScheduleId(scheduleId,pending,confirmed);
+    }
 
 }
-

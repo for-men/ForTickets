@@ -1,7 +1,7 @@
 package com.fortickets.concertservice.application.service;
 
 import com.fortickets.common.ErrorCase;
-import com.fortickets.concertservice.application.dto.CreateStageRes;
+import com.fortickets.concertservice.application.dto.response.CreateStageRes;
 import com.fortickets.concertservice.application.dto.request.CreateStageReq;
 import com.fortickets.concertservice.application.dto.response.GetStageRes;
 import com.fortickets.concertservice.domain.entity.Stage;

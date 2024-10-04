@@ -1,9 +1,6 @@
 package com.fortickets.concertservice.application.dto.response;
 
-public record GetStageRes(
-    Long id,
-    String name,
-    String location,
+public record GetStageSeatRes(
     int row,
     int col
 ) {
