@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "stage")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Stage extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

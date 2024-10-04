@@ -1,5 +1,6 @@
 package com.fortickets.concertservice.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,11 +30,12 @@ public class Schedule extends BaseEntity {
 
   // Concert와의 ManyToOne 관계 설정
   @ManyToOne(fetch = FetchType.LAZY)
+  @JsonBackReference
   @JoinColumn(name = "concert_id")
   private Concert concert;
 
   // Stage와의 ManyToOne 관계 설정
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "stage_id")
   private Stage stage;
 

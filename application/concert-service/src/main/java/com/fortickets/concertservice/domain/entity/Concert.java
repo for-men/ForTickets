@@ -1,5 +1,6 @@
 package com.fortickets.concertservice.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -51,6 +52,7 @@ public class Concert extends BaseEntity {
   private Long userId;
 
   @OneToMany(mappedBy = "concert",fetch = FetchType.LAZY)
+  @JsonManagedReference
   List<Schedule> schedules = new ArrayList<>();
 
 
