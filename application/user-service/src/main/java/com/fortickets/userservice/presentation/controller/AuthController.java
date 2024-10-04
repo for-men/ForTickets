@@ -1,6 +1,5 @@
 package com.fortickets.userservice.presentation.controller;
 
-import static com.fortickets.common.CommonResponse.getSuccessRes;
 import com.fortickets.common.CommonResponse;
 import com.fortickets.common.CommonResponse.CommonEmptyRes;
 import com.fortickets.userservice.application.dto.requset.LoginReq;

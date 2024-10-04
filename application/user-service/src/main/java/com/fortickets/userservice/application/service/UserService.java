@@ -61,6 +61,17 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public GetUserRes getUser(Long userId) {
+        var user = userRepository.findByUserId(userId)
+            .orElseThrow(() -> new GlobalException(ErrorCase.USER_NOT_FOUND));
+        return userMapper.userToGetUserRes(user);
+    }
+
+    public List<GetUserRes> searchNickname(String nickname) {
+        var users = userRepository.findByNicknameContaining(nickname);
+        return users.stream().map(userMapper::userToGetUserRes).toList();
+    }
+
     // feignClient test
 //    public String callOrderHello() {
 //        return orderClient.hello(); // OrderClient의 hello 메서드 호출
