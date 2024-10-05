@@ -11,4 +11,3 @@ services:
 
     volumes:
       - ../db/user-service:/var/lib/postgresql/data
-
