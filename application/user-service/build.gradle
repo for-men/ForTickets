@@ -8,10 +8,6 @@ repositories {
 }
 
 dependencies {
-    // sleuth (zipkin 포함)
-    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
-    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
-
     // feignClient
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 

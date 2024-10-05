@@ -8,3 +8,5 @@ spring:
         command: down
         timeout: 1m
       file: application/prometheus-service/src/main/resources/docker-compose.yml
+  profiles:
+    include: common
