@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -88,9 +89,11 @@ public class PaymentController {
      * 결제 내역 삭제
      */
     @DeleteMapping("/{paymentId}")
-    public CommonResponse<CommonEmptyRes> deletePayment(@PathVariable Long paymentId) {
+    public CommonResponse<CommonEmptyRes> deletePayment(
+        @RequestHeader("X-Email") String email,
+        @PathVariable Long paymentId) {
         // TODO: 이메일 정보 필요
-        paymentService.deletePayment("joochang@admin.com", paymentId);
+        paymentService.deletePayment(email, paymentId);
         return CommonResponse.success();
     }
 }

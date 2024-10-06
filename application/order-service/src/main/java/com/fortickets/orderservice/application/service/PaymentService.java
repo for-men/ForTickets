@@ -58,14 +58,17 @@ public class PaymentService {
 
     public Page<GetPaymentRes> getPayments(String nickname, Pageable pageable) {
         List<GetUserRes> userResList = new ArrayList<>();
+        Page<Payment> payments = null;
         if (nickname != null) {
             userResList = userClient.searchNickname(nickname);
+            payments = paymentRepository.findByUserIdIn(userResList.stream().map(GetUserRes::userId).toList(), pageable);
+        } else {
+            payments = paymentRepository.findAll(pageable);
         }
-
-        Page<Payment> payments = paymentRepository.findByUserIdIn(userResList.stream().map(GetUserRes::userId).toList(), pageable);
 
         return payments.map(paymentMapper::toGetPaymentRes);
     }
+
 
     public Page<GetPaymentRes> getPaymentByUser(Long userId, Pageable pageable) {
         Page<Payment> paymentList = paymentRepository.findByUserId(userId, pageable);

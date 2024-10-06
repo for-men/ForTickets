@@ -48,4 +48,13 @@ public class ConcertController {
         return concertService.getConcertBySeller(userId);
     }
 
+  @GetMapping("/{userId}/{concertName}/search")
+  List<GetConcertDetailRes> searchConcert(@PathVariable Long userId, @PathVariable String concertName){
+    return concertService.searchConcert(userId, concertName);
+  }
+
+  @GetMapping("/{concertName}/search")
+  List<GetConcertDetailRes> searchConcertName(@PathVariable String concertName){
+    return concertService.searchConcertName(concertName);
+  }
 }

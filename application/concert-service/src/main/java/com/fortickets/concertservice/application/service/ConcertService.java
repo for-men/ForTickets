@@ -46,4 +46,14 @@ public class ConcertService {
     List<Concert> concertList = concertRepository.findByUserId(userId);
     return concertMapper.toGetConcertDetailResList(concertList);
   }
+
+  public List<GetConcertDetailRes> searchConcert(Long userId, String concertName) {
+    List<Concert> concertList = concertRepository.findByUserIdAndConcertNameContaining(userId, concertName);
+    return concertMapper.toGetConcertResList(concertList);
+  }
+
+  public List<GetConcertDetailRes> searchConcertName(String concertName) {
+    List<Concert> concertList = concertRepository.findByConcertNameContaining(concertName);
+    return concertMapper.toGetConcertResList(concertList);
+  }
 }
