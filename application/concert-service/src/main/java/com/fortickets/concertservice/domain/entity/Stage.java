@@ -1,5 +1,7 @@
 package com.fortickets.concertservice.domain.entity;
 
+import static com.fortickets.jpa.BaseEntity.DELETED_FALSE;
+
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,11 +12,13 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "stage")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction(DELETED_FALSE)
 public class Stage extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,7 @@
 package com.fortickets.concertservice.domain.entity;
 
+import static com.fortickets.jpa.BaseEntity.DELETED_FALSE;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
@@ -16,11 +18,13 @@ import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "schedule")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction(DELETED_FALSE)
 public class Schedule extends BaseEntity {
 
   @Id
