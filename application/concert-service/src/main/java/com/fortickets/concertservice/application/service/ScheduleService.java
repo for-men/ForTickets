@@ -61,6 +61,12 @@ public class ScheduleService {
     changeSchedule(updateScheduleReq, schedule);
   }
 
+  @Transactional
+  public void deleteScheduleById(Long scheduleId, String email) {
+    Schedule schedule = getSchedule(scheduleId);
+    schedule.delete(email);
+  }
+
   private void changeSchedule(UpdateScheduleReq updateScheduleReq, Schedule schedule) {
     if(updateScheduleReq.stageId() != null){
       schedule.changeStage(getStage(updateScheduleReq.stageId()));
@@ -71,7 +77,6 @@ public class ScheduleService {
       schedule.changeConcertTime(updateScheduleReq.concertTime());
   }
 
-
   private Schedule getSchedule(Long scheduleId) {
     return scheduleRepository.findById(scheduleId)
         .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_SCHEDULE));
@@ -80,5 +85,6 @@ public class ScheduleService {
     return stageRepository.findById(stageId)
         .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_STAGE));
   }
+
 
 }

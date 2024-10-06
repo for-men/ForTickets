@@ -7,6 +7,7 @@ import com.fortickets.concertservice.application.dto.response.CreateScheduleRes;
 import com.fortickets.concertservice.application.dto.response.GetScheduleSeatRes;
 import com.fortickets.concertservice.application.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +37,11 @@ public class ScheduleController {
   public CommonResponse<GetScheduleSeatRes> updateScheduleById(@PathVariable("scheduleId") Long scheduleId,@RequestBody UpdateScheduleReq updateScheduleReq){
     scheduleService.updateScheduleById(scheduleId,updateScheduleReq);
     return CommonResponse.success(scheduleService.getScheduleById(scheduleId));
+  }
+  @DeleteMapping("/{scheduleId}")
+  public CommonResponse deleteScheduleById(@RequestHeader("X-Email") String email,@PathVariable("scheduleId") Long scheduleId){
+    scheduleService.deleteScheduleById(scheduleId,email);
+    return CommonResponse.success();
   }
 
 }
