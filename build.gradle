@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.10'
     id 'io.spring.dependency-management' version '1.1.6'
+//    id 'io.gatling.gradle' version '3.12.0.2'
 }
 
 
@@ -36,6 +37,10 @@ subprojects {
 
     // 모든 서브 모듈에서 사용될 공통 의존성들을 추가함
     dependencies {
+        // zipkin 관련 의존성 추가
+        implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+        implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+
         // lombok
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
@@ -61,6 +66,8 @@ subprojects {
             if (project.name == 'eureka') {
                 //eureka server
                 implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+            } else if (project.name == 'prometheus-service') {
+                
             } else {
                 //eureka client
                 implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'

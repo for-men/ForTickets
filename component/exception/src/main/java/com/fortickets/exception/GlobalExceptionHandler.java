@@ -4,6 +4,7 @@ import com.fortickets.common.CommonResponse;
 import com.fortickets.common.CommonResponse.CommonEmptyRes;
 import com.fortickets.common.ErrorCase;
 import jakarta.servlet.http.HttpServletResponse;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,16 @@ public class GlobalExceptionHandler {
         response.setStatus(e.getErrorCase().getHttpStatus().value()); // HttpStatus 설정
 
         return CommonResponse.error(e.getErrorCase()); // 공통 응답 양식 반환
+    }
+
+    /**
+     * 권한 없음 에러 발생에 대한 핸들러
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public CommonResponse<CommonEmptyRes> handleAccessDeniedException(AccessDeniedException e) {
+        response.setStatus(ErrorCase.NOT_AUTHORIZED.getHttpStatus().value()); // HttpStatus 설정
+
+        return CommonResponse.error(ErrorCase.NOT_AUTHORIZED); // 공통 응답 양식 반환
     }
 
     /**
@@ -74,6 +85,7 @@ public class GlobalExceptionHandler {
             .map(mapper::toInvalidInputResponseDto) // defaultMessage 필드명을 message 변경
             .toList();
     }
+
 
     /**
      * 예상치 못한 에러 발생에 대한 핸들러

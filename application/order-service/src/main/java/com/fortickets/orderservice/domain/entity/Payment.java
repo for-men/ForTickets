@@ -6,6 +6,8 @@ import com.fortickets.common.PaymentStatus;
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,6 +38,7 @@ public class Payment extends BaseEntity {
     private Long concertId;
     private Long scheduleId;
     private Long totalPrice;
+    @Enumerated(EnumType.STRING)
     private PaymentStatus status;
     private String card;
 

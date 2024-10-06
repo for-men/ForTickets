@@ -1,4 +1,4 @@
-insert into stages (stage_id, name, location, row, col, is_deleted, created_at, created_by,
+insert into stage (stage_id, name, location, row, col, is_deleted, created_at, created_by,
                       updated_at, updated_by, deleted_at, deleted_by)
 
 values

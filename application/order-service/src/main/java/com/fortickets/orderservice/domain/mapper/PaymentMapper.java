@@ -5,7 +5,7 @@ import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
 import com.fortickets.orderservice.application.dto.response.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentRes;
-import com.fortickets.orderservice.application.dto.response.GetScheduleRes;
+import com.fortickets.orderservice.application.dto.response.GetScheduleDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetUserRes;
 import com.fortickets.orderservice.domain.entity.Payment;
 import org.mapstruct.Mapper;
@@ -24,5 +24,5 @@ public interface PaymentMapper {
     @Mapping(source = "payment.id", target = "id")
     @Mapping(source = "payment.concertId", target = "concertId")
     @Mapping(source = "payment.userId", target = "userId")
-    GetPaymentDetailRes toGetPaymentDetailRes(Payment payment, GetScheduleRes getScheduleRes, GetUserRes getUserRes);
+    GetPaymentDetailRes toGetPaymentDetailRes(Payment payment, GetScheduleDetailRes getScheduleDetailRes, GetUserRes getUserRes);
 }

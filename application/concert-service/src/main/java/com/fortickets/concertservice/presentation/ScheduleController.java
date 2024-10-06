@@ -4,6 +4,7 @@ import com.fortickets.common.CommonResponse;
 import com.fortickets.concertservice.application.dto.request.CreateScheduleReq;
 import com.fortickets.concertservice.application.dto.request.UpdateScheduleReq;
 import com.fortickets.concertservice.application.dto.response.CreateScheduleRes;
+import com.fortickets.concertservice.application.dto.response.GetScheduleDetailRes;
 import com.fortickets.concertservice.application.dto.response.GetScheduleSeatRes;
 import com.fortickets.concertservice.application.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,10 @@ public class ScheduleController {
   private final ScheduleService scheduleService;
 
   @PostMapping
-  public CommonResponse<CreateScheduleRes> createSchedule(@RequestHeader("X-USER-Id") Long userId,@RequestBody CreateScheduleReq createScheduleReq){
-    return CommonResponse.success(scheduleService.createSchedule(createScheduleReq,userId));
+  public CommonResponse<CreateScheduleRes> createSchedule(
+      @RequestHeader("X-User-Id") String userId,
+      @RequestBody CreateScheduleReq createScheduleReq){
+    return CommonResponse.success(scheduleService.createSchedule(createScheduleReq,Long.valueOf(userId)));
   }
   // 스케줄 단건조회
   @GetMapping("/{scheduleId}")
@@ -44,4 +47,8 @@ public class ScheduleController {
     return CommonResponse.success();
   }
 
+  @GetMapping("/{scheduleId}/detail")
+  public GetScheduleDetailRes getScheduleDetail(@PathVariable Long scheduleId) {
+    return scheduleService.getScheduleDetail(scheduleId);
+  }
 }
