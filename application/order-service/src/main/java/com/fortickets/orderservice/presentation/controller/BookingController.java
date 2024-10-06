@@ -12,6 +12,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -56,6 +58,7 @@ public class BookingController {
      * 관리자 예매 내역 조회
      * @ROLE :MANAGER
      */
+    @PreAuthorize("hasRole('MANAGER')")
     @GetMapping
     public CommonResponse<Page<GetBookingRes>> getBooking(
         // TODO: default value qeurydsl 적용 후 삭제
@@ -69,15 +72,19 @@ public class BookingController {
     /**
      * 판매자 예매 내역 조회
      */
+    // TODO : ROLE SELLER
+    @PreAuthorize("hasRole('SELLER') or hasRole('MANAGER')")
     @GetMapping("/seller/{sellerId}")
     public CommonResponse<Page<GetBookingRes>> getBookingBySeller(
         @PathVariable Long sellerId,
+        @RequestHeader("X-Role") String role,
+        @RequestHeader("X-User-Id") String userId,
         @RequestParam(required = false, name = "nickname") String nickname,
         @RequestParam(required = false, name = "concert-name") String concertName,
         Pageable pageable
     ) {
         // role, userid securitycontext에서 가져오기
-        return CommonResponse.success(bookingService.getBookingBySeller(1L, sellerId, "MANAGER", nickname, concertName, pageable));
+        return CommonResponse.success(bookingService.getBookingBySeller(Long.valueOf(userId), sellerId, role, nickname, concertName, pageable));
     }
 
     /**

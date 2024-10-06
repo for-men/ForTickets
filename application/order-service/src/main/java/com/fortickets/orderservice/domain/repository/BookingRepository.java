@@ -31,4 +31,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
          Long scheduleId,
           BookingStatus pending,
           BookingStatus confirmed);
+
+     List<Booking> findAllByIdInAndStatus(List<Long> bookingIds, BookingStatus status);
 }

@@ -37,7 +37,7 @@ public class Booking extends BaseEntity {
     private String seat;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id", nullable = false)
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 
     public void updateStatus(BookingStatus status) {

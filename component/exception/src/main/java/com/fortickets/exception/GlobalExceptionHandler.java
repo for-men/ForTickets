@@ -38,6 +38,16 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 권한 없음 에러 발생에 대한 핸들러
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public CommonResponse<CommonEmptyRes> handleAccessDeniedException(AccessDeniedException e) {
+        response.setStatus(ErrorCase.NOT_AUTHORIZED.getHttpStatus().value()); // HttpStatus 설정
+
+        return CommonResponse.error(ErrorCase.NOT_AUTHORIZED); // 공통 응답 양식 반환
+    }
+
+    /**
      * RequestBody 입력 파라미터가 없거나 형식이 맞지 않을 때 발생하는 오류에 대한 핸들러
      */
     @ExceptionHandler({
@@ -76,15 +86,6 @@ public class GlobalExceptionHandler {
             .toList();
     }
 
-    /**
-     * 권한 없음 에러 발생에 대한 핸들러
-     */
-    @ExceptionHandler(AccessDeniedException.class)
-    public CommonResponse<CommonEmptyRes> handleAccessDeniedException(AccessDeniedException e) {
-        response.setStatus(ErrorCase.NOT_AUTHORIZED.getHttpStatus().value()); // HttpStatus 설정
-
-        return CommonResponse.error(ErrorCase.NOT_AUTHORIZED); // 공통 응답 양식 반환
-    }
 
     /**
      * 예상치 못한 에러 발생에 대한 핸들러

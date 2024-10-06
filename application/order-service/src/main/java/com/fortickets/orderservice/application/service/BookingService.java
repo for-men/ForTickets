@@ -69,7 +69,10 @@ public class BookingService {
 
     @Transactional
     public void confirmBooking(ConfirmBookingReq confirmBookingReq) {
-        List<Booking> bookingList = bookingRepository.findAllById(confirmBookingReq.bookingIds());
+        List<Booking> bookingList = bookingRepository.findAllByIdInAndStatus(confirmBookingReq.bookingIds(), BookingStatus.PENDING);
+        if (bookingList.isEmpty()) {
+            throw new GlobalException(ErrorCase.BOOKING_NOT_FOUND);
+        }
         bookingList.forEach(Booking::confirm);
 
         CreatePaymentReq createPaymentReq = CreatePaymentReq.builder()
@@ -121,8 +124,8 @@ public class BookingService {
 
     public Page<GetBookingRes> getBookingBySeller(Long userId, Long sellerId, String role, String nickname, String concertName, Pageable pageable) {
         // 판매자와 요청자가 같은지 확인
-        // TODO: role String에서 변경 필요
-        if (!role.equals("MANAGER")) {
+        // TODO: @PreAuthorize 는 MANAGER 인데 X-Role은 ROLE_MANAGER?
+        if (!role.equals("ROLE_MANAGER")) {
             if (!userId.equals(sellerId)) {
                 throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
             }
