@@ -66,6 +66,8 @@ subprojects {
             if (project.name == 'eureka') {
                 //eureka server
                 implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+            } else if (project.name == 'prometheus-service') {
+                
             } else {
                 //eureka client
                 implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
