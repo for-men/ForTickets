@@ -16,8 +16,21 @@ repositories {
 
 dependencies {
     // Gatling 관련 의존성 추가
-    implementation 'io.gatling.highcharts:gatling-charts-highcharts:3.9.2'
-    implementation 'io.gatling:gatling-test-framework:3.9.2'
+    testImplementation group: 'io.gatling.highcharts', name: 'gatling-charts-highcharts', version: '3.12.0'
+    implementation group: 'io.gatling', name: 'gatling-core', version: '3.12.0'
+    implementation group: 'io.gatling', name: 'gatling-http', version: '3.12.0'
+    testImplementation group: 'io.gatling', name: 'gatling-test-framework', version: '3.12.0'
+
+    // 토큰 생성을 위한 의존성 추가
+    testImplementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    testImplementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    testImplementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // .env 파일에서 정보를 가져오기 위한 의존성 추가
+    testImplementation 'io.github.cdimascio:java-dotenv:5.2.2'
 }
 
 sourceSets {
