@@ -4,6 +4,7 @@ import com.fortickets.common.ErrorCase;
 import com.fortickets.concertservice.application.client.BookingClient;
 import com.fortickets.concertservice.application.dto.request.CreateScheduleReq;
 import com.fortickets.concertservice.application.dto.response.CreateScheduleRes;
+import com.fortickets.concertservice.application.dto.response.GetScheduleDetailRes;
 import com.fortickets.concertservice.application.dto.response.GetScheduleRes;
 import com.fortickets.concertservice.domain.entity.Concert;
 import com.fortickets.concertservice.domain.entity.Schedule;
@@ -57,4 +58,11 @@ public class ScheduleService {
     return scheduleMapper.toGetScheduleRes(schedule,seatList);
   }
 
+  public GetScheduleDetailRes getScheduleDetail(Long scheduleId) {
+    Schedule schedule = scheduleRepository.findById(scheduleId)
+        .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_SCHEDULE));
+
+    return scheduleMapper.toGetScheduleDetailRes(schedule);
+
+  }
 }

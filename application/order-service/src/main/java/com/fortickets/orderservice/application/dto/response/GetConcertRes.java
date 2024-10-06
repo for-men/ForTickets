@@ -1,9 +1,9 @@
 package com.fortickets.orderservice.application.dto.response;
 
 public record GetConcertRes(
-    Long concertId,
+    Long id,
     String concertName,
-    Integer runtime
+    int runtime
 ) {
 
 }
