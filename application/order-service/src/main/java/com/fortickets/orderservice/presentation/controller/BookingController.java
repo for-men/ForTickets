@@ -8,14 +8,10 @@ import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.service.BookingService;
-import com.fortickets.security.CustomAuthentication;
-import com.sun.jdi.LongValue;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -41,11 +37,8 @@ public class BookingController {
      */
     @PostMapping
     public CommonResponse<List<CreateBookingRes>> createBooking(
+        @RequestHeader("X-User-Id") String userId,
         @RequestBody CreateBookingReq createBookingReq) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomAuthentication customAuth = (CustomAuthentication) authentication;
-        Long userId = customAuth.getUserId();
-        String email = customAuth.getEmail();
         var createBookingRes = bookingService.createBooking(Long.valueOf(userId), createBookingReq);
         return CommonResponse.success(createBookingRes);
     }
@@ -65,6 +58,7 @@ public class BookingController {
      */
     @GetMapping
     public CommonResponse<Page<GetBookingRes>> getBooking(
+        // TODO: default value qeurydsl 적용 후 삭제
         @RequestParam(required = false, name = "nickname") String nickname,
         @RequestParam(required = false, name = "concert-name") String concertName,
         Pageable pageable
