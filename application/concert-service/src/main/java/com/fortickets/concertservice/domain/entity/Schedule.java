@@ -68,4 +68,16 @@ public class Schedule extends BaseEntity {
     this.concertTime = concertTime;
   }
 
+  public void changeStage(Stage stage) {
+    this.stage = stage;
+  }
+
+  public void changeConcertDate(LocalDate localDate) {
+    this.concertDate = localDate;
+  }
+
+  public void changeConcertTime(LocalTime localTime) {
+    this.concertTime = localTime;
+  }
+
 }
