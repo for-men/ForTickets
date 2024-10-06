@@ -34,7 +34,7 @@ public class JwtAuthenticationFilterForUserService extends OncePerRequestFilter 
         String requestURI = req.getRequestURI();
 
         // /auth/** 경로에 대해서는 필터를 타지 않고 바로 통과시킴
-        if (requestURI.startsWith("/auth")) {
+        if (requestURI.startsWith("/auth") || requestURI.startsWith("/actuator")) {
             filterChain.doFilter(req, res);
             return;
         }

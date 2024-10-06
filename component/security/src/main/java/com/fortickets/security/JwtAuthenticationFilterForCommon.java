@@ -25,14 +25,14 @@ public class JwtAuthenticationFilterForCommon extends OncePerRequestFilter {
         HttpServletResponse res,
         FilterChain filterChain) throws ServletException, IOException {
 
-//        // 요청 URI 가져오기
-//        String requestURI = req.getRequestURI();
+        // 요청 URI 가져오기
+        String requestURI = req.getRequestURI();
 
-//        // 토큰이 없이 통과시켜야 할 경로에 대해서는 필터를 타지 않고 바로 통과시킴 ex) /auth/**
-//        if (requestURI.startsWith("/auth")) {
-//            filterChain.doFilter(req, res);
-//            return;
-//        }
+        // 토큰이 없이 통과시켜야 할 경로에 대해서는 필터를 타지 않고 바로 통과시킴 ex) /auth/**
+        if (requestURI.startsWith("/actuator")) {
+            filterChain.doFilter(req, res);
+            return;
+        }
 
         // 헤더에서 사용자 정보 추출
         String userIdHeader = req.getHeader("X-User-Id");
