@@ -1,6 +1,8 @@
 spring:
   application:
     name: order-service
+  profiles:
+    include: common
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:54324/fortickets
