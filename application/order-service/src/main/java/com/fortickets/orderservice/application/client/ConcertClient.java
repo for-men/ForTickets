@@ -18,7 +18,7 @@ public interface ConcertClient {
     @GetMapping("/schedules/{scheduleId}/detail")
     GetScheduleDetailRes getScheduleDetail(@PathVariable Long scheduleId);
 
-    // Concert 정보 조회
+    // Concert 정보 조회 o
     @GetMapping("/concerts/{concertId}")
     GetConcertRes getConcert(@PathVariable Long concertId);
 
@@ -26,11 +26,11 @@ public interface ConcertClient {
     @GetMapping("/concerts/{concertName}/search")
     List<GetConcertRes> searchConcertName(@PathVariable String concertName);
 
-    // userId와 concertName이 포함된 Concert 정보 조회
+    // userId와 concertName이 포함된 Concert 정보 조회 o
     @GetMapping("/concerts/{userId}/{concertName}/search")
     List<GetConcertRes> searchConcert(@PathVariable Long userId, @PathVariable String concertName);
 
-    // userId로 Concert 정보 조회
+    // userId로 Concert 정보 조회 o
     @GetMapping("/concerts/{userId}/seller")
     List<GetConcertRes> getConcertBySeller(@PathVariable Long userId);
 }
