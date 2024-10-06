@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,9 +28,7 @@ public class ConcertController {
 
   // 공연생성 , ROLE : SELLER , MANAGER
   @PostMapping
-  public CommonResponse<CreateConcertRes> createConcert(@RequestBody  CreateConcertReq createConcertReq){
-    //todo userId 값 전달 필요
-    Long userId = 1L;
+  public CommonResponse<CreateConcertRes> createConcert(@RequestHeader("X-USER-Id") Long userId ,@RequestBody  CreateConcertReq createConcertReq){
     var createConcertRes = concertService.createConcert(createConcertReq,userId);
     return CommonResponse.success(createConcertRes);
   }
@@ -47,9 +46,7 @@ public class ConcertController {
     return CommonResponse.success(concertService.getConcertById(concertId));
   }
   @DeleteMapping("/{concertId}")
-  public CommonResponse deleteConcertById(@PathVariable("concertId") Long concertId){
-    // todo email 값 불러오기 필요
-    String email = "user@user.io";
+  public CommonResponse deleteConcertById(@RequestHeader("X-Email") String email ,@PathVariable("concertId") Long concertId){
     concertService.deleteConcertById(concertId, email);
     return CommonResponse.success();
   }

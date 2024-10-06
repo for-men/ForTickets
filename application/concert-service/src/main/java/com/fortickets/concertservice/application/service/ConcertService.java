@@ -1,7 +1,5 @@
 package com.fortickets.concertservice.application.service;
 
-import static com.fortickets.jpa.BaseEntity.DELETED_FALSE;
-
 import com.fortickets.common.ErrorCase;
 import com.fortickets.concertservice.application.dto.request.CreateConcertReq;
 import com.fortickets.concertservice.application.dto.request.UpdateConcertReq;
@@ -13,7 +11,6 @@ import com.fortickets.concertservice.domain.mapper.ConcertMapper;
 import com.fortickets.concertservice.domain.repository.ConcertRepository;
 import com.fortickets.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -57,6 +54,7 @@ public class ConcertService {
     concert.delete(email);
   }
 
+
   private static void changeConcert(UpdateConcertReq updateConcertReq, Concert concert) {
     if(updateConcertReq.concertImage() !=null)
       concert.changeImage(updateConcertReq.concertImage());
@@ -73,9 +71,8 @@ public class ConcertService {
   }
 
   private Concert getConcert(Long concertId) {
-    Concert concert = concertRepository.findById(concertId)
+    return concertRepository.findById(concertId)
         .orElseThrow(()-> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
-    return concert;
   }
 
 
