@@ -1,4 +1,4 @@
-insert into schedules (schedule_id, concert_id, stage_id, concert_date, concert_time, is_deleted, created_at, created_by,
+insert into schedule (schedule_id, concert_id, stage_id, concert_date, concert_time, is_deleted, created_at, created_by,
                     updated_at, updated_by, deleted_at, deleted_by)
 
 values

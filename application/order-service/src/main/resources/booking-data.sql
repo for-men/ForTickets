@@ -1,4 +1,4 @@
-insert into bookings (booking_id, payment_id, concert_id, user_id, price, status, seat, is_deleted, created_at, created_by,
+insert into booking (booking_id, payment_id, concert_id, user_id, price, status, seat, is_deleted, created_at, created_by,
                    updated_at, updated_by, deleted_at, deleted_by)
 
 values
