@@ -32,7 +32,7 @@ public class ScheduleController {
     return CommonResponse.success(scheduleService.getSchedule(scheduleId));
   }
 
-  @GetMapping("/schedules/{scheduleId}")
+  @GetMapping("/{scheduleId}/detail")
   public GetScheduleDetailRes getScheduleDetail(@PathVariable Long scheduleId) {
     return scheduleService.getScheduleDetail(scheduleId);
   }

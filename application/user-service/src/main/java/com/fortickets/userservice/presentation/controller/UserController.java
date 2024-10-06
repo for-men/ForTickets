@@ -89,12 +89,12 @@ public class UserController {
 //        return userService.callOrderHello(); // UserService의 메서드를 통해 호출
 //    }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/{userId}")
     public GetUserRes getUser(@PathVariable Long userId){
         return userService.getUser(userId);
     }
 
-    @GetMapping("/users/{nickname}/nickname")
+    @GetMapping("/{nickname}/nickname")
     public List<GetUserRes> searchNickname(@PathVariable String nickname){
         return userService.searchNickname(nickname);
     }

@@ -48,7 +48,7 @@ public class BookingService {
         if (!userId.equals(createBookingReq.userId())) {
             throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
         }
-        var getScheduleRes = concertClient.getScheduleDetail(createBookingReq.scheduleId());
+
         // 이미 예약된 좌석인지 확인
         // 하나라도 예약된 좌석이 있으면 예외처리
         List<Booking> bookings = new ArrayList<>();

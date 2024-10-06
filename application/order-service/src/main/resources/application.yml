@@ -1,6 +1,8 @@
 spring:
   application:
     name: order-service
+  config:
+    import: "classpath:application-credentials.yml"
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:54324/fortickets

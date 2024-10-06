@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,12 @@ public class ConcertController {
   @GetMapping
   public CommonResponse<Page<GetConcertRes>> getAllConcerts(Pageable pageable){
     return CommonResponse.success(concertService.getAllConcerts(pageable));
+  }
+
+  // Concert 정보 조회
+  @GetMapping("/{concertId}")
+  public GetConcertRes getConcert(@PathVariable Long concertId){
+    return concertService.getConcert(concertId);
   }
 
 
