@@ -48,4 +48,17 @@ public class Stage extends BaseEntity {
     this.col = col;
   }
 
+  public void changeName(String name){
+    this.name = name;
+  }
+  public void changeLocation(String location){
+    this.location = location;
+  }
+  public void changeRow(int row){
+    this.row = row;
+  }
+  public void changeCol(int col){
+    this.col = col;
+  }
+
 }

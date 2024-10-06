@@ -1,6 +1,7 @@
 package com.fortickets.concertservice.application.service;
 
 import com.fortickets.common.ErrorCase;
+import com.fortickets.concertservice.application.dto.request.UpdateStageReq;
 import com.fortickets.concertservice.application.dto.response.CreateStageRes;
 import com.fortickets.concertservice.application.dto.request.CreateStageReq;
 import com.fortickets.concertservice.application.dto.response.GetStageRes;
@@ -32,11 +33,32 @@ public class StageService {
     return stages.stream().map(stageMapper::toGetStageRes).toList();
   }
 
-  public GetStageRes getStage(Long stageId) {
-    Stage stage = stageRepository.findById(stageId)
-        .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_STAGE));
+  public GetStageRes getStageById(Long stageId) {
+    Stage stage = getStage(stageId);
     return stageMapper.toGetStageRes(stage);
   }
 
 
+
+  public void updateStageById(Long stageId, UpdateStageReq updateStageReq) {
+    Stage stage = getStage(stageId);
+    changeStage(updateStageReq, stage);
+  }
+
+
+  private  Stage getStage(Long stageId) {
+    Stage stage = stageRepository.findById(stageId)
+        .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_STAGE));
+    return stage;
+  }
+  private static void changeStage(UpdateStageReq updateStageReq, Stage stage) {
+    if(updateStageReq.name() != null)
+      stage.changeName(updateStageReq.name());
+    if(updateStageReq.location() != null)
+      stage.changeLocation(updateStageReq.location());
+    if(updateStageReq.row() != null)
+      stage.changeRow(updateStageReq.row());
+    if(updateStageReq.col() != null)
+      stage.changeCol(updateStageReq.col());
+  }
 }
