@@ -1,5 +1,7 @@
 package com.fortickets.concertservice.domain.entity;
 
+import static com.fortickets.jpa.BaseEntity.DELETED_FALSE;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
@@ -18,11 +20,13 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "concert")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction(DELETED_FALSE)
 public class Concert extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,7 +59,28 @@ public class Concert extends BaseEntity {
   @JsonManagedReference
   List<Schedule> schedules = new ArrayList<>();
 
-
+  // 수정 method
+  public void changeImage(String s) {
+    this.concertImage = s;
+  }
+  public void changeRuntime(int i) {
+    this.runtime = i;
+  }
+  public void changeStartDate(LocalDate d) {
+    this.startDate = d;
+  }
+  public void changeEndDate(LocalDate d) {
+    this.endDate = d;
+  }
+  public void changePrice(Long price) {
+    this.price = price;
+  }
+  public void changeConcertName(String concertName) {
+    this.concertName = concertName;
+  }
+  public void changeName(String s) {
+    this.concertName = s;
+  }
 
   public static Concert of(Long userId, String concertName, int runtime, LocalDate startDate, LocalDate endDate, Long price, String concertImage) {
     return new Concert(userId,concertName,runtime,startDate,endDate,price,concertImage);
@@ -70,9 +95,6 @@ public class Concert extends BaseEntity {
     this.price = price;
     this.concertImage = concertImage;
   }
-
-
-
 
 
 

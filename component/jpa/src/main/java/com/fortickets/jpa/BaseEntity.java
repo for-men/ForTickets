@@ -16,6 +16,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
+    public static final String DELETED_FALSE = "is_deleted = false";
+
     @Column(name = "is_deleted")
     protected Boolean isDeleted = false;
 
