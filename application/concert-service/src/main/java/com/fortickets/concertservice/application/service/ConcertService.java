@@ -3,11 +3,13 @@ package com.fortickets.concertservice.application.service;
 import com.fortickets.common.ErrorCase;
 import com.fortickets.concertservice.application.dto.request.CreateConcertReq;
 import com.fortickets.concertservice.application.dto.response.CreateConcertRes;
+import com.fortickets.concertservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.concertservice.application.dto.response.GetConcertRes;
 import com.fortickets.concertservice.domain.entity.Concert;
 import com.fortickets.concertservice.domain.mapper.ConcertMapper;
 import com.fortickets.concertservice.domain.repository.ConcertRepository;
 import com.fortickets.exception.GlobalException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,5 +40,10 @@ public class ConcertService {
   public GetConcertRes getConcert(Long concertId) {
     Concert concert = concertRepository.findById(concertId).orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
     return concertMapper.toGetConcertRes(concert);
+  }
+
+  public List<GetConcertDetailRes> getConcertBySeller(Long userId) {
+    List<Concert> concertList = concertRepository.findByUserId(userId);
+    return concertMapper.toGetConcertDetailResList(concertList);
   }
 }

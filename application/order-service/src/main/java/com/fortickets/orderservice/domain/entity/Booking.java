@@ -4,6 +4,8 @@ import com.fortickets.common.BookingStatus;
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,6 +35,7 @@ public class Booking extends BaseEntity {
     private Long scheduleId;
     private Long userId;
     private Long price;
+    @Enumerated(EnumType.STRING)
     private BookingStatus status;
     private String seat;
 

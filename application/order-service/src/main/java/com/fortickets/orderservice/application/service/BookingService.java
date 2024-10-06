@@ -105,11 +105,11 @@ public class BookingService {
         // 사용자, 공연명으로 예약 조회 null일 경우는 메서드에서 처리함
         Page<Booking> bookingList = bookingRepository.findByBookingSearch(
             userList.stream().map(GetUserRes::userId).toList(),
-            concertList.stream().map(GetConcertRes::concertId).toList(), BookingStatus.PENDING, pageable);
+            concertList.stream().map(GetConcertRes::id).toList(), BookingStatus.PENDING, pageable);
 
         // GetConcertRes를 concertId 기준으로 찾기 위한 Map 생성
         Map<Long, GetConcertRes> concertMap = concertList.stream()
-            .collect(Collectors.toMap(GetConcertRes::concertId, Function.identity()));
+            .collect(Collectors.toMap(GetConcertRes::id, Function.identity()));
 
 
         // Booking의 concertId와 매칭되는 GetConcertRes를 찾아 매핑
@@ -148,11 +148,11 @@ public class BookingService {
         // 사용자, 공연명으로 예약 조회 null일 경우는 메서드에서 처리함
         Page<Booking> bookingList = bookingRepository.findByBookingSearch(
             userList.stream().map(GetUserRes::userId).toList(),
-            concertList.stream().map(GetConcertRes::concertId).toList(), BookingStatus.PENDING, pageable);
+            concertList.stream().map(GetConcertRes::id).toList(), BookingStatus.PENDING, pageable);
 
         // GetConcertRes를 concertId 기준으로 찾기 위한 Map 생성
         Map<Long, GetConcertRes> concertMap = concertList.stream()
-            .collect(Collectors.toMap(GetConcertRes::concertId, Function.identity()));
+            .collect(Collectors.toMap(GetConcertRes::id, Function.identity()));
 
         // Booking의 concertId와 매칭되는 GetConcertRes를 찾아 매핑
         List<GetBookingRes> getBookingResList = bookingList.getContent().stream()
@@ -194,11 +194,7 @@ public class BookingService {
             throw new GlobalException(ErrorCase.CANNOT_CANCEL_BOOKING);
         }
 
-        // TODO: 결제 취소 요청
-        // paymentService.cancelPayment(booking.getPaymentId());
-
-        // 예약 취소
-        booking.cancel();
+         paymentService.cancelPayment(booking.getPayment().getId());
     }
 
     @Transactional
