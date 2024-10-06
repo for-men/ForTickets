@@ -37,17 +37,7 @@ public class Stage extends BaseEntity {
   @Column(name = "col", nullable = false)
   private int col;
 
-  public static Stage of(String name, String location, int row, int col) {
-    return new Stage(name, location, row, col);
-  }
-
-  private Stage(String name, String location, int row, int col) {
-    this.name = name;
-    this.location = location;
-    this.row = row;
-    this.col = col;
-  }
-
+  //수정 메서드
   public void changeName(String name){
     this.name = name;
   }
@@ -60,5 +50,18 @@ public class Stage extends BaseEntity {
   public void changeCol(int col){
     this.col = col;
   }
+
+
+  public static Stage of(String name, String location, int row, int col) {
+    return new Stage(name, location, row, col);
+  }
+
+  private Stage(String name, String location, int row, int col) {
+    this.name = name;
+    this.location = location;
+    this.row = row;
+    this.col = col;
+  }
+
 
 }

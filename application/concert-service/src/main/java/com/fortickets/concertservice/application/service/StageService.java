@@ -1,14 +1,15 @@
 package com.fortickets.concertservice.application.service;
 
 import com.fortickets.common.ErrorCase;
+import com.fortickets.concertservice.application.dto.request.CreateStageReq;
 import com.fortickets.concertservice.application.dto.request.UpdateStageReq;
 import com.fortickets.concertservice.application.dto.response.CreateStageRes;
-import com.fortickets.concertservice.application.dto.request.CreateStageReq;
 import com.fortickets.concertservice.application.dto.response.GetStageRes;
 import com.fortickets.concertservice.domain.entity.Stage;
 import com.fortickets.concertservice.domain.mapper.StageMapper;
 import com.fortickets.concertservice.domain.repository.StageRepository;
 import com.fortickets.exception.GlobalException;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class StageService {
 
   private final StageRepository stageRepository;
   private final StageMapper stageMapper;
+  private final EntityManager entityManager;
 
   @Transactional
   public CreateStageRes createStage(CreateStageReq createStageReq) {
@@ -38,19 +40,23 @@ public class StageService {
     return stageMapper.toGetStageRes(stage);
   }
 
-
-
+  @Transactional
   public void updateStageById(Long stageId, UpdateStageReq updateStageReq) {
     Stage stage = getStage(stageId);
     changeStage(updateStageReq, stage);
   }
 
+  @Transactional
+  public void deleteStageById(String email, Long stageId) {
+    Stage stage = getStage(stageId);
+    stage.delete(email);
+  }
 
   private  Stage getStage(Long stageId) {
-    Stage stage = stageRepository.findById(stageId)
+    return stageRepository.findById(stageId)
         .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_STAGE));
-    return stage;
   }
+
   private static void changeStage(UpdateStageReq updateStageReq, Stage stage) {
     if(updateStageReq.name() != null)
       stage.changeName(updateStageReq.name());
@@ -61,4 +67,6 @@ public class StageService {
     if(updateStageReq.col() != null)
       stage.changeCol(updateStageReq.col());
   }
+
+
 }
