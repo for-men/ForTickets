@@ -60,7 +60,3 @@ management:
   tracing:
     sampling:
       probability: 1.0
-
-#networks:
-#  fortickets_default:
-#    external: true  # 이미 생성된 네트워크를 사용
