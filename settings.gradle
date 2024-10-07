@@ -17,5 +17,3 @@ include 'application:prometheus-service'
 include 'gatling'
 findProject(':application:prometheus-service')?.name = 'prometheus-service'
 include 'component:redis'
-findProject(':component:redis')?.name = 'redis'
-
