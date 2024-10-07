@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -42,7 +43,7 @@ public class BookingService {
     private final ConcertClient concertClient;
     private final PaymentService paymentService;
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public List<CreateBookingRes> createBooking(Long userId, CreateBookingReq createBookingReq) {
         // TODO : 대기열
         if (!userId.equals(createBookingReq.userId())) {
