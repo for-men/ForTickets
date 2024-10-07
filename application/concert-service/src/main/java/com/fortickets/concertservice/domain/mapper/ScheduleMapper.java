@@ -5,6 +5,7 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 import com.fortickets.concertservice.application.dto.response.CreateScheduleRes;
 import com.fortickets.concertservice.application.dto.response.GetScheduleDetailRes;
 import com.fortickets.concertservice.application.dto.response.GetScheduleRes;
+import com.fortickets.concertservice.application.dto.response.GetScheduleSeatRes;
 import com.fortickets.concertservice.domain.entity.Schedule;
 import java.util.List;
 import org.mapstruct.Mapper;
@@ -15,7 +16,7 @@ public interface ScheduleMapper {
 
   CreateScheduleRes toCreateScheduleRes(Schedule schedule);
 
-  GetScheduleRes toGetScheduleRes(Schedule schedule, List<String> seatList);
+  GetScheduleSeatRes toGetScheduleSeatRes(Schedule schedule, List<String> seatList);
 
   @Mapping(target = "concertName", source = "schedule.concert.concertName")
   @Mapping(target = "runtime", source = "schedule.concert.runtime")

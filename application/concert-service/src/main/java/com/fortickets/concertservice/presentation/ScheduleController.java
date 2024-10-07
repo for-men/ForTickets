@@ -2,12 +2,15 @@ package com.fortickets.concertservice.presentation;
 
 import com.fortickets.common.CommonResponse;
 import com.fortickets.concertservice.application.dto.request.CreateScheduleReq;
+import com.fortickets.concertservice.application.dto.request.UpdateScheduleReq;
 import com.fortickets.concertservice.application.dto.response.CreateScheduleRes;
 import com.fortickets.concertservice.application.dto.response.GetScheduleDetailRes;
-import com.fortickets.concertservice.application.dto.response.GetScheduleRes;
+import com.fortickets.concertservice.application.dto.response.GetScheduleSeatRes;
 import com.fortickets.concertservice.application.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,8 +32,19 @@ public class ScheduleController {
   }
   // 스케줄 단건조회
   @GetMapping("/{scheduleId}")
-  public CommonResponse<GetScheduleRes> getSchedule(@PathVariable("scheduleId") Long scheduleId){
-    return CommonResponse.success(scheduleService.getSchedule(scheduleId));
+  public CommonResponse<GetScheduleSeatRes> getScheduleById(@PathVariable("scheduleId") Long scheduleId){
+    return CommonResponse.success(scheduleService.getScheduleById(scheduleId));
+  }
+
+  @PatchMapping("/{scheduleId}")
+  public CommonResponse<GetScheduleSeatRes> updateScheduleById(@PathVariable("scheduleId") Long scheduleId,@RequestBody UpdateScheduleReq updateScheduleReq){
+    scheduleService.updateScheduleById(scheduleId,updateScheduleReq);
+    return CommonResponse.success(scheduleService.getScheduleById(scheduleId));
+  }
+  @DeleteMapping("/{scheduleId}")
+  public CommonResponse deleteScheduleById(@RequestHeader("X-Email") String email,@PathVariable("scheduleId") Long scheduleId){
+    scheduleService.deleteScheduleById(scheduleId,email);
+    return CommonResponse.success();
   }
 
   @GetMapping("/{scheduleId}/detail")

@@ -1,5 +1,7 @@
 package com.fortickets.orderservice.domain.entity;
 
+import static com.fortickets.jpa.BaseEntity.DELETED_FALSE;
+
 import com.fortickets.common.BookingStatus;
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
@@ -18,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
@@ -25,6 +28,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction(DELETED_FALSE)
 public class Booking extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

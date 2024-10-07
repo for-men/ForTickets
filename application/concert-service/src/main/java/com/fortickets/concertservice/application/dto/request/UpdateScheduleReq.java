@@ -1,11 +1,9 @@
-package com.fortickets.concertservice.application.dto.response;
+package com.fortickets.concertservice.application.dto.request;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
-public record GetScheduleRes(
-    Long id,
+public record UpdateScheduleReq(
     Long stageId,
     LocalDate concertDate,
     LocalTime concertTime

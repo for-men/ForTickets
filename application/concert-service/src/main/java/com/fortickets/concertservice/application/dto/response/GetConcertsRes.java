@@ -1,18 +1,16 @@
 package com.fortickets.concertservice.application.dto.response;
 
-import com.fortickets.concertservice.domain.entity.Schedule;
 import java.time.LocalDate;
-import java.util.List;
 
-public record GetConcertRes(
+public record GetConcertsRes(
     Long id,
+    Long userId,
     String concertName,
     String concertImage,
     int runtime,
-    Long price,
     LocalDate startDate,
     LocalDate endDate,
-    List<GetScheduleRes> schedules
+    Long price
 ) {
 
 }

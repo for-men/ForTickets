@@ -1,5 +1,7 @@
 package com.fortickets.userservice.domain.entity;
 
+import static com.fortickets.jpa.BaseEntity.DELETED_FALSE;
+
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,11 +14,13 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction(DELETED_FALSE)
 public class User extends BaseEntity {
 
     @Id
