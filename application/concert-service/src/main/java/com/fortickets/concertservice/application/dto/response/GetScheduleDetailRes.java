@@ -2,11 +2,14 @@ package com.fortickets.concertservice.application.dto.response;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
-public record GetScheduleRes(
+public record GetScheduleDetailRes(
     Long id,
-    Long stageId,
+    Long concertId,
+    String concertName,
+    Integer runtime,
+    String stageName,
+    String location,
     LocalDate concertDate,
     LocalTime concertTime
 ) {

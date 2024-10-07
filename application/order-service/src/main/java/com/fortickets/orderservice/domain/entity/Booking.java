@@ -1,9 +1,13 @@
 package com.fortickets.orderservice.domain.entity;
 
+import static com.fortickets.jpa.BaseEntity.DELETED_FALSE;
+
 import com.fortickets.common.BookingStatus;
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
@@ -23,6 +28,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction(DELETED_FALSE)
 public class Booking extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,11 +39,12 @@ public class Booking extends BaseEntity {
     private Long scheduleId;
     private Long userId;
     private Long price;
+    @Enumerated(EnumType.STRING)
     private BookingStatus status;
     private String seat;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id", nullable = false)
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 
     public void updateStatus(BookingStatus status) {
