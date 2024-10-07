@@ -11,6 +11,9 @@ dependencies {
     // loki
 //    implementation 'com.github.loki4j:loki-logback-appender:1.5.1'
 
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     // feignClient
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
