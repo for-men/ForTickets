@@ -19,7 +19,7 @@ public interface ConcertClient {
     GetScheduleDetailRes getScheduleDetail(@PathVariable Long scheduleId);
 
     // Concert 정보 조회 o
-    @GetMapping("/concerts/{concertId}")
+    @GetMapping("/concerts/{concertId}/detail")
     GetConcertRes getConcert(@PathVariable Long concertId);
 
     // Concert Name이 포함된 Concert 정보 조회

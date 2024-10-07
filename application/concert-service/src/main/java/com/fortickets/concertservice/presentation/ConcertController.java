@@ -56,7 +56,7 @@ public class ConcertController {
   }
 
   // Concert 정보 조회
-  @GetMapping("/{concertId}")
+  @GetMapping("/{concertId}/detail")
   public GetConcertRes getConcert(@PathVariable Long concertId){
     return concertService.getConcert(concertId);
   }
@@ -65,5 +65,14 @@ public class ConcertController {
     public List<GetConcertDetailRes> getConcertBySeller(@PathVariable Long userId){
         return concertService.getConcertBySeller(userId);
     }
+  @GetMapping("/{userId}/{concertName}/search")
+  List<GetConcertDetailRes> searchConcert(@PathVariable Long userId, @PathVariable String concertName){
+    return concertService.searchConcert(userId, concertName);
+  }
+
+  @GetMapping("/{concertName}/search")
+  List<GetConcertDetailRes> searchConcertName(@PathVariable String concertName){
+    return concertService.searchConcertName(concertName);
+  }
 
 }
