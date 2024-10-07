@@ -34,7 +34,7 @@ spring:
     redis:
       host: localhost
       port: 6379
-#      password: "systempass"
+      password: systempass
 
 server:
   port: 12021

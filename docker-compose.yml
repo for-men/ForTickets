@@ -5,11 +5,13 @@ services:
       - "9411:9411" # Zipkin UI에 접근할 포트
 
   redis-stack:
-    image: redis/redis-stack:latest
+    image: redis/redis-stack
     container_name: redis-stack-compose
     restart: always
     environment:
       REDIS_ARGS: "--requirepass systempass"
+    volumes:
+      - ./redis_data:/data
     ports:
       - 6379:6379
       - 8001:8001

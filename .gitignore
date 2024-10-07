@@ -40,3 +40,6 @@ db/
 
 ### secret-key ###
 **/application-credentials.yml
+
+### redis ###
+redis_data/
