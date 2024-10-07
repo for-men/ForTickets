@@ -3,6 +3,7 @@ services:
     image: openzipkin/zipkin
     ports:
       - "9411:9411" # Zipkin UI에 접근할 포트
+
   redis-stack:
     image: redis/redis-stack:latest
     container_name: redis-stack-compose
@@ -12,3 +13,4 @@ services:
     ports:
       - 6379:6379
       - 8001:8001
+    network_mode: host

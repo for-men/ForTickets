@@ -32,10 +32,10 @@ spring:
       file: application/user-service/docker-compose.yml
   data:
     redis:
-      host: localhost:6379
+      host: localhost
       port: 6379
-      username: ""
-      password: systempass
+#      password: "systempass"
+
 
 server:
   port: 12021
@@ -61,3 +61,7 @@ management:
   tracing:
     sampling:
       probability: 1.0
+
+networks:
+  fortickets_default:
+    external: true  # 이미 생성된 네트워크를 사용
