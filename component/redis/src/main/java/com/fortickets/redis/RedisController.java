@@ -1,6 +1,5 @@
-package com.fortickets.userservice.presentation.controller;
+package com.fortickets.redis;
 
-import com.fortickets.userservice.application.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
