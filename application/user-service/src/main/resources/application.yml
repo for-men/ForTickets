@@ -36,7 +36,6 @@ spring:
       port: 6379
 #      password: "systempass"
 
-
 server:
   port: 12021
 
@@ -62,6 +61,6 @@ management:
     sampling:
       probability: 1.0
 
-networks:
-  fortickets_default:
-    external: true  # 이미 생성된 네트워크를 사용
+#networks:
+#  fortickets_default:
+#    external: true  # 이미 생성된 네트워크를 사용
