@@ -56,6 +56,10 @@ subprojects {
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
         // module
+        if (project.name != 'redis' && project.name != 'common') {
+            implementation project(":component:redis")
+        }
+
         if (project.name != 'gateway-service') {
             // spring web mvc
             implementation 'org.springframework.boot:spring-boot-starter'
