@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.10'
     id 'io.spring.dependency-management' version '1.1.6'
-//    id 'io.gatling.gradle' version '3.12.0.2'
 }
 
 
@@ -57,6 +56,10 @@ subprojects {
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
         // module
+        if (project.name != 'redis' && project.name != 'common') {
+            implementation project(":component:redis")
+        }
+
         if (project.name != 'gateway-service') {
             // spring web mvc
             implementation 'org.springframework.boot:spring-boot-starter'

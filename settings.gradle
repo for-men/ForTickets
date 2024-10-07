@@ -1,10 +1,3 @@
-//pluginManagement {
-//    repositories {
-//        mavenCentral()
-//        gradlePluginPortal()
-//    }
-//}
-
 rootProject.name = 'ForTickets'
 
 include 'application:order-service'
@@ -23,3 +16,4 @@ findProject(':component:security')?.name = 'security'
 include 'application:prometheus-service'
 include 'gatling'
 findProject(':application:prometheus-service')?.name = 'prometheus-service'
+include 'component:redis'

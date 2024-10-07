@@ -1,4 +1,4 @@
-package com.fortickets.userservice.application.service;
+package com.fortickets.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
