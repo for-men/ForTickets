@@ -34,13 +34,6 @@ public class JwtAuthenticationFilterForCommon extends OncePerRequestFilter {
             return;
         }
 
-        // 토큰이 없이 통과시켜야 할 경로에 대해서는 필터를 타지 않고 바로 통과시킴 ex) /auth/**
-        if (requestURI.startsWith("/actuator")) {
-            System.out.println("hihi");
-            filterChain.doFilter(req, res);
-            return;
-        }
-
         // 헤더에서 사용자 정보 추출
         String userIdHeader = req.getHeader("X-User-Id");
         String email = req.getHeader("X-Email");

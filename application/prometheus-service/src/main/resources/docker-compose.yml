@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   prometheus:
     image: prom/prometheus
@@ -11,7 +9,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     networks:
-      - prometheus-network  # Prometheus를 prometheus-network에 연결
+      - prometheus-network
 
   grafana:
     image: grafana/grafana
@@ -21,7 +19,7 @@ services:
     depends_on:
       - prometheus
     networks:
-      - prometheus-network  # Grafana를 prometheus-network에 연결
+      - prometheus-network
 
 networks:
   prometheus-network:

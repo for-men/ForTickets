@@ -8,6 +8,9 @@ repositories {
 }
 
 dependencies {
+    // loki
+//    implementation 'com.github.loki4j:loki-logback-appender:1.5.1'
+
     // feignClient
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
