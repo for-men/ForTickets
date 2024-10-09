@@ -26,9 +26,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class BookingService {
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
@@ -45,6 +49,8 @@ public class BookingService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public List<CreateBookingRes> createBooking(Long userId, CreateBookingReq createBookingReq) {
+
+        log.info("createBookingReq : {}", createBookingReq);
         // TODO : 대기열
         if (!userId.equals(createBookingReq.userId())) {
             throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
