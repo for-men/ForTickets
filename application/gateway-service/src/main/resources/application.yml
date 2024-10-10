@@ -10,6 +10,9 @@ spring:
       enabled: false  # CSRF 보호 비활성화
   cloud:
     gateway:
+      default-filters:
+        - name: TicketFilter
+#        - name: KafkaRequestFilter
       routes:
         - id: user-service
           uri: lb://user-service
@@ -43,3 +46,6 @@ management:
     web:
       exposure:
         include: 'prometheus'
+
+kafka:
+  bootstrap-servers: localhost:9092
