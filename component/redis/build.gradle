@@ -15,6 +15,9 @@ dependencies {
 
     // redis
     api('org.springframework.boot:spring-boot-starter-data-redis')
+
+    // redisson
+    api('org.redisson:redisson-spring-boot-starter:3.16.0')
 }
 
 test {
