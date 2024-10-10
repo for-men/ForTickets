@@ -3,4 +3,27 @@ insert into stage (stage_id, name, location, row, col, is_deleted, created_at, c
 
 values
     (1, '공연장이름1', '공연장위치1', 10, 100, false, now(), 5, now(), 5, null, null),
-    (2, '공연장이름2', '공연장위치2', 20, 200, false, now(), 6, now(), 6, null, null);
+    (2, '공연장이름2', '공연장위치2', 10, 100, false, now(), 5, now(), 5, null, null),
+    (3, '공연장이름3', '공연장위치3', 10, 100, false, now(), 5, now(), 5, null, null),
+    (4, '공연장이름4', '공연장위치4', 10, 100, false, now(), 5, now(), 5, null, null),
+    (5, '공연장이름5', '공연장위치5', 10, 100, false, now(), 5, now(), 5, null, null),
+    (6, '공연장이름6', '공연장위치6', 10, 100, false, now(), 5, now(), 5, null, null),
+    (7, '공연장이름7', '공연장위치7', 10, 100, false, now(), 5, now(), 5, null, null),
+    (8, '공연장이름8', '공연장위치8', 10, 100, false, now(), 5, now(), 5, null, null),
+    (9, '공연장이름9', '공연장위치9', 10, 100, false, now(), 5, now(), 5, null, null),
+    (10, '공연장이름10', '공연장위치10', 10, 100, false, now(), 5, now(), 5, null, null),
+    (11, '공연장이름11', '공연장위치11', 10, 100, false, now(), 5, now(), 5, null, null),
+    (12, '공연장이름12', '공연장위치12', 10, 100, false, now(), 5, now(), 5, null, null),
+    (13, '공연장이름13', '공연장위치13', 10, 100, false, now(), 5, now(), 5, null, null),
+    (14, '공연장이름14', '공연장위치14', 10, 100, false, now(), 5, now(), 5, null, null),
+    (15, '공연장이름15', '공연장위치15', 10, 100, false, now(), 5, now(), 5, null, null),
+    (16, '공연장이름16', '공연장위치16', 10, 100, false, now(), 5, now(), 5, null, null),
+    (17, '공연장이름17', '공연장위치17', 10, 100, false, now(), 5, now(), 5, null, null),
+    (18, '공연장이름18', '공연장위치18', 10, 100, false, now(), 5, now(), 5, null, null),
+    (19, '공연장이름19', '공연장위치19', 10, 100, false, now(), 5, now(), 5, null, null),
+    (20, '공연장이름20', '공연장위치20', 10, 100, false, now(), 5, now(), 5, null, null),
+    (21, '공연장이름21', '공연장위치21', 10, 100, false, now(), 5, now(), 5, null, null),
+    (22, '공연장이름22', '공연장위치22', 10, 100, false, now(), 5, now(), 5, null, null),
+    (23, '공연장이름23', '공연장위치23', 10, 100, false, now(), 5, now(), 5, null, null),
+    (24, '공연장이름24', '공연장위치24', 10, 100, false, now(), 5, now(), 5, null, null),
+    (25, '공연장이름25', '공연장위치25', 10, 100, false, now(), 5, now(), 5, null, null);
