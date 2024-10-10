@@ -28,7 +28,6 @@ public class AuthController {
     public CommonResponse<CommonEmptyRes> signUp(@Valid @RequestBody SignUpReq req) {
         authService.signUp(req);
         return CommonResponse.success();
-//        return CommonResponse.success("회원가입을 성공하였습니다.");
     }
 
     // 로그인

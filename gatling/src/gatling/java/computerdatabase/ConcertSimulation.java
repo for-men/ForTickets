@@ -3,9 +3,11 @@ package computerdatabase;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import io.gatling.javaapi.core.Simulation;
 import io.gatling.javaapi.http.HttpProtocolBuilder;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static io.gatling.javaapi.core.CoreDsl.atOnceUsers;
 import static io.gatling.javaapi.core.CoreDsl.bodyString;
+import static io.gatling.javaapi.core.CoreDsl.rampUsers;
 import static io.gatling.javaapi.core.CoreDsl.scenario;
 import static io.gatling.javaapi.http.HttpDsl.http;
 import static io.gatling.javaapi.http.HttpDsl.status;
@@ -19,13 +21,18 @@ public class ConcertSimulation extends Simulation {
             .contentTypeHeader("application/json")
             .userAgentHeader("Gatling");
 
+    // 랜덤 공연 아이디 생성
+    private Long getRandomConcertId() {
+        return (long) ThreadLocalRandom.current().nextInt(1, 21); // 1부터 10까지의 랜덤 Long 값 생성
+    }
+
     // 시나리오 정의
     ScenarioBuilder scn = scenario("Concert 조회 시나리오")
             // 1. 데이터 생성
             .exec(session -> {
                 // JWT 토큰을 포스트맨에서 복사하여 입력
-                String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsImVtYWlsIjoidXNlcjFAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyODI3ODQ5MywiZXhwIjoxNzI4MjgyMDkzfQ.DG-1wibnFgFwh5Pg63dEXJFQdOF8JZu2I7QVWYeNHzo"; // 포스트맨에서 받은 JWT 토큰
-                Long concertId = 1L; // 고정된 콘서트 ID
+                String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidXNlcjEwQGVtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpc3MiOiJ1c2VyLXNlcnZpY2UiLCJpYXQiOjE3Mjg1Mzg3MDAsImV4cCI6MTcyODU0MjMwMH0.eomEgL376XbAeId0rlLTN0KXRdw0IENuR6XTH8G06Xs"; // 포스트맨에서 받은 JWT 토큰
+                Long concertId = getRandomConcertId(); // 랜덤한 스케줄 ID 생성
                 return session.set("jwtToken", jwtToken).set("concertId", concertId); // 세션에 토큰과 콘서트 ID 저장
             })
 
@@ -38,7 +45,7 @@ public class ConcertSimulation extends Simulation {
             );
 
     {
-        // 시뮬레이션 설정: 한 번에 5000명의 사용자가 콘서트 조회 시도
-        setUp(scn.injectOpen(atOnceUsers(1000))).protocols(httpProtocol);
+        // 시뮬레이션 설정: 한 번에 1000명의 사용자가 콘서트 조회 시도
+        setUp(scn.injectOpen(rampUsers(9000).during(1))).protocols(httpProtocol);
     }
 }
