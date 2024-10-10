@@ -42,4 +42,10 @@ db/
 **/application-credentials.yml
 
 ### redis ###
-redis_data/
+redis_data
+redis_data_master1/
+redis_data_master2/
+redis_data_master3/
+redis_data_slave1/
+redis_data_slave2/
+redis_data_slave3/
