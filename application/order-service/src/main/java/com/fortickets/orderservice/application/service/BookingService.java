@@ -27,7 +27,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.CannotAcquireLockException;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -46,32 +47,48 @@ public class BookingService {
     private final UserClient userClient;
     private final ConcertClient concertClient;
     private final PaymentService paymentService;
+    private final RedissonClient redissonClient;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public List<CreateBookingRes> createBooking(Long userId, CreateBookingReq createBookingReq) {
 
         log.info("createBookingReq : {}", createBookingReq);
-        // TODO : 대기열
-        if (!userId.equals(createBookingReq.userId())) {
-            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+
+        // 분산 락 이름 정의 (예약 스케줄 ID 기반)
+        String lockKey = "bookingLock:" + createBookingReq.scheduleId();
+        RLock lock = redissonClient.getLock(lockKey); // 락 객체 생성
+
+        // 락을 획득하고, 예외 발생 시 락 해제
+        try {
+            lock.lock(); // 락 획득
+
+            // TODO : 대기열
+            if (!userId.equals(createBookingReq.userId())) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+
+            // 이미 예약된 좌석인지 확인
+            List<Booking> bookings = new ArrayList<>();
+            createBookingReq.seat().forEach(seat -> {
+                bookingRepository.findByScheduleIdAndSeat(createBookingReq.scheduleId(), seat)
+                        .ifPresent(booking -> {
+                            throw new GlobalException(ErrorCase.ALREADY_BOOKED_SEAT);
+                        });
+                Booking booking = createBookingReq.toEntity(seat);
+                bookings.add(booking);
+            });
+
+            // 예매 정보 저장
+            bookingRepository.saveAll(bookings);
+
+            return bookings.stream().map(bookingMapper::toCreateBookingRes).toList();
+
+        } finally {
+            // 락 해제
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
-
-        // 이미 예약된 좌석인지 확인
-        // 하나라도 예약된 좌석이 있으면 예외처리
-        List<Booking> bookings = new ArrayList<>();
-        createBookingReq.seat().forEach(seat -> {
-            bookingRepository.findByScheduleIdAndSeat(createBookingReq.scheduleId(), seat)
-                .ifPresent(booking -> {
-                    throw new GlobalException(ErrorCase.ALREADY_BOOKED_SEAT);
-                });
-            Booking booking = createBookingReq.toEntity(seat);
-            bookings.add(booking);
-        });
-
-        // 예매 정보 저장
-        bookingRepository.saveAll(bookings);
-
-        return bookings.stream().map(bookingMapper::toCreateBookingRes).toList();
     }
 
     @Transactional
