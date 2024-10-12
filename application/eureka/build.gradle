@@ -1,4 +1,7 @@
-bootJar { enabled = true }
+bootJar {
+    enabled = true
+    mainClass  = 'com.fortickets.eureka.EurekaApplication'
+}
 jar { enabled = false }
 
 repositories {

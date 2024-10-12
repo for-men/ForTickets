@@ -1,4 +1,7 @@
-bootJar { enabled = true }
+bootJar {
+    enabled = true
+    mainClass  = 'com.fortickets.userservice.UserServiceApplication'
+}
 jar { enabled = false }
 
 repositories {
@@ -24,8 +27,8 @@ dependencies {
     implementation project(":component:exception")
     implementation project(":component:jpa")
 
-    // postgresql
-    runtimeOnly 'org.postgresql:postgresql'
+    // PostgreSQL
+    implementation 'org.postgresql:postgresql'  // 최신 버전으로 설정
     // docker compose support
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 }

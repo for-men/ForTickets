@@ -1,3 +1,6 @@
+server:
+  port: 12031
+
 spring:
   application:
     name: concert-service
@@ -6,7 +9,7 @@ spring:
   # db 설정
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:54323/fortickets
+    url: jdbc:postgresql://postgres:5432/fortickets
     username: forman
     password: 1234
   jpa:
@@ -18,6 +21,7 @@ spring:
         show_sql: true # sql 로깅
         format_sql: true # SQL 문 정렬하여 출력
         highlight_sql: true # SQL 문 색 부여
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   # docker compose lifecycle 설정
   docker:
     compose:
@@ -30,12 +34,9 @@ spring:
       file: application/concert-service/docker-compose.yml
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
 #      password: "systempass"
-
-server:
-  port: 12031
 
 # auditing entity scan을 위한 base package 설정
 base-package:
@@ -46,10 +47,16 @@ base-package:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:12001/eureka/
+      defaultZone: http://eureka:12001/eureka/
 
 management:
   endpoints:
     web:
       exposure:
         include: 'prometheus'
+  zipkin:
+    tracing:
+      endpoint: "http://zipkin:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0

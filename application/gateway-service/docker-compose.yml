@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  gateway:
+    image: notitle1215/gateway-service:latest
+    ports:
+      - "12011:12011"  # Gateway 포트
+    networks:
+      - eureka-network
+
+networks:
+  eureka-network:
+    external: true  # 외부 네트워크 사용

@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  eureka:
+    image: notitle1215/eureka:latest
+    ports:
+      - "12001:12001"
+    networks:
+      - eureka-network
+
+networks:
+  eureka-network:
+    external: true  # 외부 네트워크 사용

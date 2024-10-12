@@ -1,3 +1,6 @@
+server:
+  port: 12041
+
 spring:
   application:
     name: order-service
@@ -7,7 +10,7 @@ spring:
     include: common
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:54324/fortickets
+    url: jdbc:postgresql://postgres:5432/fortickets
     username: forman
     password: 1234
   jpa:
@@ -19,6 +22,7 @@ spring:
         show_sql: true # sql 로깅
         format_sql: true # SQL 문 정렬하여 출력
         highlight_sql: true # SQL 문 색 부여
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   docker:
     compose:
       lifecycle-management: start_and_stop # start_only, start_and_stop 옵션이 있으며, 스프링 종료 시 컨테이너 종료 여부를 결정할 수 있음
@@ -34,9 +38,6 @@ spring:
       port: 6379
 #      password: "systempass"
 
-server:
-  port: 12041
-
 # auditing entity scan을 위한 base package 설정
 base-package:
   jpa: "com.fortickets.orderservice"
@@ -44,10 +45,16 @@ base-package:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:12001/eureka/
+      defaultZone: http://eureka:12001/eureka/
 
 management:
   endpoints:
     web:
       exposure:
         include: 'prometheus'
+  zipkin:
+    tracing:
+      endpoint: "http://zipkin:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0

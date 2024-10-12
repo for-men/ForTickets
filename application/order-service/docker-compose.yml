@@ -1,4 +1,15 @@
 services:
+  concert-service:
+    image: notitle1215/order-service:latest
+    ports:
+      - "12041:12041"
+    depends_on:
+      - postgres
+    networks:
+      - eureka-network
+    command: [ "sh", "-c", "sleep 10 && java -jar app.jar" ]
+    environment:
+      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/fortickets'
 
   postgres:
     image: 'postgres:16.4'
@@ -10,4 +21,14 @@ services:
       - '54324:5432'
     volumes:
       - ../db/order-service:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U forman -d fortickets" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - eureka-network
 
+networks:
+  eureka-network:
+    external: true  # 외부 네트워크 사용

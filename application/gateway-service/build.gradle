@@ -1,4 +1,7 @@
-bootJar { enabled = true }
+bootJar {
+    enabled = true
+    mainClass  = 'com.fortickets.gatewayservice.GatewayServiceApplication'
+}
 jar { enabled = false }
 
 dependencies {
