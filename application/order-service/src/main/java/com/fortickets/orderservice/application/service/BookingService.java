@@ -26,11 +26,13 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class BookingService {
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
@@ -48,6 +51,9 @@ public class BookingService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public List<CreateBookingRes> createBooking(Long userId, CreateBookingReq createBookingReq) {
+
+        log.info("createBookingReq : {}", createBookingReq);
+
         // 분산 락 이름 정의 (예약 스케줄 ID 기반)
         String lockKey = "bookingLock:" + createBookingReq.scheduleId();
         RLock lock = redissonClient.getLock(lockKey); // 락 객체 생성

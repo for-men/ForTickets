@@ -44,6 +44,7 @@ public class BookingSimulation2 extends Simulation {
     private int getRandomScheduleId(int concertId) {
         int[] schedules = concertScheduleMap.get(concertId);
         return schedules[ThreadLocalRandom.current().nextInt(schedules.length)];
+
     }
 
     // 고정된 userId
@@ -65,6 +66,7 @@ public class BookingSimulation2 extends Simulation {
     private String getRandomSeat() {
         int row = ThreadLocalRandom.current().nextInt(1, 11); // 1~10행
         int seat = ThreadLocalRandom.current().nextInt(1, 101); // 1~10열
+
         return row + " " + seat; // "행 열" 형태로 반환
     }
 
@@ -91,5 +93,6 @@ public class BookingSimulation2 extends Simulation {
         // 시나리오 설정: 시나리오를 Gatling에 등록
 //        setUp(scn.injectOpen(atOnceUsers(1000))).protocols(httpProtocol); // 1명의 사용자가 동시에 요청을 보냄
         setUp(scn.injectOpen(rampUsers(3000).during(1))).protocols(httpProtocol); // 10초동안 1000건의 요청
+
     }
 }
