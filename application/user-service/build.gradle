@@ -8,37 +8,24 @@ repositories {
 }
 
 dependencies {
-    // 원래 됐었는데 pull 이후로 안받아와져 추가했습니다
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    // redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-    // loki
-//    implementation 'com.github.loki4j:loki-logback-appender:1.5.1'
-
-    // feignClient
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-
-    // jwt추가
+    // 스프링 시큐리티 & JWT user-service는 component security가 아닌 자체 class를 사용해 의존성 따로 관리
+    api 'org.springframework.boot:spring-boot-starter-security'
     compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
-    // 스프링 시큐리티 (패스워드 인코더)
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // validation 의존성
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // postgresql
-    runtimeOnly 'org.postgresql:postgresql'
-
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    //아래는 주창님이 추가하신 내역들 postgresql은 중복으로 삭제
+    // component의 exception 과 jpa 포함
     implementation project(":component:exception")
     implementation project(":component:jpa")
 
+    // postgresql
+    runtimeOnly 'org.postgresql:postgresql'
     // docker compose support
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 }
