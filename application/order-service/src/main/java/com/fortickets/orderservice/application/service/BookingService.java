@@ -2,6 +2,7 @@ package com.fortickets.orderservice.application.service;
 
 import com.fortickets.common.BookingStatus;
 import com.fortickets.common.ErrorCase;
+import com.fortickets.common.GlobalUtil;
 import com.fortickets.exception.GlobalException;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
@@ -71,7 +72,7 @@ public class BookingService {
         try {
             lock.lock(); // 락 획득
 
-            // TODO : 대기열
+            // 요청 사용자와 예약 사용자가 같은지 확인
             if (!userId.equals(createBookingReq.userId())) {
                 throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
             }
@@ -79,10 +80,16 @@ public class BookingService {
             // 이미 예약된 좌석인지 확인
             List<Booking> bookings = new ArrayList<>();
             createBookingReq.seat().forEach(seat -> {
+                // 좌석 형식 확인
+                if (!GlobalUtil.isValidSeatFormat(seat)) {
+                    throw new GlobalException(ErrorCase.INVALID_SEAT_FORMAT);
+                }
+                // 이미 예약된 좌석인지 확인
                 bookingRepository.findByScheduleIdAndSeat(createBookingReq.scheduleId(), seat)
                     .ifPresent(booking -> {
                         throw new GlobalException(ErrorCase.ALREADY_BOOKED_SEAT);
                     });
+
                 Booking booking = createBookingReq.toEntity(seat);
                 bookings.add(booking);
             });
@@ -107,9 +114,11 @@ public class BookingService {
             confirmBookingReq.bookingIds(), BookingStatus.PENDING,
             confirmBookingReq.userId());
 
+        // 예매 정보가 없으면 예외 발생
         if (bookingList.isEmpty()) {
             throw new GlobalException(ErrorCase.BOOKING_NOT_FOUND);
         }
+        // 예매 정보 상태 변경 CONFIRMED
         bookingList.forEach(Booking::confirm);
 
         CreatePaymentReq createPaymentReq = CreatePaymentReq.builder()
