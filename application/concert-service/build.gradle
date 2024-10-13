@@ -4,6 +4,9 @@ jar { enabled = false }
 
 
 dependencies {
+    // validation 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     implementation project(":component:jpa")
     implementation project(":component:security")
     // postgresql

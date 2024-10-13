@@ -8,6 +8,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -28,6 +29,17 @@ public class GlobalExceptionHandler {
     private final HttpServletResponse response; // HttpStatus 설정을 위한 response 객체
 
     /**
+     * 권한 부족 (403) 발생 시 처리하는 핸들러
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public CommonResponse<CommonEmptyRes> handleAccessDeniedException(AccessDeniedException e) {
+        log.warn("권한 부족 예외 발생: {}", e.getMessage());
+        response.setStatus(HttpStatus.FORBIDDEN.value());
+        return CommonResponse.error(ErrorCase.NOT_AUTHORIZED);
+    }
+
+
+    /**
      * Business 오류 발생에 대한 핸들러
      */
     @ExceptionHandler(GlobalException.class)
@@ -35,16 +47,6 @@ public class GlobalExceptionHandler {
         response.setStatus(e.getErrorCase().getHttpStatus().value()); // HttpStatus 설정
 
         return CommonResponse.error(e.getErrorCase()); // 공통 응답 양식 반환
-    }
-
-    /**
-     * 권한 없음 에러 발생에 대한 핸들러
-     */
-    @ExceptionHandler(AccessDeniedException.class)
-    public CommonResponse<CommonEmptyRes> handleAccessDeniedException(AccessDeniedException e) {
-        response.setStatus(ErrorCase.NOT_AUTHORIZED.getHttpStatus().value()); // HttpStatus 설정
-
-        return CommonResponse.error(ErrorCase.NOT_AUTHORIZED); // 공통 응답 양식 반환
     }
 
     /**
