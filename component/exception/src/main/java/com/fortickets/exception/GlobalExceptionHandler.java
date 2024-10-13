@@ -4,7 +4,7 @@ import com.fortickets.common.CommonResponse;
 import com.fortickets.common.CommonResponse.CommonEmptyRes;
 import com.fortickets.common.ErrorCase;
 import jakarta.servlet.http.HttpServletResponse;
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
