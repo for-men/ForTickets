@@ -25,6 +25,7 @@ public class RedissonConfig {
 
         config.useSingleServer()
                 .setAddress("redis://localhost:6379");
+//                .setPassword("systempass");
 
         return Redisson.create(config); // RedissonClient 인스턴스 생성
     }

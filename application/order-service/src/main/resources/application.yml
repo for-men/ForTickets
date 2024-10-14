@@ -32,6 +32,9 @@ spring:
     redis:
       host: localhost
       port: 6379
+
+#      password: "systempass"
+
 # kafka
   kafka:
     bootstrap-servers: localhost:9092
@@ -40,6 +43,7 @@ spring:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
 
 server:
   port: 12041
