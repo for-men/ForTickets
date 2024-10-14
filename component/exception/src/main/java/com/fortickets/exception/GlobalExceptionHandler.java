@@ -8,7 +8,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -37,15 +36,15 @@ public class GlobalExceptionHandler {
         return CommonResponse.error(e.getErrorCase()); // 공통 응답 양식 반환
     }
 
-    /**
-     * 권한 없음 에러 발생에 대한 핸들러
-     */
-    @ExceptionHandler(AccessDeniedException.class)
-    public CommonResponse<CommonEmptyRes> handleAccessDeniedException(AccessDeniedException e) {
-        response.setStatus(ErrorCase.NOT_AUTHORIZED.getHttpStatus().value()); // HttpStatus 설정
-
-        return CommonResponse.error(ErrorCase.NOT_AUTHORIZED); // 공통 응답 양식 반환
-    }
+//    /**
+//     * 권한 없음 에러 발생에 대한 핸들러
+//     */
+//    @ExceptionHandler(AccessDeniedException.class)
+//    public CommonResponse<CommonEmptyRes> handleAccessDeniedException(AccessDeniedException e) {
+//        response.setStatus(ErrorCase.NOT_AUTHORIZED.getHttpStatus().value()); // HttpStatus 설정
+//
+//        return CommonResponse.error(ErrorCase.NOT_AUTHORIZED); // 공통 응답 양식 반환
+//    }
 
     /**
      * RequestBody 입력 파라미터가 없거나 형식이 맞지 않을 때 발생하는 오류에 대한 핸들러
