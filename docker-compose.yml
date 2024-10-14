@@ -1,8 +1,115 @@
+version: '3.8'
+
 services:
+  eureka-service:
+    image: eureka:latest  # 빌드한 eureka 이미지 이름
+    ports:
+      - '12001:12001'  # Eureka의 기본 포트
+    networks:
+      - service-network
+
+  gateway-service:
+    image: gateway-service:latest  # 빌드한 gateway 이미지 이름
+    ports:
+      - '12011:12011'  # Gateway의 포트
+    environment:
+      - SPRING_CLOUD_GATEWAY_DISCOVERY_CLIENT_ENABLED=true
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+    depends_on:
+      - eureka-service
+    networks:
+      - service-network
+
+  user-service:
+    image: user-service:latest  # 빌드한 user-service 이미지 이름
+    ports:
+      - '12021:12021'  # User 서비스의 포트
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5432/fortickets
+      - SPRING_DATASOURCE_USERNAME=forman
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+    depends_on:
+      - postgres-user
+      - eureka-service
+    networks:
+      - service-network
+
+  postgres-user:
+    image: 'postgres:16.4'
+    environment:
+      - 'POSTGRES_DB=fortickets'
+      - 'POSTGRES_PASSWORD=1234'
+      - 'POSTGRES_USER=forman'
+    ports:
+      - '54322:5432'
+    volumes:
+      - ../db/user-service:/var/lib/postgresql/data
+    networks:
+      - service-network
+
+  concert-service:
+    image: concert-service:latest  # 빌드한 concert-service 이미지 이름
+    ports:
+      - '12031:12031'  # Concert 서비스의 포트
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-concert:5432/fortickets
+      - SPRING_DATASOURCE_USERNAME=forman
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+    depends_on:
+      - postgres-concert
+      - eureka-service
+    networks:
+      - service-network
+
+  postgres-concert:
+    image: 'postgres:16.4'
+    environment:
+      - 'POSTGRES_DB=fortickets'
+      - 'POSTGRES_PASSWORD=1234'
+      - 'POSTGRES_USER=forman'
+    ports:
+      - '54323:5432'
+    volumes:
+      - ../db/concert-service:/var/lib/postgresql/data
+    networks:
+      - service-network
+
+  order-service:
+    image: order-service:latest  # 빌드한 order-service 이미지 이름
+    ports:
+      - '12041:12041'  # Order 서비스의 포트
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-order:5432/fortickets
+      - SPRING_DATASOURCE_USERNAME=forman
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+    depends_on:
+      - postgres-order
+      - eureka-service
+    networks:
+      - service-network
+
+  postgres-order:
+    image: 'postgres:16.4'
+    environment:
+      - 'POSTGRES_DB=fortickets'
+      - 'POSTGRES_PASSWORD=1234'
+      - 'POSTGRES_USER=forman'
+    ports:
+      - '54324:5432'
+    volumes:
+      - ../db/order-service:/var/lib/postgresql/data
+    networks:
+      - service-network
+
   zipkin:
     image: openzipkin/zipkin
     ports:
       - "9411:9411" # Zipkin UI에 접근할 포트
+    networks:
+      - service-network
 
   redis-stack:
     image: redis/redis-stack
@@ -15,4 +122,7 @@ services:
     ports:
       - 6379:6379
       - 8001:8001
-#    network_mode: host
+    networks:
+      - service-network
+networks:
+  service-network:
