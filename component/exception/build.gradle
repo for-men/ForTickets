@@ -6,5 +6,5 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
     implementation project(':component:common')
 
-    api 'org.springframework.boot:spring-boot-starter-security'
+//    api 'org.springframework.boot:spring-boot-starter-security'
 }
