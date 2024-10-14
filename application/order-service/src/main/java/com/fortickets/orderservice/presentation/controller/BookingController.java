@@ -4,16 +4,16 @@ import com.fortickets.common.CommonResponse;
 import com.fortickets.common.CommonResponse.CommonEmptyRes;
 import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
-import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
+import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.service.BookingService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +42,7 @@ public class BookingController {
     @PostMapping
     public CommonResponse<List<CreateBookingRes>> createBooking(
         @RequestHeader("X-User-Id") String userId,
-        @RequestBody CreateBookingReq createBookingReq) {
+        @Valid @RequestBody CreateBookingReq createBookingReq) {
         var createBookingRes = bookingService.createBooking(Long.valueOf(userId), createBookingReq);
         return CommonResponse.success(createBookingRes);
     }
@@ -51,13 +51,15 @@ public class BookingController {
      * 예매 확정
      */
     @PatchMapping("/confirm")
-    public CommonResponse<CommonEmptyRes> confirmBooking(@RequestBody ConfirmBookingReq confirmBookingReq) {
+    public CommonResponse<CommonEmptyRes> confirmBooking(
+        @Valid @RequestBody ConfirmBookingReq confirmBookingReq) {
         bookingService.confirmBooking(confirmBookingReq);
         return CommonResponse.success();
     }
 
     /**
      * 관리자 예매 내역 조회
+     *
      * @ROLE :MANAGER
      */
     @PreAuthorize("hasRole('MANAGER')")
@@ -74,7 +76,6 @@ public class BookingController {
     /**
      * 판매자 예매 내역 조회
      */
-    // TODO : ROLE SELLER
     @PreAuthorize("hasRole('SELLER') or hasRole('MANAGER')")
     @GetMapping("/seller/{sellerId}")
     public CommonResponse<Page<GetBookingRes>> getBookingBySeller(
@@ -86,7 +87,8 @@ public class BookingController {
         Pageable pageable
     ) {
         // role, userid securitycontext에서 가져오기
-        return CommonResponse.success(bookingService.getBookingBySeller(Long.valueOf(userId), sellerId, role, nickname, concertName, pageable));
+        return CommonResponse.success(
+            bookingService.getBookingBySeller(Long.valueOf(userId), sellerId, role, nickname, concertName, pageable));
     }
 
     /**
@@ -129,7 +131,6 @@ public class BookingController {
     public CommonResponse<CommonEmptyRes> deleteBooking(
         @RequestHeader("X-Email") String email,
         @PathVariable Long bookingId) {
-        // TODO: email securitycontext에서 가져오기
         bookingService.deleteBooking(email, bookingId);
         return CommonResponse.success();
     }

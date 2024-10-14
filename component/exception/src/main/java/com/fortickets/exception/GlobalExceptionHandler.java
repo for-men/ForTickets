@@ -1,8 +1,10 @@
 package com.fortickets.exception;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fortickets.common.CommonResponse;
 import com.fortickets.common.CommonResponse.CommonEmptyRes;
 import com.fortickets.common.ErrorCase;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,7 @@ public class GlobalExceptionHandler {
 
     private final InvalidInputMapper mapper;
     private final HttpServletResponse response; // HttpStatus 설정을 위한 response 객체
-
+    private final ObjectMapper objectMapper;
     /**
      * 권한 부족 (403) 발생 시 처리하는 핸들러
      */
@@ -86,6 +88,24 @@ public class GlobalExceptionHandler {
             .toList();
     }
 
+    /**
+     * feign client 호출 시 발생하는 오류에 대한 핸들러
+     */
+    @ExceptionHandler(FeignException.class)
+    public CommonResponse<CommonEmptyRes> handleFeignException(FeignException e) {
+        CommonResponse<CommonEmptyRes> commonResponse = null;
+        log.error("Feign Client 호출 오류 발생", e);
+        try {
+            // FeignException에서 응답 본문을 추출하여 CommonResponse로 변환
+            String responseBody = e.contentUTF8();  // 응답 바디 추출
+            commonResponse = objectMapper.readValue(responseBody, CommonResponse.class);  // CommonResponse로 변환
+            response.setStatus(e.status()); // HttpStatus 설정
+        } catch (Exception ex) {
+            // 만약 파싱 중 문제가 생기면 기본 응답 반환
+            commonResponse = CommonResponse.error(ErrorCase.SYSTEM_ERROR);
+        }
+        return commonResponse; // 공통 응답 양식 반환
+    }
 
     /**
      * 예상치 못한 에러 발생에 대한 핸들러

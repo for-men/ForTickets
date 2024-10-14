@@ -3,11 +3,11 @@ package com.fortickets.orderservice.presentation.controller;
 import com.fortickets.common.CommonResponse;
 import com.fortickets.common.CommonResponse.CommonEmptyRes;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
-import com.fortickets.orderservice.application.dto.response.GetBookingRes;
+import com.fortickets.orderservice.application.dto.request.RequestPaymentReq;
 import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentRes;
 import com.fortickets.orderservice.application.service.PaymentService;
-import lombok.Getter;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,12 +30,20 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     /**
-     *  결제 생성
-     *  내부에서 예매 생성 시 결제 생성
+     * 결제 생성 내부에서 예매 생성 시 결제 생성
      */
     @PostMapping
-    public void createPayment(@RequestBody CreatePaymentReq createPaymentReq) {
+    public void createPayment(@Valid @RequestBody CreatePaymentReq createPaymentReq) {
         paymentService.createPayment(createPaymentReq);
+    }
+
+    /**
+     * 결제 요청
+     */
+    @PatchMapping("/request")
+    public CommonResponse<CommonEmptyRes> requestPayment(@Valid @RequestBody RequestPaymentReq requestPaymentReq) {
+        paymentService.requestPayment(requestPaymentReq);
+        return CommonResponse.success();
     }
 
     /**
@@ -50,7 +58,7 @@ public class PaymentController {
     }
 
     /**
-     *  결제 내역 전체 조회 (Seller)
+     * 결제 내역 전체 조회 (Seller)
      */
     @GetMapping("/seller/{sellerId}")
     public CommonResponse<Page<GetPaymentRes>> getPaymentsBySeller(
@@ -77,7 +85,7 @@ public class PaymentController {
     }
 
     /**
-     *  결제 취소
+     * 결제 취소
      */
     @PatchMapping("/{paymentId}")
     public CommonResponse<CommonEmptyRes> cancelPayment(@PathVariable Long paymentId) {
@@ -92,7 +100,6 @@ public class PaymentController {
     public CommonResponse<CommonEmptyRes> deletePayment(
         @RequestHeader("X-Email") String email,
         @PathVariable Long paymentId) {
-        // TODO: 이메일 정보 필요
         paymentService.deletePayment(email, paymentId);
         return CommonResponse.success();
     }
