@@ -24,8 +24,7 @@ public class RedissonConfig {
 //                .setPassword("systempass"); // Redis 비밀번호
 
         config.useSingleServer()
-                .setAddress("redis://localhost:6379")
-                .setPassword("systempass");
+                .setAddress("redis://localhost:6379");
 
         return Redisson.create(config); // RedissonClient 인스턴스 생성
     }

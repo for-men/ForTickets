@@ -66,6 +66,11 @@ public class SecurityConfig {
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
+        if (url == "/user-service") {
+            http.addFilterBefore(jwtAuthorizationFilterForUserService(), UsernamePasswordAuthenticationFilter.class);
+        } else if (){
+            http.addFilterBefore(jwtAuthenticationFilterForCommon(), UsernamePasswordAuthenticationFilter.class);
+        }
         // 필터 관리
 //        http.addFilterBefore(jwtAuthenticationFilterForCommon(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthorizationFilterForUserService(), UsernamePasswordAuthenticationFilter.class);
