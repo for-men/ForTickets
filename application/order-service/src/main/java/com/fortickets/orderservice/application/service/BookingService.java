@@ -1,7 +1,7 @@
 package com.fortickets.orderservice.application.service;
 
-import com.fortickets.common.BookingStatus;
-import com.fortickets.common.ErrorCase;
+import com.fortickets.common.util.BookingStatus;
+import com.fortickets.common.util.ErrorCase;
 import com.fortickets.common.exception.GlobalException;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;

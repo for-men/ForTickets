@@ -1,4 +1,4 @@
-package com.fortickets.jpa;
+package com.fortickets.common.jpa;
 
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;

@@ -1,5 +1,6 @@
-package com.fortickets.security;
+package com.fortickets.common.security;
 
+import com.fortickets.common.security.CustomPreFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;

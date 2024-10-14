@@ -1,9 +1,9 @@
 package com.fortickets.orderservice.domain.entity;
 
-import static com.fortickets.jpa.BaseEntity.DELETED_FALSE;
+import static com.fortickets.common.jpa.BaseEntity.DELETED_FALSE;
 
-import com.fortickets.common.PaymentStatus;
-import com.fortickets.jpa.BaseEntity;
+import com.fortickets.common.util.PaymentStatus;
+import com.fortickets.common.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

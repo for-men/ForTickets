@@ -1,4 +1,4 @@
-package com.fortickets.common;
+package com.fortickets.common.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;

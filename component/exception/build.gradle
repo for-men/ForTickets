@@ -1,10 +1,10 @@
-bootJar { enabled = false }
-jar { enabled = true }
-
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    implementation project(':component:common')
-
-//    api 'org.springframework.boot:spring-boot-starter-security'
-}
+//bootJar { enabled = false }
+//jar { enabled = true }
+//
+//dependencies {
+//    testImplementation platform('org.junit:junit-bom:5.10.0')
+//    testImplementation 'org.junit.jupiter:junit-jupiter'
+//    implementation project(':component:common')
+//
+////    api 'org.springframework.boot:spring-boot-starter-security'
+//}

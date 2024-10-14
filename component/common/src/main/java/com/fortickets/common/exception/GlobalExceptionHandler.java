@@ -1,14 +1,15 @@
 package com.fortickets.common.exception;
 
-import com.fortickets.common.CommonResponse;
-import com.fortickets.common.CommonResponse.CommonEmptyRes;
-import com.fortickets.common.ErrorCase;
-import com.fortickets.common.exception.GlobalException;
+import com.fortickets.common.util.CommonResponse;
+import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
+import com.fortickets.common.util.ErrorCase;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -30,12 +31,12 @@ public class GlobalExceptionHandler {
     /**
      * 권한 부족 (403) 발생 시 처리하는 핸들러
      */
-//    @ExceptionHandler(AccessDeniedException.class)
-//    public CommonResponse<CommonEmptyRes> handleAccessDeniedException(AccessDeniedException e) {
-//        log.warn("권한 부족 예외 발생: {}", e.getMessage());
-//        response.setStatus(HttpStatus.FORBIDDEN.value());
-//        return CommonResponse.error(ErrorCase.NOT_AUTHORIZED);
-//    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public CommonResponse<CommonEmptyRes> handleAccessDeniedException(AccessDeniedException e) {
+        log.warn("권한 부족 예외 발생: {}", e.getMessage());
+        response.setStatus(HttpStatus.FORBIDDEN.value());
+        return CommonResponse.error(ErrorCase.NOT_AUTHORIZED);
+    }
 
 
     /**

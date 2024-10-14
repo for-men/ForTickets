@@ -1,6 +1,6 @@
 package com.fortickets.userservice.application.service;
 
-import com.fortickets.common.ErrorCase;
+import com.fortickets.common.util.ErrorCase;
 import com.fortickets.common.exception.GlobalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

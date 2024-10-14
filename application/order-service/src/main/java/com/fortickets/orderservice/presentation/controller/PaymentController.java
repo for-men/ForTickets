@@ -1,13 +1,11 @@
 package com.fortickets.orderservice.presentation.controller;
 
-import com.fortickets.common.CommonResponse;
-import com.fortickets.common.CommonResponse.CommonEmptyRes;
+import com.fortickets.common.util.CommonResponse;
+import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
-import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentRes;
 import com.fortickets.orderservice.application.service.PaymentService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

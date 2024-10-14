@@ -1,4 +1,4 @@
-package com.fortickets.jpa;
+package com.fortickets.common.jpa;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

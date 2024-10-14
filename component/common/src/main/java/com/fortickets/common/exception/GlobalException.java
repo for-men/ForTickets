@@ -1,6 +1,6 @@
 package com.fortickets.common.exception;
 
-import com.fortickets.common.ErrorCase;
+import com.fortickets.common.util.ErrorCase;
 import lombok.Getter;
 
 /**

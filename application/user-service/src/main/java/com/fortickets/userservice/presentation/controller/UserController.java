@@ -1,12 +1,12 @@
 package com.fortickets.userservice.presentation.controller;
 
-import com.fortickets.common.CommonResponse;
-import com.fortickets.common.CommonResponse.CommonEmptyRes;
-import com.fortickets.security.CustomUser;
+import com.fortickets.common.util.CommonResponse;
+import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
+import com.fortickets.common.security.CustomUser;
 import com.fortickets.userservice.application.dto.requset.UpdateUserReq;
 import com.fortickets.userservice.application.dto.response.GetUserRes;
 import com.fortickets.userservice.application.service.UserService;
-import com.fortickets.security.UseAuth;
+import com.fortickets.common.security.UseAuth;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,7 @@
 package com.fortickets.orderservice.presentation.controller;
 
-import com.fortickets.common.CommonResponse;
-import com.fortickets.common.CommonResponse.CommonEmptyRes;
+import com.fortickets.common.util.CommonResponse;
+import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
 import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

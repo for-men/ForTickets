@@ -1,6 +1,6 @@
 package com.fortickets.userservice.application.service;
 
-import com.fortickets.common.ErrorCase;
+import com.fortickets.common.util.ErrorCase;
 import com.fortickets.common.exception.GlobalException;
 import com.fortickets.userservice.application.dto.requset.UpdateUserReq;
 import com.fortickets.userservice.application.dto.response.GetUserRes;

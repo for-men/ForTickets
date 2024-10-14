@@ -1,4 +1,4 @@
-package com.fortickets.jpa;
+package com.fortickets.common.jpa;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;

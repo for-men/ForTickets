@@ -1,6 +1,6 @@
 package com.fortickets.orderservice.application.dto.response;
 
-import com.fortickets.common.PaymentStatus;
+import com.fortickets.common.util.PaymentStatus;
 
 public record GetPaymentRes(
     Long totalPrice,

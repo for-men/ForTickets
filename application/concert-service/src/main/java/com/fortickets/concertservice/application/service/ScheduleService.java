@@ -1,6 +1,6 @@
 package com.fortickets.concertservice.application.service;
 
-import com.fortickets.common.ErrorCase;
+import com.fortickets.common.util.ErrorCase;
 import com.fortickets.concertservice.application.client.BookingClient;
 import com.fortickets.concertservice.application.dto.request.CreateScheduleReq;
 import com.fortickets.concertservice.application.dto.request.UpdateScheduleReq;

@@ -1,4 +1,4 @@
-package com.fortickets.security;
+package com.fortickets.common.security;
 
 import feign.RequestInterceptor;
 import lombok.RequiredArgsConstructor;

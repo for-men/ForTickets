@@ -1,20 +1,20 @@
-bootJar { enabled = false }
-jar { enabled = true }
-
-dependencies {
-    // jwt
-    compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
-    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
-    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
-
-    // 페인 클라이언트
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-
-    // 스프링 시큐리티 (패스워드 인코더)
-    api 'org.springframework.boot:spring-boot-starter-security'
-
-    // 기본
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-}
-
+//bootJar { enabled = false }
+//jar { enabled = true }
+//
+//dependencies {
+//    // jwt
+//    compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+//    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+//    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+//
+//    // 페인 클라이언트
+//    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+//
+//    // 스프링 시큐리티 (패스워드 인코더)
+//    api 'org.springframework.boot:spring-boot-starter-security'
+//
+//    // 기본
+//    testImplementation platform('org.junit:junit-bom:5.9.1')
+//    testImplementation 'org.junit.jupiter:junit-jupiter'
+//}
+//

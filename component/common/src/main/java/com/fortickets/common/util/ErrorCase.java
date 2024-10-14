@@ -1,4 +1,4 @@
-package com.fortickets.common;
+package com.fortickets.common.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
