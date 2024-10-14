@@ -13,8 +13,13 @@ public class AuditorAwareImpl implements AuditorAware<String> {
 
     @Override
     public Optional<String> getCurrentAuditor() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String email = request.getHeader("X-Email");
+        String email;
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            email = request.getHeader("X-Email");
+        } catch (Exception e) {
+            return Optional.of("system");
+        }
 
         return Optional.of(Objects.requireNonNullElse(email, "system"));
     }
