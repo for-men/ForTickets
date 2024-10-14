@@ -128,6 +128,7 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
 
+        // TODO : 결제 취소
         if (!role.equals("ROLE_MANAGER")) {
             if (!getUserId.equals(payment.getUserId())) {
                 throw new GlobalException(ErrorCase.NOT_AUTHORIZED);

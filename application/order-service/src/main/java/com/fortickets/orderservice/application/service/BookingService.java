@@ -263,6 +263,7 @@ public class BookingService {
     @Transactional
     public void cancelBooking(Long getUserId, String role, Long bookingId) {
 
+        // TODO : 이거 좀 애매함 확인 필요 -> 결제 취소
         Booking booking = bookingRepository.findById(bookingId)
             .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
 
@@ -278,7 +279,7 @@ public class BookingService {
             throw new GlobalException(ErrorCase.CANNOT_CANCEL_BOOKING);
         }
 
-        paymentService.cancelPayment(booking.getPayment().getId());
+        paymentService.cancelPayment(getUserId, role, booking.getPayment().getId());
     }
 
     @Transactional
