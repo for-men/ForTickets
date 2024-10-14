@@ -59,3 +59,28 @@ services:
     volumes:
       - ./redis_data:/data
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker-config/prometheus.yml:/etc/prometheus/prometheus.yml  # 상대 경로 수정
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - grafana-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - grafana-network
+
+networks:
+  grafana-network:
+    external: false  # 내부 네트워크로 설정

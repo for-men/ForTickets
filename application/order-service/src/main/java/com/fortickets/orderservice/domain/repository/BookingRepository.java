@@ -8,34 +8,17 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
-public interface BookingRepository extends JpaRepository<Booking, Long> {
+import java.util.List;
+import java.util.Optional;
 
-    Optional<Booking> findByScheduleIdAndSeat(Long scheduleId, String seat);
+public interface BookingRepository extends JpaRepository<Booking, Long>, BookingRepositoryCustom {
 
-    // 예매 대기 인 경우는 제외하고 예매 내역 조회
-    @Query("SELECT b FROM Booking b WHERE "
-        + "(:userIds IS NULL OR b.userId IN :userIds) "
-        + "AND (:concertIds IS NULL OR b.concertId IN :concertIds) "
-        + "AND b.status != :status")
-    Page<Booking> findByBookingSearch(List<Long> userIds, List<Long> concertIds, BookingStatus status, Pageable pageable);
+     Optional<Booking> findByScheduleIdAndSeat(Long scheduleId, String seat);
 
-    Page<Booking> findByUserId(Long userId, Pageable pageable);
+     Page<Booking> findByUserId(Long userId, Pageable pageable);
 
     List<Booking> findByPaymentId(Long paymentId);
 
-    @Query("SELECT b.seat FROM Booking b "
-        + "WHERE b.scheduleId = :scheduleId "
-        + "AND (b.status = :pending OR b.status = :confirmed)")
-    List<String> findSeatByScheduleId(
-        Long scheduleId,
-        BookingStatus pending,
-        BookingStatus confirmed);
-
-    List<Booking> findAllByIdInAndStatus(List<Long> bookingIds, BookingStatus status);
-
-    List<Booking> findAllByIdInAndStatusAndUserId(List<Long> longs, BookingStatus bookingStatus, Long userId);
-
-    List<Booking> findAllByStatusAndCreatedAtBefore(BookingStatus status, LocalDateTime deleteTime);
+     List<Booking> findAllByIdInAndStatus(List<Long> bookingIds, BookingStatus status);
 }

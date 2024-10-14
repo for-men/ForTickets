@@ -11,7 +11,6 @@ import com.fortickets.concertservice.domain.entity.Concert;
 import com.fortickets.concertservice.domain.mapper.ConcertMapper;
 import com.fortickets.concertservice.domain.repository.ConcertRepository;
 import com.fortickets.exception.GlobalException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,17 +18,21 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ConcertService {
+
     private final ConcertRepository concertRepository;
+
     private final ConcertMapper concertMapper;
 
     // 공연 생성
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @Transactional
-    public CreateConcertRes createConcert(CreateConcertReq createConcertReq,Long userId) {
+    public CreateConcertRes createConcert(CreateConcertReq createConcertReq, Long userId) {
         Concert concert = createConcertReq.toEntity(userId);
         concert = concertRepository.save(concert);
 
@@ -52,7 +55,7 @@ public class ConcertService {
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @Transactional
     public void updateConcertById(Long concertId, UpdateConcertReq updateConcertReq) {
-       Concert concert = getConcertUtil(concertId);
+        Concert concert = getConcertUtil(concertId);
         changeConcert(updateConcertReq, concert);
     }
 
@@ -67,24 +70,24 @@ public class ConcertService {
     // 콘서트 부분 수정
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     private static void changeConcert(UpdateConcertReq updateConcertReq, Concert concert) {
-        if(updateConcertReq.concertImage() !=null)
-          concert.changeImage(updateConcertReq.concertImage());
-        if(updateConcertReq.concertName() != null)
-          concert.changeName(updateConcertReq.concertName());
-        if(updateConcertReq.runtime() != null)
-          concert.changeRuntime(updateConcertReq.runtime());
-        if(updateConcertReq.startDate() != null)
-          concert.changeStartDate(updateConcertReq.startDate());
-        if(updateConcertReq.endDate() != null)
-          concert.changeEndDate(updateConcertReq.endDate());
-        if(updateConcertReq.price() != null)
-          concert.changePrice(updateConcertReq.price());
+        if (updateConcertReq.concertImage() != null)
+            concert.changeImage(updateConcertReq.concertImage());
+        if (updateConcertReq.concertName() != null)
+            concert.changeName(updateConcertReq.concertName());
+        if (updateConcertReq.runtime() != null)
+            concert.changeRuntime(updateConcertReq.runtime());
+        if (updateConcertReq.startDate() != null)
+            concert.changeStartDate(updateConcertReq.startDate());
+        if (updateConcertReq.endDate() != null)
+            concert.changeEndDate(updateConcertReq.endDate());
+        if (updateConcertReq.price() != null)
+            concert.changePrice(updateConcertReq.price());
     }
 
     // 콘서트 조회 유틸
     private Concert getConcertUtil(Long concertId) {
         return concertRepository.findById(concertId)
-            .orElseThrow(()-> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
+                .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
     }
 
     // 콘서트 ID로 콘서트 조회
@@ -110,4 +113,5 @@ public class ConcertService {
         List<Concert> concertList = concertRepository.findByConcertNameContaining(concertName);
         return concertMapper.toGetConcertResList(concertList);
     }
+
 }

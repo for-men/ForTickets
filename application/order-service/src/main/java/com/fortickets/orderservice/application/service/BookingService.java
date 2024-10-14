@@ -39,6 +39,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -46,10 +55,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookingService {
 
     private final BookingRepository bookingRepository;
+
     private final BookingMapper bookingMapper;
+
     private final UserClient userClient;
+
     private final ConcertClient concertClient;
+
     private final PaymentService paymentService;
+
     private final RedissonClient redissonClient;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -126,12 +140,12 @@ public class BookingService {
 //        bookingList.forEach(Booking::confirm);
 
         CreatePaymentReq createPaymentReq = CreatePaymentReq.builder()
-            .userId(bookingList.get(0).getUserId())
-            .totalPrice(bookingList.stream().mapToLong(Booking::getPrice).sum())
-            .concertId(bookingList.get(0).getConcertId())
-            .scheduleId(bookingList.get(0).getScheduleId())
-            .bookingIds(confirmBookingReq.bookingIds())
-            .build();
+                .userId(bookingList.get(0).getUserId())
+                .totalPrice(bookingList.stream().mapToLong(Booking::getPrice).sum())
+                .concertId(bookingList.get(0).getConcertId())
+                .scheduleId(bookingList.get(0).getScheduleId())
+                .bookingIds(confirmBookingReq.bookingIds())
+                .build();
 
         // 결제 생성
         paymentService.createPayment(createPaymentReq);
@@ -153,20 +167,26 @@ public class BookingService {
         }
 
         // 사용자, 공연명으로 예약 조회 null일 경우는 메서드에서 처리함
-        Page<Booking> bookingList = bookingRepository.findByBookingSearch(
-            userList.stream().map(GetUserRes::userId).toList(),
-            concertList.stream().map(GetConcertRes::id).toList(), BookingStatus.PENDING, pageable);
+//        Page<Booking> bookingList = bookingRepository.findByBookingSearch(
+//                userList.stream().map(GetUserRes::userId).toList(),
+//                concertList.stream().map(GetConcertRes::id).toList(), BookingStatus.PENDING, pageable);
+
+        List<Long> userIds = userList.stream().map(GetUserRes::userId).toList();
+        List<Long> concertIds = concertList.stream().map(GetConcertRes::id).toList();
+
+        // QueryDSL 사용
+        Page<Booking> bookingList = bookingRepository.findByBookingSearch(userIds, concertIds, pageable);
 
         // GetConcertRes를 concertId 기준으로 찾기 위한 Map 생성
         Map<Long, GetConcertRes> concertMap = concertList.stream()
-            .collect(Collectors.toMap(GetConcertRes::id, Function.identity()));
+                .collect(Collectors.toMap(GetConcertRes::id, Function.identity()));
 
         // Booking의 concertId와 매칭되는 GetConcertRes를 찾아 매핑
         List<GetBookingRes> getBookingResList = bookingList.getContent().stream()
-            .map(booking -> {
-                GetConcertRes concertRes = concertMap.get(booking.getConcertId());
-                return bookingMapper.toGetBookingRes(booking, concertRes);
-            }).toList();
+                .map(booking -> {
+                    GetConcertRes concertRes = concertMap.get(booking.getConcertId());
+                    return bookingMapper.toGetBookingRes(booking, concertRes);
+                }).toList();
 
         return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
@@ -196,20 +216,26 @@ public class BookingService {
         }
 
         // 사용자, 공연명으로 예약 조회 null일 경우는 메서드에서 처리함
-        Page<Booking> bookingList = bookingRepository.findByBookingSearch(
-            userList.stream().map(GetUserRes::userId).toList(),
-            concertList.stream().map(GetConcertRes::id).toList(), BookingStatus.PENDING, pageable);
+//        Page<Booking> bookingList = bookingRepository.findByBookingSearch(
+//            userList.stream().map(GetUserRes::userId).toList(),
+//            concertList.stream().map(GetConcertRes::id).toList(), BookingStatus.PENDING, pageable);
+
+        List<Long> userIds = userList.stream().map(GetUserRes::userId).toList();
+        List<Long> concertIds = concertList.stream().map(GetConcertRes::id).toList();
+
+        // QueryDSL 사용
+        Page<Booking> bookingList = bookingRepository.findByBookingSearch(userIds, concertIds, pageable);
 
         // GetConcertRes를 concertId 기준으로 찾기 위한 Map 생성
         Map<Long, GetConcertRes> concertMap = concertList.stream()
-            .collect(Collectors.toMap(GetConcertRes::id, Function.identity()));
+                .collect(Collectors.toMap(GetConcertRes::id, Function.identity()));
 
         // Booking의 concertId와 매칭되는 GetConcertRes를 찾아 매핑
         List<GetBookingRes> getBookingResList = bookingList.getContent().stream()
-            .map(booking -> {
-                GetConcertRes concertRes = concertMap.get(booking.getConcertId());
-                return bookingMapper.toGetBookingRes(booking, concertRes);
-            }).toList();
+                .map(booking -> {
+                    GetConcertRes concertRes = concertMap.get(booking.getConcertId());
+                    return bookingMapper.toGetBookingRes(booking, concertRes);
+                }).toList();
 
         return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
@@ -226,7 +252,7 @@ public class BookingService {
 
     public GetConcertDetailRes getBookingById(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
         GetScheduleDetailRes getScheduleDetailRes = concertClient.getScheduleDetail(booking.getScheduleId());
 
         return bookingMapper.toGetConcertDetailRes(booking, getScheduleDetailRes);
@@ -235,7 +261,7 @@ public class BookingService {
     @Transactional
     public void cancelBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
         // TODO: 예약 취소 가능한지 확인
         GetScheduleDetailRes scheduleRes = concertClient.getScheduleDetail(booking.getScheduleId());
 
@@ -250,7 +276,7 @@ public class BookingService {
     @Transactional
     public void deleteBooking(String email, Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
         booking.delete(email);
     }
 
