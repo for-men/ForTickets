@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 @Getter
@@ -35,6 +36,7 @@ public class Booking extends BaseEntity {
     @Column(name = "booking_id")
     private Long id;
 
+    @Setter
     private Long concertId;
     private Long scheduleId;
     private Long userId;
@@ -54,9 +56,8 @@ public class Booking extends BaseEntity {
         this.payment = payment;
     }
 
-    public Booking(Long scheduleId, Long concertId, Long userId, Long price, String seat) {
+    public Booking(Long scheduleId, Long userId, Long price, String seat) {
         this.scheduleId = scheduleId;
-        this.concertId = concertId;
         this.userId = userId;
         this.price = price;
         this.seat = seat;

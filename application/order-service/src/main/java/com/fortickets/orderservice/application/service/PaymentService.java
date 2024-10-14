@@ -1,10 +1,12 @@
 package com.fortickets.orderservice.application.service;
 
+import com.fortickets.common.GlobalUtil;
 import com.fortickets.common.util.ErrorCase;
 import com.fortickets.common.exception.GlobalException;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
+import com.fortickets.orderservice.application.dto.request.RequestPaymentReq;
 import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentRes;
 import com.fortickets.orderservice.application.dto.response.GetUserRes;
@@ -13,6 +15,7 @@ import com.fortickets.orderservice.domain.entity.Payment;
 import com.fortickets.orderservice.domain.mapper.PaymentMapper;
 import com.fortickets.orderservice.domain.repository.BookingRepository;
 import com.fortickets.orderservice.domain.repository.PaymentRepository;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,7 @@ public class PaymentService {
 
     /**
      * 결제 생성 (예매 확정 시 결제 생성)
+     *
      * @param createPaymentReq
      */
     @Transactional
@@ -73,7 +77,7 @@ public class PaymentService {
     public Page<GetPaymentRes> getPaymentByUser(Long userId, Pageable pageable) {
         Page<Payment> paymentList = paymentRepository.findByUserId(userId, pageable);
 
-        List<GetPaymentRes> getPaymentResList = paymentList.getContent().stream().map( payment -> {
+        List<GetPaymentRes> getPaymentResList = paymentList.getContent().stream().map(payment -> {
             var getConcertRes = concertClient.getConcert(payment.getConcertId());
             return paymentMapper.toGetPaymentUser(payment, getConcertRes);
         }).toList();
@@ -110,4 +114,20 @@ public class PaymentService {
 
         payment.delete(email);
     }
+
+    @Transactional
+    public void requestPayment(RequestPaymentReq requestPaymentReq) {
+        // 결제 요청 -> 결제 완료
+        Payment payment = paymentRepository.findById(requestPaymentReq.paymentId())
+            .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
+
+        try {
+            payment.complete(GlobalUtil.hash(requestPaymentReq.card()));
+        } catch (NoSuchAlgorithmException e) {
+            throw new GlobalException(ErrorCase.INVALID_INPUT);
+        }
+    }
+    //                                          카드번호 받기
+    // 좌석 선택 (예매 생성) -> 결제 요청(결제 ID를 예매에 넣어주고 결제 생성) -> 결제 완료 시 예매 확정
+    // 예매 생성 -> 결제 요청 (응답 결제 정보) -> (토스가쏴주는)결제완료 API (req 결제 ID , 예매 확정)
 }

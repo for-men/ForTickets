@@ -53,4 +53,9 @@ public class Payment extends BaseEntity {
     public void waiting() {
         this.status = PaymentStatus.WAITING;
     }
+
+    public void complete(String card) {
+        this.status = PaymentStatus.COMPLETED;
+        this.card = card;
+    }
 }
