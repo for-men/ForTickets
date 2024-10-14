@@ -1,6 +1,6 @@
 package com.fortickets.orderservice.infrastructure.scheduler;
 
-import com.fortickets.common.BookingStatus;
+import com.fortickets.common.util.BookingStatus;
 import com.fortickets.orderservice.domain.repository.BookingRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
