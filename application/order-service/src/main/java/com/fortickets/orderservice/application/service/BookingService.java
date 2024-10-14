@@ -2,6 +2,7 @@ package com.fortickets.orderservice.application.service;
 
 import com.fortickets.common.BookingStatus;
 import com.fortickets.common.ErrorCase;
+import com.fortickets.common.GlobalUtil;
 import com.fortickets.exception.GlobalException;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
@@ -17,6 +18,16 @@ import com.fortickets.orderservice.application.dto.response.GetUserRes;
 import com.fortickets.orderservice.domain.entity.Booking;
 import com.fortickets.orderservice.domain.mapper.BookingMapper;
 import com.fortickets.orderservice.domain.repository.BookingRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -60,6 +71,13 @@ public class BookingService {
 
         log.info("createBookingReq : {}", createBookingReq);
 
+        // 중복 좌석 예약 확인
+        if (createBookingReq.seat().size() >= 2) {
+            Set<String> set = new HashSet<>();
+            if (createBookingReq.seat().stream().anyMatch(e -> !set.add(e))) {
+                throw new GlobalException(ErrorCase.DUPLICATE_SEAT);
+            }
+        }
         // 분산 락 이름 정의 (예약 스케줄 ID 기반)
         String lockKey = "bookingLock:" + createBookingReq.scheduleId();
         RLock lock = redissonClient.getLock(lockKey); // 락 객체 생성
@@ -68,19 +86,29 @@ public class BookingService {
         try {
             lock.lock(); // 락 획득
 
-            // TODO : 대기열
+            // 요청 사용자와 예약 사용자가 같은지 확인
             if (!userId.equals(createBookingReq.userId())) {
                 throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
             }
 
+            // 스케줄 정보 조회
+            GetScheduleDetailRes scheduleRes = concertClient.getScheduleDetail(createBookingReq.scheduleId());
+
             // 이미 예약된 좌석인지 확인
             List<Booking> bookings = new ArrayList<>();
             createBookingReq.seat().forEach(seat -> {
+                // 좌석 형식 확인
+                if (!GlobalUtil.isValidSeatFormat(seat)) {
+                    throw new GlobalException(ErrorCase.INVALID_SEAT_FORMAT);
+                }
+                // 이미 예약된 좌석인지 확인
                 bookingRepository.findByScheduleIdAndSeat(createBookingReq.scheduleId(), seat)
-                        .ifPresent(booking -> {
-                            throw new GlobalException(ErrorCase.ALREADY_BOOKED_SEAT);
-                        });
+                    .ifPresent(booking -> {
+                        throw new GlobalException(ErrorCase.ALREADY_BOOKED_SEAT);
+                    });
+
                 Booking booking = createBookingReq.toEntity(seat);
+                booking.setConcertId(scheduleRes.concertId());
                 bookings.add(booking);
             });
 
@@ -99,11 +127,17 @@ public class BookingService {
 
     @Transactional
     public void confirmBooking(ConfirmBookingReq confirmBookingReq) {
-        List<Booking> bookingList = bookingRepository.findAllByIdInAndStatus(confirmBookingReq.bookingIds(), BookingStatus.PENDING);
+        // 예매 정보 조회
+        List<Booking> bookingList = bookingRepository.findAllByIdInAndStatusAndUserId(
+            confirmBookingReq.bookingIds(), BookingStatus.PENDING,
+            confirmBookingReq.userId());
+
+        // 예매 정보가 없으면 예외 발생
         if (bookingList.isEmpty()) {
             throw new GlobalException(ErrorCase.BOOKING_NOT_FOUND);
         }
-        bookingList.forEach(Booking::confirm);
+//        // 예매 정보 상태 변경 CONFIRMED
+//        bookingList.forEach(Booking::confirm);
 
         CreatePaymentReq createPaymentReq = CreatePaymentReq.builder()
                 .userId(bookingList.get(0).getUserId())
@@ -147,7 +181,6 @@ public class BookingService {
         Map<Long, GetConcertRes> concertMap = concertList.stream()
                 .collect(Collectors.toMap(GetConcertRes::id, Function.identity()));
 
-
         // Booking의 concertId와 매칭되는 GetConcertRes를 찾아 매핑
         List<GetBookingRes> getBookingResList = bookingList.getContent().stream()
                 .map(booking -> {
@@ -158,7 +191,8 @@ public class BookingService {
         return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
 
-    public Page<GetBookingRes> getBookingBySeller(Long userId, Long sellerId, String role, String nickname, String concertName, Pageable pageable) {
+    public Page<GetBookingRes> getBookingBySeller(Long userId, Long sellerId, String role, String nickname, String concertName,
+        Pageable pageable) {
         // 판매자와 요청자가 같은지 확인
         // TODO: @PreAuthorize 는 MANAGER 인데 X-Role은 ROLE_MANAGER?
         if (!role.equals("ROLE_MANAGER")) {

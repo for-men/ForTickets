@@ -1,7 +1,6 @@
 package com.fortickets.orderservice.domain.entity;
 
 import static com.fortickets.jpa.BaseEntity.DELETED_FALSE;
-
 import com.fortickets.common.BookingStatus;
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
@@ -20,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 @Getter
@@ -30,11 +30,13 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction(DELETED_FALSE)
 public class Booking extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_id")
     private Long id;
 
+    @Setter
     private Long concertId;
     private Long scheduleId;
     private Long userId;
@@ -50,13 +52,13 @@ public class Booking extends BaseEntity {
     public void updateStatus(BookingStatus status) {
         this.status = status;
     }
+
     public void setPayment(Payment payment) {
         this.payment = payment;
     }
 
-    public Booking(Long scheduleId, Long concertId, Long userId, Long price, String seat) {
+    public Booking(Long scheduleId, Long userId, Long price, String seat) {
         this.scheduleId = scheduleId;
-        this.concertId = concertId;
         this.userId = userId;
         this.price = price;
         this.seat = seat;
@@ -70,4 +72,5 @@ public class Booking extends BaseEntity {
     public void confirm() {
         this.status = BookingStatus.CONFIRMED;
     }
+
 }
