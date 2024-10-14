@@ -9,16 +9,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface BookingRepository extends JpaRepository<Booking, Long>, BookingRepositoryCustom {
 
-     Optional<Booking> findByScheduleIdAndSeat(Long scheduleId, String seat);
+    Optional<Booking> findByScheduleIdAndSeat(Long scheduleId, String seat);
 
-     Page<Booking> findByUserId(Long userId, Pageable pageable);
+    Page<Booking> findByUserId(Long userId, Pageable pageable);
 
     List<Booking> findByPaymentId(Long paymentId);
 
-     List<Booking> findAllByIdInAndStatus(List<Long> bookingIds, BookingStatus status);
+    List<Booking> findAllByIdInAndStatusAndUserId(List<Long> bookingIds, BookingStatus status, Long userId);
+
+    List<Booking> findAllByStatusAndCreatedAtBefore(BookingStatus bookingStatus, LocalDateTime deleteTime);
 }
