@@ -1,10 +1,8 @@
 package com.fortickets.orderservice.infrastructure.scheduler;
 
 import com.fortickets.common.BookingStatus;
-import com.fortickets.orderservice.domain.entity.Booking;
 import com.fortickets.orderservice.domain.repository.BookingRepository;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,11 +23,10 @@ public class OrderScheduler {
 
         LocalDateTime deleteTime = LocalDateTime.now().minusMinutes(5);
 
-        List<Booking> bookingList = bookingRepository.findAllByStatusAndCreatedAtBefore(BookingStatus.PENDING, deleteTime).stream()
-            .map(booking -> {
+        bookingRepository.findAllByStatusAndCreatedAtBefore(BookingStatus.PENDING, deleteTime)
+            .forEach(booking -> {
                 booking.delete("system");
-                return booking;
-            }).toList();
+            });
 
     }
 
