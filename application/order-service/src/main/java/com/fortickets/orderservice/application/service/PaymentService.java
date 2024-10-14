@@ -73,8 +73,30 @@ public class PaymentService {
         return payments.map(paymentMapper::toGetPaymentRes);
     }
 
+    public Page<GetPaymentRes> getPaymentsBySeller(Long getUserId, String role, Long userId, String nickname, Pageable pageable) {
+        if (!role.equals("ROLE_MANAGER")) {
+            if (!getUserId.equals(userId)) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
+        List<GetUserRes> userResList = new ArrayList<>();
+        Page<Payment> payments = null;
+        if (nickname != null) {
+            userResList = userClient.searchNickname(nickname);
+            payments = paymentRepository.findByUserIdIn(userResList.stream().map(GetUserRes::userId).toList(), pageable);
+        } else {
+            payments = paymentRepository.findAll(pageable);
+        }
 
-    public Page<GetPaymentRes> getPaymentByUser(Long userId, Pageable pageable) {
+        return payments.map(paymentMapper::toGetPaymentRes);
+    }
+
+    public Page<GetPaymentRes> getPaymentByUser(Long getUserId, String role, Long userId, Pageable pageable) {
+        if (!role.equals("ROLE_MANAGER")) {
+            if (!getUserId.equals(userId)) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
         Page<Payment> paymentList = paymentRepository.findByUserId(userId, pageable);
 
         List<GetPaymentRes> getPaymentResList = paymentList.getContent().stream().map(payment -> {
@@ -85,9 +107,15 @@ public class PaymentService {
         return new PageImpl<>(getPaymentResList, pageable, paymentList.getTotalElements());
     }
 
-    public GetPaymentDetailRes getPayment(Long paymentId) {
+    public GetPaymentDetailRes getPayment(Long getUserId, String role, Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
+
+        if (!role.equals("ROLE_MANAGER")) {
+            if (!getUserId.equals(payment.getUserId())) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
 
         var getScheduleRes = concertClient.getScheduleDetail(payment.getScheduleId());
         var getUserRes = userClient.getUser(payment.getUserId());
@@ -96,10 +124,15 @@ public class PaymentService {
     }
 
     @Transactional
-    public void cancelPayment(Long paymentId) {
+    public void cancelPayment(Long getUserId, String role, Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
 
+        if (!role.equals("ROLE_MANAGER")) {
+            if (!getUserId.equals(payment.getUserId())) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
         payment.cancel();
 
         // 예매 취소
@@ -116,10 +149,14 @@ public class PaymentService {
     }
 
     @Transactional
-    public void requestPayment(RequestPaymentReq requestPaymentReq) {
+    public void requestPayment(Long getUserId, RequestPaymentReq requestPaymentReq) {
         // 결제 요청 -> 결제 완료
         Payment payment = paymentRepository.findById(requestPaymentReq.paymentId())
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
+
+        if (!getUserId.equals(payment.getUserId())) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
 
         try {
             payment.complete(GlobalUtil.hash(requestPaymentReq.card()));
