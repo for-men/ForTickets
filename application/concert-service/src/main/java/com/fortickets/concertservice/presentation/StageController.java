@@ -6,8 +6,10 @@ import com.fortickets.concertservice.application.dto.request.UpdateStageReq;
 import com.fortickets.concertservice.application.dto.response.CreateStageRes;
 import com.fortickets.concertservice.application.dto.response.GetStageRes;
 import com.fortickets.concertservice.application.service.StageService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,33 +24,41 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/stages")
 public class StageController {
-  private final StageService stageService;
 
-  @PostMapping
-  public CommonResponse<CreateStageRes> createStage(@RequestBody CreateStageReq createStageReq) {
-    // Role  MANAGER 확인 필요
-    return CommonResponse.success(stageService.createStage(createStageReq));
-  }
+    private final StageService stageService;
 
-  @GetMapping
-  public CommonResponse<List<GetStageRes>> getStages() {
-    return CommonResponse.success(stageService.getAllStage());
-  }
+    // 공연장 생성
+    @PreAuthorize("hasRole('MANAGER')")
+    @PostMapping
+    public CommonResponse<CreateStageRes> createStage(@Valid @RequestBody CreateStageReq createStageReq) {
+        return CommonResponse.success(stageService.createStage(createStageReq));
+    }
 
-  @GetMapping("/{stageId}")
-  public CommonResponse<GetStageRes> getStageById(@PathVariable("stageId") Long stageId) {
-    return CommonResponse.success(stageService.getStageById(stageId));
-  }
-  @PatchMapping("/{stageId}")
-  public CommonResponse<GetStageRes> updateStageById(@PathVariable("stageId") Long stageId, @RequestBody UpdateStageReq updateStageReq){
-    stageService.updateStageById(stageId,updateStageReq);
-    return CommonResponse.success(stageService.getStageById(stageId));
-  }
-  @DeleteMapping("/{stageId}")
-  public CommonResponse deleteStageById(@RequestHeader("X-Email") String email ,@PathVariable("stageId") Long stageId) {
-    stageService.deleteStageById(email,stageId);
-    return CommonResponse.success();
-  }
+    // 공연장 전체 리스트 조회
+    @GetMapping
+    public CommonResponse<List<GetStageRes>> getStages() {
+        return CommonResponse.success(stageService.getAllStage());
+    }
 
+    // 특정 공연장 조회
+    @GetMapping("/{stageId}")
+    public CommonResponse<GetStageRes> getStageById(@PathVariable("stageId") Long stageId) {
+        return CommonResponse.success(stageService.getStageById(stageId));
+    }
 
+    // 공연장 수정
+    @PreAuthorize("hasRole('MANAGER')")
+    @PatchMapping("/{stageId}")
+    public CommonResponse<GetStageRes> updateStageById(@PathVariable("stageId") Long stageId, @Valid @RequestBody UpdateStageReq updateStageReq){
+        stageService.updateStageById(stageId,updateStageReq);
+        return CommonResponse.success(stageService.getStageById(stageId));
+    }
+
+    // 공연장 삭제
+    @PreAuthorize("hasRole('MANAGER')")
+    @DeleteMapping("/{stageId}")
+    public CommonResponse deleteStageById(@RequestHeader("X-Email") String email ,@PathVariable("stageId") Long stageId) {
+        stageService.deleteStageById(email,stageId);
+        return CommonResponse.success();
+    }
 }

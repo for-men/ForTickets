@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -13,7 +16,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j
@@ -21,6 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity // Spring Security 사용을 위한 설정
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
@@ -66,10 +72,39 @@ public class SecurityConfig {
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
+        // 인증 실패 핸들러와 권한 없음 핸들러 등록
+//        http.exceptionHandling(exceptionHandling ->
+//            exceptionHandling
+//                .authenticationEntryPoint(authenticationEntryPoint())
+//                .accessDeniedHandler(accessDeniedHandler())
+//        );
+
         // 필터 관리
 //        http.addFilterBefore(jwtAuthenticationFilterForCommon(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthorizationFilterForUserService(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
+    // 인증 실패 (401) 처리 핸들러
+//    @Bean
+//    public AuthenticationEntryPoint authenticationEntryPoint() {
+//        return (request, response, authException) -> {
+//            log.warn("인증 실패: {}", authException.getMessage());
+//            response.setStatus(HttpStatus.UNAUTHORIZED.value());  // 401 상태 설정
+//            response.getWriter().write("인증이 필요합니다.");
+//            response.getWriter().flush(); // Flush the response writer
+//        };
+//    }
+//
+//    // 권한 없음 (403) 처리 핸들러
+//    @Bean
+//    public AccessDeniedHandler accessDeniedHandler() {
+//        return (request, response, accessDeniedException) -> {
+//            log.warn("권한 부족: {}", accessDeniedException.getMessage());
+//            response.setStatus(HttpStatus.FORBIDDEN.value());  // 403 상태 설정
+//            response.getWriter().write("접근 권한이 없습니다.");
+//            response.getWriter().flush(); // Flush the response writer
+//        };
+//    }
 }
