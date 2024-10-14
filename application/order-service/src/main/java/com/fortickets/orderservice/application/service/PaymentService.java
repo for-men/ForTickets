@@ -1,7 +1,7 @@
 package com.fortickets.orderservice.application.service;
 
 import com.fortickets.common.ErrorCase;
-import com.fortickets.exception.GlobalException;
+import com.fortickets.common.exception.GlobalException;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;

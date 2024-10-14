@@ -8,7 +8,7 @@ import com.fortickets.concertservice.application.dto.response.GetStageRes;
 import com.fortickets.concertservice.domain.entity.Stage;
 import com.fortickets.concertservice.domain.mapper.StageMapper;
 import com.fortickets.concertservice.domain.repository.StageRepository;
-import com.fortickets.exception.GlobalException;
+import com.fortickets.common.exception.GlobalException;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

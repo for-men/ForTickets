@@ -1,7 +1,7 @@
 package com.fortickets.userservice.application.service;
 
 import com.fortickets.common.ErrorCase;
-import com.fortickets.exception.GlobalException;
+import com.fortickets.common.exception.GlobalException;
 import com.fortickets.userservice.application.dto.requset.UpdateUserReq;
 import com.fortickets.userservice.application.dto.response.GetUserRes;
 import com.fortickets.userservice.application.mapper.UserMapper;

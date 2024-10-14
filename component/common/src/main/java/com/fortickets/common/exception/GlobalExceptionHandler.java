@@ -1,8 +1,9 @@
-package com.fortickets.exception;
+package com.fortickets.common.exception;
 
 import com.fortickets.common.CommonResponse;
 import com.fortickets.common.CommonResponse.CommonEmptyRes;
 import com.fortickets.common.ErrorCase;
+import com.fortickets.common.exception.GlobalException;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

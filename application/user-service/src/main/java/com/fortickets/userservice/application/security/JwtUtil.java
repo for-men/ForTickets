@@ -64,18 +64,4 @@ public class JwtUtil {
                 .signWith(key, signatureAlgorithm)
                 .compact();
     }
-
-    // 리프레시 토큰 생성
-    public String createRefreshToken(Long userId) {
-        Date date = new Date();
-
-        return BEARER_PREFIX +
-            Jwts.builder()
-                .claim(USER_ID_KEY, userId) // 사용자 식별자값(ID)
-                .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME)) // 만료 시간
-                .setIssuer(issuer)
-                .setIssuedAt(date) // 발급일
-                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                .compact();
-    }
 }

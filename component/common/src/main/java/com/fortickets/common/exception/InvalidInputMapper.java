@@ -1,4 +1,4 @@
-package com.fortickets.exception;
+package com.fortickets.common.exception;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 

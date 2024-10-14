@@ -10,7 +10,7 @@ import com.fortickets.concertservice.application.dto.response.GetConcertsRes;
 import com.fortickets.concertservice.domain.entity.Concert;
 import com.fortickets.concertservice.domain.mapper.ConcertMapper;
 import com.fortickets.concertservice.domain.repository.ConcertRepository;
-import com.fortickets.exception.GlobalException;
+import com.fortickets.common.exception.GlobalException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

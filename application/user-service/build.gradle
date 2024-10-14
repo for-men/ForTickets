@@ -9,7 +9,7 @@ repositories {
 
 dependencies {
     // 스프링 시큐리티 & JWT user-service는 component security가 아닌 자체 class를 사용해 의존성 따로 관리
-    api 'org.springframework.boot:spring-boot-starter-security'
+//    api 'org.springframework.boot:spring-boot-starter-security'
     compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
@@ -23,6 +23,7 @@ dependencies {
     // component의 exception 과 jpa 포함
     implementation project(":component:exception")
     implementation project(":component:jpa")
+    implementation project(":component:security")
 
     // postgresql
     runtimeOnly 'org.postgresql:postgresql'

@@ -7,7 +7,9 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan(basePackages = {
     "com.fortickets.exception",
     "com.fortickets.jpa",
+    "com.fortickets.security",
     "com.fortickets.redis"
+
 })
 public class ComponentConfig {
 }
