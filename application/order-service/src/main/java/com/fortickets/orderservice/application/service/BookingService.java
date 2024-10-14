@@ -122,8 +122,8 @@ public class BookingService {
         if (bookingList.isEmpty()) {
             throw new GlobalException(ErrorCase.BOOKING_NOT_FOUND);
         }
-        // 예매 정보 상태 변경 CONFIRMED
-        bookingList.forEach(Booking::confirm);
+//        // 예매 정보 상태 변경 CONFIRMED
+//        bookingList.forEach(Booking::confirm);
 
         CreatePaymentReq createPaymentReq = CreatePaymentReq.builder()
             .userId(bookingList.get(0).getUserId())

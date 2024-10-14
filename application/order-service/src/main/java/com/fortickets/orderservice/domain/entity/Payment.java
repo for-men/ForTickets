@@ -1,7 +1,6 @@
 package com.fortickets.orderservice.domain.entity;
 
 import static com.fortickets.jpa.BaseEntity.DELETED_FALSE;
-
 import com.fortickets.common.PaymentStatus;
 import com.fortickets.jpa.BaseEntity;
 import jakarta.persistence.Column;
@@ -29,6 +28,7 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction(DELETED_FALSE)
 public class Payment extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
@@ -52,5 +52,10 @@ public class Payment extends BaseEntity {
 
     public void waiting() {
         this.status = PaymentStatus.WAITING;
+    }
+
+    public void complete(String card) {
+        this.status = PaymentStatus.COMPLETED;
+        this.card = card;
     }
 }
