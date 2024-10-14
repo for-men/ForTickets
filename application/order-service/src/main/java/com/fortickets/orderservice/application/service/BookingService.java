@@ -77,6 +77,9 @@ public class BookingService {
                 throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
             }
 
+            // 스케줄 정보 조회
+            GetScheduleDetailRes scheduleRes = concertClient.getScheduleDetail(createBookingReq.scheduleId());
+
             // 이미 예약된 좌석인지 확인
             List<Booking> bookings = new ArrayList<>();
             createBookingReq.seat().forEach(seat -> {
@@ -91,6 +94,7 @@ public class BookingService {
                     });
 
                 Booking booking = createBookingReq.toEntity(seat);
+                booking.setConcertId(scheduleRes.concertId());
                 bookings.add(booking);
             });
 

@@ -7,13 +7,12 @@ import java.util.List;
 
 public record CreateBookingReq(
     @NotNull Long scheduleId,
-    @NotNull Long concertId,
     @NotNull Long userId,
     @NotNull Long price,
     @NotNull List<String> seat
 ) {
 
     public Booking toEntity(String seat) {
-        return new Booking(scheduleId(), concertId(), userId(), price(), seat);
+        return new Booking(scheduleId(), userId(), price(), seat);
     }
 }
