@@ -30,10 +30,9 @@ public class ConcertService {
     // 공연 생성
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @Transactional
-    public CreateConcertRes createConcert(CreateConcertReq createConcertReq,Long userId) {
+    public CreateConcertRes createConcert(Long userId, CreateConcertReq createConcertReq) {
         Concert concert = createConcertReq.toEntity(userId);
         concert = concertRepository.save(concert);
-
         return concertMapper.toCreateConcertRes(concert);
     }
 
@@ -60,7 +59,7 @@ public class ConcertService {
     // 특정 공연 삭제
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @Transactional
-    public void deleteConcertById(Long concertId, String email) {
+    public void deleteConcertById(String email, Long concertId) {
         Concert concert = getConcertUtil(concertId);
         concert.delete(email);
     }

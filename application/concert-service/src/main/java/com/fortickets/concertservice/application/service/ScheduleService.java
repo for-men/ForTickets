@@ -31,7 +31,7 @@ public class ScheduleService {
   private final BookingClient bookingClient;
 
   @Transactional
-  public CreateScheduleRes createSchedule(CreateScheduleReq createScheduleReq, Long userId) {
+  public CreateScheduleRes createSchedule(Long userId, CreateScheduleReq createScheduleReq) {
     // 해당하는 콘서트 불러오기
     Concert concert = concertRepository.findById(createScheduleReq.concertId())
         .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
@@ -72,7 +72,7 @@ public class ScheduleService {
   }
 
   @Transactional
-  public void deleteScheduleById(Long scheduleId, String email) {
+  public void deleteScheduleById(String email, Long scheduleId) {
     Schedule schedule = getSchedule(scheduleId);
     schedule.delete(email);
   }
