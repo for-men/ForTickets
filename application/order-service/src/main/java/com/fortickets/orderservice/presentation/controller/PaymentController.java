@@ -1,7 +1,10 @@
 package com.fortickets.orderservice.presentation.controller;
 
+import com.fortickets.common.security.CustomUser;
+import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
+import com.fortickets.orderservice.application.dto.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
 import com.fortickets.orderservice.application.dto.request.RequestPaymentReq;
 import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
@@ -18,7 +21,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,8 +36,8 @@ public class PaymentController {
      * 결제 생성 내부에서 예매 생성 시 결제 생성
      */
     @PostMapping
-    public void createPayment(@Valid @RequestBody CreatePaymentReq createPaymentReq) {
-        paymentService.createPayment(createPaymentReq);
+    public CommonResponse<CreatePaymentRes> createPayment(@Valid @RequestBody CreatePaymentReq createPaymentReq) {
+        return CommonResponse.success(paymentService.createPayment(createPaymentReq));
     }
 
     /**
@@ -43,9 +45,9 @@ public class PaymentController {
      */
     @PatchMapping("/request")
     public CommonResponse<CommonEmptyRes> requestPayment(
-        @RequestHeader("X-User-Id") String getUserId,
+        @UseAuth CustomUser customUser,
         @Valid @RequestBody RequestPaymentReq requestPaymentReq) {
-        paymentService.requestPayment(Long.valueOf(getUserId), requestPaymentReq);
+        paymentService.requestPayment(customUser.getUserId(), requestPaymentReq);
         return CommonResponse.success();
     }
 
@@ -67,13 +69,13 @@ public class PaymentController {
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @GetMapping("/seller/{sellerId}")
     public CommonResponse<Page<GetPaymentRes>> getPaymentsBySeller(
-        @RequestHeader("X-Role") String role,
-        @RequestHeader("X-User-Id") String getUserId,
+        @UseAuth CustomUser customUser,
         @PathVariable Long sellerId,
         @RequestParam(required = false, name = "nickname") String nickname,
         Pageable pageable
     ) {
-        return CommonResponse.success(paymentService.getPaymentsBySeller(Long.valueOf(getUserId), role, sellerId, nickname, pageable));
+        return CommonResponse.success(
+            paymentService.getPaymentsBySeller(customUser.getUserId(), customUser.getRole(), sellerId, nickname, pageable));
     }
 
     /**
@@ -82,10 +84,9 @@ public class PaymentController {
     @GetMapping("/me/{userId}")
     @PreAuthorize("hasAnyRole('MANAGER', 'USER')")
     public CommonResponse<Page<GetPaymentRes>> getBookingByUser(
-        @RequestHeader("X-Role") String role,
-        @RequestHeader("X-User-Id") String getUserId,
+        @UseAuth CustomUser customUser,
         @PathVariable Long userId, Pageable pageable) {
-        return CommonResponse.success(paymentService.getPaymentByUser(Long.valueOf(getUserId), role, userId, pageable));
+        return CommonResponse.success(paymentService.getPaymentByUser(customUser.getUserId(), customUser.getRole(), userId, pageable));
     }
 
     /**
@@ -93,10 +94,9 @@ public class PaymentController {
      */
     @GetMapping("/{paymentId}")
     public CommonResponse<GetPaymentDetailRes> getPayment(
-        @RequestHeader("X-Role") String role,
-        @RequestHeader("X-User-Id") String getUserId,
+        @UseAuth CustomUser customUser,
         @PathVariable Long paymentId) {
-        return CommonResponse.success(paymentService.getPayment(Long.valueOf(getUserId), role, paymentId));
+        return CommonResponse.success(paymentService.getPayment(customUser.getUserId(), customUser.getRole(), paymentId));
     }
 
     /**
@@ -104,10 +104,9 @@ public class PaymentController {
      */
     @PatchMapping("/{paymentId}")
     public CommonResponse<CommonEmptyRes> cancelPayment(
-        @RequestHeader("X-Role") String role,
-        @RequestHeader("X-User-Id") String getUserId,
+        @UseAuth CustomUser customUser,
         @PathVariable Long paymentId) {
-        paymentService.cancelPayment(Long.valueOf(getUserId), role, paymentId);
+        paymentService.cancelPayment(customUser.getUserId(), customUser.getRole(), paymentId);
         return CommonResponse.success();
     }
 
@@ -117,9 +116,9 @@ public class PaymentController {
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{paymentId}")
     public CommonResponse<CommonEmptyRes> deletePayment(
-        @RequestHeader("X-Email") String email,
+        @UseAuth CustomUser customUser,
         @PathVariable Long paymentId) {
-        paymentService.deletePayment(email, paymentId);
+        paymentService.deletePayment(customUser.getEmail(), paymentId);
         return CommonResponse.success();
     }
 }

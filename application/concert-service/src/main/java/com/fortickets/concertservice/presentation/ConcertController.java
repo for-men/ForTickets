@@ -1,5 +1,7 @@
 package com.fortickets.concertservice.presentation;
 
+import com.fortickets.common.security.CustomUser;
+import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.concertservice.application.dto.request.CreateConcertReq;
 import com.fortickets.concertservice.application.dto.request.UpdateConcertReq;
@@ -38,9 +40,9 @@ public class ConcertController {
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @PostMapping
     public CommonResponse<CreateConcertRes> createConcert(
-            @RequestHeader("X-User-Id") String userId, @Valid
+        @UseAuth CustomUser customUser, @Valid
     @RequestBody CreateConcertReq createConcertReq) {
-        var createConcertRes = concertService.createConcert(createConcertReq, Long.valueOf(userId));
+        var createConcertRes = concertService.createConcert(customUser.getUserId(), createConcertReq);
         return CommonResponse.success(createConcertRes);
     }
 
@@ -67,8 +69,8 @@ public class ConcertController {
     // 특정 공연 삭제
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @DeleteMapping("/{concertId}")
-    public CommonResponse deleteConcertById(@RequestHeader("X-Email") String email, @PathVariable("concertId") Long concertId) {
-        concertService.deleteConcertById(concertId, email);
+    public CommonResponse deleteConcertById(@UseAuth CustomUser customUser, @PathVariable("concertId") Long concertId) {
+        concertService.deleteConcertById(customUser.getEmail(), concertId);
         return CommonResponse.success();
     }
 

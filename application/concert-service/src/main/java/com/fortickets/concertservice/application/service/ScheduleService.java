@@ -31,7 +31,7 @@ public class ScheduleService {
   private final BookingClient bookingClient;
 
   @Transactional
-  public CreateScheduleRes createSchedule(CreateScheduleReq createScheduleReq, Long userId) {
+  public CreateScheduleRes createSchedule(Long userId, CreateScheduleReq createScheduleReq) {
     // 해당하는 콘서트 불러오기
     Concert concert = concertRepository.findById(createScheduleReq.concertId())
         .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
@@ -51,9 +51,18 @@ public class ScheduleService {
     Schedule schedule = scheduleRepository.findById(scheduleId)
         .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_SCHEDULE));
 
+    // Order Service 가 실행중이지 않을시 500에러 발생
+    List<String> seatList;
+    try {
+      // 예매 서비스 호출
+      seatList = bookingClient.getSeatsWithBooking(scheduleId).getData();
+    } catch (Exception e) {
+      throw new GlobalException(ErrorCase.SYSTEM_ERROR);
+    }
+
     // 스케줄 아이디를 통해 예매 조회 후 예매 상태 확인 및 조건에 맞는 해당 좌석 불러오기
     // 조건 : status가 PENDING , CONFIRMED
-    List<String> seatList = bookingClient.getSeatsWithBooking(scheduleId).getData();
+//    List<String> seatList = bookingClient.getSeatsWithBooking(scheduleId).getData();
 
     return scheduleMapper.toGetScheduleSeatRes(schedule,seatList);
   }
@@ -72,7 +81,7 @@ public class ScheduleService {
   }
 
   @Transactional
-  public void deleteScheduleById(Long scheduleId, String email) {
+  public void deleteScheduleById(String email, Long scheduleId) {
     Schedule schedule = getSchedule(scheduleId);
     schedule.delete(email);
   }
@@ -95,6 +104,4 @@ public class ScheduleService {
     return stageRepository.findById(stageId)
         .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_STAGE));
   }
-
-
 }

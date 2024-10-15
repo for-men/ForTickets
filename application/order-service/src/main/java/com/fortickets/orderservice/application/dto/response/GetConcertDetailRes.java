@@ -11,6 +11,7 @@ public record GetConcertDetailRes(
     String seat,
     Long scheduleId,
     Long concertId,
+    Long paymentId,
     String concertName,
     Integer runtime,
     String stageName,

@@ -23,7 +23,7 @@ spring:
   # docker compose lifecycle 설정
   docker:
     compose:
-      lifecycle-management: start_only # start_only, start_and_stop 옵션이 있으며, 스프링 종료 시 컨테이너 종료 여부를 결정할 수 있음
+      lifecycle-management: start_and_stop # start_only, start_and_stop 옵션이 있으며, 스프링 종료 시 컨테이너 종료 여부를 결정할 수 있음
       start:
         command: up
       stop:

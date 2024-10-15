@@ -5,6 +5,7 @@ import com.fortickets.common.exception.GlobalException;
 import com.fortickets.common.util.ErrorCase;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
+import com.fortickets.orderservice.application.dto.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
 import com.fortickets.orderservice.application.dto.request.RequestPaymentReq;
 import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
@@ -42,7 +43,7 @@ public class PaymentService {
      * @param createPaymentReq
      */
     @Transactional
-    public void createPayment(CreatePaymentReq createPaymentReq) {
+    public CreatePaymentRes createPayment(CreatePaymentReq createPaymentReq) {
         // 결제 생성
         Payment payment = paymentMapper.toEntity(createPaymentReq);
         payment.waiting();
@@ -58,6 +59,8 @@ public class PaymentService {
 
         // 예매 저장
         bookingRepository.saveAll(bookingList);
+
+        return paymentMapper.toCreatePaymentRes(payment);
     }
 
     public Page<GetPaymentRes> getPayments(String nickname, Pageable pageable) {
@@ -69,8 +72,11 @@ public class PaymentService {
         } else {
             payments = paymentRepository.findAll(pageable);
         }
-
-        return payments.map(paymentMapper::toGetPaymentRes);
+        List<GetPaymentRes> getPaymentResList = payments.getContent().stream().map(payment -> {
+            var getConcertRes = concertClient.getConcert(payment.getConcertId());
+            return paymentMapper.toGetPaymentUser(payment, getConcertRes);
+        }).toList();
+        return new PageImpl<>(getPaymentResList, pageable, payments.getTotalElements());
     }
 
     public Page<GetPaymentRes> getPaymentsBySeller(Long getUserId, String role, Long userId, String nickname, Pageable pageable) {
@@ -87,8 +93,11 @@ public class PaymentService {
         } else {
             payments = paymentRepository.findAll(pageable);
         }
-
-        return payments.map(paymentMapper::toGetPaymentRes);
+        List<GetPaymentRes> getPaymentResList = payments.getContent().stream().map(payment -> {
+            var getConcertRes = concertClient.getConcert(payment.getConcertId());
+            return paymentMapper.toGetPaymentUser(payment, getConcertRes);
+        }).toList();
+        return new PageImpl<>(getPaymentResList, pageable, payments.getTotalElements());
     }
 
     public Page<GetPaymentRes> getPaymentByUser(Long getUserId, String role, Long userId, Pageable pageable) {

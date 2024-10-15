@@ -1,7 +1,10 @@
 package com.fortickets.orderservice.presentation.controller;
 
+import com.fortickets.common.security.CustomUser;
+import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
+import com.fortickets.orderservice.application.dto.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
@@ -21,7 +24,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,9 +42,9 @@ public class BookingController {
      */
     @PostMapping
     public CommonResponse<List<CreateBookingRes>> createBooking(
-        @RequestHeader("X-User-Id") String userId,
+        @UseAuth CustomUser customUser,
         @Valid @RequestBody CreateBookingReq createBookingReq) {
-        var createBookingRes = bookingService.createBooking(Long.valueOf(userId), createBookingReq);
+        var createBookingRes = bookingService.createBooking(customUser.getUserId(), createBookingReq);
         return CommonResponse.success(createBookingRes);
     }
 
@@ -50,11 +52,11 @@ public class BookingController {
      * 예매 확정 본인만 가능
      */
     @PatchMapping("/confirm")
-    public CommonResponse<CommonEmptyRes> confirmBooking(
-        @RequestHeader("X-User-Id") String getUserId,
+    public CommonResponse<CreatePaymentRes> confirmBooking(
+        @UseAuth CustomUser customUser,
         @Valid @RequestBody ConfirmBookingReq confirmBookingReq) {
-        bookingService.confirmBooking(Long.valueOf(getUserId), confirmBookingReq);
-        return CommonResponse.success();
+
+        return CommonResponse.success(bookingService.confirmBooking(customUser.getUserId(), confirmBookingReq));
     }
 
     /**
@@ -80,15 +82,14 @@ public class BookingController {
     @GetMapping("/seller/{sellerId}")
     public CommonResponse<Page<GetBookingRes>> getBookingBySeller(
         @PathVariable Long sellerId,
-        @RequestHeader("X-Role") String role,
-        @RequestHeader("X-User-Id") String userId,
+        @UseAuth CustomUser customUser,
         @RequestParam(required = false, name = "nickname") String nickname,
         @RequestParam(required = false, name = "concert-name") String concertName,
         Pageable pageable
     ) {
         // role, userid securitycontext에서 가져오기
         return CommonResponse.success(
-            bookingService.getBookingBySeller(Long.valueOf(userId), sellerId, role, nickname, concertName, pageable));
+            bookingService.getBookingBySeller(sellerId, customUser.getUserId(), customUser.getRole(), nickname, concertName, pageable));
     }
 
     /**
@@ -96,10 +97,9 @@ public class BookingController {
      */
     @GetMapping("/me/{userId}")
     public CommonResponse<Page<GetBookingRes>> getBookingByUser(
-        @RequestHeader("X-Role") String role,
-        @RequestHeader("X-User-Id") String getUserId,
+        @UseAuth CustomUser customUser,
         @PathVariable Long userId, Pageable pageable) {
-        return CommonResponse.success(bookingService.getBookingByUser(Long.valueOf(getUserId), role, userId, pageable));
+        return CommonResponse.success(bookingService.getBookingByUser(customUser.getUserId(), customUser.getRole(), userId, pageable));
     }
 
     /**
@@ -107,10 +107,9 @@ public class BookingController {
      */
     @GetMapping("/{bookingId}")
     public CommonResponse<GetConcertDetailRes> getBookingById(
-        @RequestHeader("X-Role") String role,
-        @RequestHeader("X-User-Id") String getUserId,
+        @UseAuth CustomUser customUser,
         @PathVariable Long bookingId) {
-        return CommonResponse.success(bookingService.getBookingById(Long.valueOf(getUserId), role, bookingId));
+        return CommonResponse.success(bookingService.getBookingById(customUser.getUserId(), customUser.getRole(), bookingId));
     }
 
 
@@ -119,10 +118,9 @@ public class BookingController {
      */
     @PatchMapping("/cancel/{bookingId}")
     public CommonResponse<CommonEmptyRes> cancelBooking(
-        @RequestHeader("X-Role") String role,
-        @RequestHeader("X-User-Id") String getUserId,
+        @UseAuth CustomUser customUser,
         @PathVariable Long bookingId) {
-        bookingService.cancelBooking(Long.valueOf(getUserId), role, bookingId);
+        bookingService.cancelBooking(customUser.getUserId(), customUser.getRole(), bookingId);
         return CommonResponse.success();
     }
 
@@ -132,9 +130,9 @@ public class BookingController {
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{bookingId}")
     public CommonResponse<CommonEmptyRes> deleteBooking(
-        @RequestHeader("X-Email") String email,
+        @UseAuth CustomUser customUser,
         @PathVariable Long bookingId) {
-        bookingService.deleteBooking(email, bookingId);
+        bookingService.deleteBooking(customUser.getEmail(), bookingId);
         return CommonResponse.success();
     }
 
