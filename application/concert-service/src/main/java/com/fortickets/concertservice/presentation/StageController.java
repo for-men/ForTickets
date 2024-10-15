@@ -1,5 +1,7 @@
 package com.fortickets.concertservice.presentation;
 
+import com.fortickets.common.security.CustomUser;
+import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.concertservice.application.dto.request.CreateStageReq;
 import com.fortickets.concertservice.application.dto.request.UpdateStageReq;
@@ -57,8 +59,8 @@ public class StageController {
     // 공연장 삭제
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{stageId}")
-    public CommonResponse deleteStageById(@RequestHeader("X-Email") String email ,@PathVariable("stageId") Long stageId) {
-        stageService.deleteStageById(email,stageId);
+    public CommonResponse deleteStageById(@UseAuth CustomUser customUser ,@PathVariable("stageId") Long stageId) {
+        stageService.deleteStageById(customUser.getEmail(), stageId);
         return CommonResponse.success();
     }
 }

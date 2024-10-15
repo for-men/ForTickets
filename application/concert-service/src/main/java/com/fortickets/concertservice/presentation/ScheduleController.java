@@ -1,5 +1,7 @@
 package com.fortickets.concertservice.presentation;
 
+import com.fortickets.common.security.CustomUser;
+import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.concertservice.application.dto.request.CreateScheduleReq;
 import com.fortickets.concertservice.application.dto.request.UpdateScheduleReq;
@@ -30,9 +32,9 @@ public class ScheduleController {
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @PostMapping
     public CommonResponse<CreateScheduleRes> createSchedule(
-        @RequestHeader("X-User-Id") String userId,
+        @UseAuth CustomUser customUser,
         @Valid  @RequestBody CreateScheduleReq createScheduleReq){
-        return CommonResponse.success(scheduleService.createSchedule(createScheduleReq,Long.valueOf(userId)));
+        return CommonResponse.success(scheduleService.createSchedule(customUser.getUserId(), createScheduleReq));
     }
 
     // 스케줄 단건조회
@@ -52,8 +54,8 @@ public class ScheduleController {
     // 스케줄 삭제
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @DeleteMapping("/{scheduleId}")
-    public CommonResponse deleteScheduleById(@RequestHeader("X-Email") String email,@PathVariable("scheduleId") Long scheduleId){
-        scheduleService.deleteScheduleById(scheduleId,email);
+    public CommonResponse deleteScheduleById(@UseAuth CustomUser customUser ,@PathVariable("scheduleId") Long scheduleId){
+        scheduleService.deleteScheduleById(customUser.getEmail(), scheduleId);
         return CommonResponse.success();
     }
 

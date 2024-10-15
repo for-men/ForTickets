@@ -44,21 +44,14 @@ public class AuthService {
         String profileImage = req.profileImage();
 
         // 회원 중복 확인
-        Optional<User> checkEmail = userRepository.findByEmail(email);
-        if (checkEmail.isPresent()) {
-            throw new GlobalException(ErrorCase.DUPLICATE_EMAIL); // 중복된 사용자 예외 처리
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new GlobalException(ErrorCase.DUPLICATE_EMAIL);
         }
-
-        // 닉네임 중복 확인
-        Optional<User> checkNickname = userRepository.findByNickname(nickname);
-        if (checkNickname.isPresent()) {
-            throw new GlobalException(ErrorCase.DUPLICATE_NICKNAME); // 중복된 닉네임 예외 처리
+        if (userRepository.findByNickname(nickname).isPresent()) {
+            throw new GlobalException(ErrorCase.DUPLICATE_NICKNAME);
         }
-
-        // 전화번호 중복 확인
-        Optional<User> checkPhone = userRepository.findByPhone(phone);
-        if (checkPhone.isPresent()) {
-            throw new GlobalException(ErrorCase.DUPLICATE_PHONE); // 중복된 전화번호 예외 처리
+        if (userRepository.findByPhone(phone).isPresent()) {
+            throw new GlobalException(ErrorCase.DUPLICATE_PHONE);
         }
 
         // 사용자 ROLE 확인
