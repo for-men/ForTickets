@@ -131,7 +131,7 @@ public class BookingService {
         if (bookingList.isEmpty()) {
             throw new GlobalException(ErrorCase.BOOKING_NOT_FOUND);
         }
-//        // 예매 정보 상태 변경 CONFIRMED
+        // 예매 정보 상태 변경 CONFIRMED
 //        bookingList.forEach(Booking::confirm);
 
         CreatePaymentReq createPaymentReq = CreatePaymentReq.builder()
@@ -184,7 +184,7 @@ public class BookingService {
         return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
 
-    public Page<GetBookingRes> getBookingBySeller(Long userId, Long sellerId, String role, String nickname, String concertName,
+    public Page<GetBookingRes> getBookingBySeller(Long sellerId, Long userId, String role, String nickname, String concertName,
         Pageable pageable) {
         // 판매자와 요청자가 같은지 확인
         if (!role.equals("ROLE_MANAGER")) {
