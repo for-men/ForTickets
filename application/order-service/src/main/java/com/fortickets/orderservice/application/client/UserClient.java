@@ -13,8 +13,8 @@ public interface UserClient {
 
     // TODO : 내부 API 생성 필요
     @GetMapping("/users/{userId}")
-    GetUserRes getUser(@PathVariable Long userId);
+    GetUserRes getUser(@PathVariable(value = "userId") Long userId);
 
     @GetMapping("/users/{nickname}/nickname")
-    List<GetUserRes> searchNickname(@PathVariable String nickname);
+    List<GetUserRes> searchNickname(@PathVariable(value = "nickname") String nickname);
 }
