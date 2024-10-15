@@ -72,8 +72,11 @@ public class PaymentService {
         } else {
             payments = paymentRepository.findAll(pageable);
         }
-
-        return payments.map(paymentMapper::toGetPaymentRes);
+        List<GetPaymentRes> getPaymentResList = payments.getContent().stream().map(payment -> {
+            var getConcertRes = concertClient.getConcert(payment.getConcertId());
+            return paymentMapper.toGetPaymentUser(payment, getConcertRes);
+        }).toList();
+        return new PageImpl<>(getPaymentResList, pageable, payments.getTotalElements());
     }
 
     public Page<GetPaymentRes> getPaymentsBySeller(Long getUserId, String role, Long userId, String nickname, Pageable pageable) {
@@ -90,8 +93,11 @@ public class PaymentService {
         } else {
             payments = paymentRepository.findAll(pageable);
         }
-
-        return payments.map(paymentMapper::toGetPaymentRes);
+        List<GetPaymentRes> getPaymentResList = payments.getContent().stream().map(payment -> {
+            var getConcertRes = concertClient.getConcert(payment.getConcertId());
+            return paymentMapper.toGetPaymentUser(payment, getConcertRes);
+        }).toList();
+        return new PageImpl<>(getPaymentResList, pageable, payments.getTotalElements());
     }
 
     public Page<GetPaymentRes> getPaymentByUser(Long getUserId, String role, Long userId, Pageable pageable) {
