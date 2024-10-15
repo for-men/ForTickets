@@ -117,7 +117,11 @@ public class BookingService {
     }
 
     @Transactional
-    public void confirmBooking(ConfirmBookingReq confirmBookingReq) {
+    public void confirmBooking(Long getUserId, ConfirmBookingReq confirmBookingReq) {
+        // 요청 사용자와 예약 사용자가 같은지 확인
+        if (!getUserId.equals(confirmBookingReq.userId())) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
         // 예매 정보 조회
         List<Booking> bookingList = bookingRepository.findAllByIdInAndStatusAndUserId(
             confirmBookingReq.bookingIds(), BookingStatus.PENDING,
@@ -131,22 +135,20 @@ public class BookingService {
 //        bookingList.forEach(Booking::confirm);
 
         CreatePaymentReq createPaymentReq = CreatePaymentReq.builder()
-                .userId(bookingList.get(0).getUserId())
-                .totalPrice(bookingList.stream().mapToLong(Booking::getPrice).sum())
-                .concertId(bookingList.get(0).getConcertId())
-                .scheduleId(bookingList.get(0).getScheduleId())
-                .bookingIds(confirmBookingReq.bookingIds())
-                .build();
+            .userId(bookingList.get(0).getUserId())
+            .totalPrice(bookingList.stream().mapToLong(Booking::getPrice).sum())
+            .concertId(bookingList.get(0).getConcertId())
+            .scheduleId(bookingList.get(0).getScheduleId())
+            .bookingIds(confirmBookingReq.bookingIds())
+            .build();
 
         // 결제 생성
         paymentService.createPayment(createPaymentReq);
     }
 
     public Page<GetBookingRes> getBooking(String nickname, String concertName, Pageable pageable) {
-        // TODO: role String에서 변경 필요
         List<GetUserRes> userList = new ArrayList<>();
         List<GetConcertRes> concertList = new ArrayList<>();
-        // TODO: 검색 조건 null 체크 하려면 QueryDSL 필요
         // 닉네임으로 사용자 조회
         // 검색 조건에 없으면 조회할 필요 없음
         if (nickname != null) {
@@ -170,14 +172,14 @@ public class BookingService {
 
         // GetConcertRes를 concertId 기준으로 찾기 위한 Map 생성
         Map<Long, GetConcertRes> concertMap = concertList.stream()
-                .collect(Collectors.toMap(GetConcertRes::id, Function.identity()));
+            .collect(Collectors.toMap(GetConcertRes::id, Function.identity()));
 
         // Booking의 concertId와 매칭되는 GetConcertRes를 찾아 매핑
         List<GetBookingRes> getBookingResList = bookingList.getContent().stream()
-                .map(booking -> {
-                    GetConcertRes concertRes = concertMap.get(booking.getConcertId());
-                    return bookingMapper.toGetBookingRes(booking, concertRes);
-                }).toList();
+            .map(booking -> {
+                GetConcertRes concertRes = concertMap.get(booking.getConcertId());
+                return bookingMapper.toGetBookingRes(booking, concertRes);
+            }).toList();
 
         return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
@@ -185,7 +187,6 @@ public class BookingService {
     public Page<GetBookingRes> getBookingBySeller(Long userId, Long sellerId, String role, String nickname, String concertName,
         Pageable pageable) {
         // 판매자와 요청자가 같은지 확인
-        // TODO: @PreAuthorize 는 MANAGER 인데 X-Role은 ROLE_MANAGER?
         if (!role.equals("ROLE_MANAGER")) {
             if (!userId.equals(sellerId)) {
                 throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
@@ -193,7 +194,6 @@ public class BookingService {
         }
         List<GetUserRes> userList = new ArrayList<>();
         List<GetConcertRes> concertList = new ArrayList<>();
-        // TODO: 검색 조건 null 체크 하려면 QueryDSL 필요
         // 닉네임으로 사용자 조회
         // 검색 조건에 없으면 조회할 필요 없음
         if (nickname != null) {
@@ -219,19 +219,25 @@ public class BookingService {
 
         // GetConcertRes를 concertId 기준으로 찾기 위한 Map 생성
         Map<Long, GetConcertRes> concertMap = concertList.stream()
-                .collect(Collectors.toMap(GetConcertRes::id, Function.identity()));
+            .collect(Collectors.toMap(GetConcertRes::id, Function.identity()));
 
         // Booking의 concertId와 매칭되는 GetConcertRes를 찾아 매핑
         List<GetBookingRes> getBookingResList = bookingList.getContent().stream()
-                .map(booking -> {
-                    GetConcertRes concertRes = concertMap.get(booking.getConcertId());
-                    return bookingMapper.toGetBookingRes(booking, concertRes);
-                }).toList();
+            .map(booking -> {
+                GetConcertRes concertRes = concertMap.get(booking.getConcertId());
+                return bookingMapper.toGetBookingRes(booking, concertRes);
+            }).toList();
 
         return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
 
-    public Page<GetBookingRes> getBookingByUser(Long userId, Pageable pageable) {
+    public Page<GetBookingRes> getBookingByUser(Long getUserId, String role, Long userId, Pageable pageable) {
+        // 요청 사용자와 예약 사용자가 같은지 확인
+        if (!role.equals("ROLE_MANAGER")) {
+            if (!getUserId.equals(userId)) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
         Page<Booking> bookingList = bookingRepository.findByUserId(userId, pageable);
         // TODO: 성능 개선 필요 (한번에 받아와서 처리 가능할 듯?)
         List<GetBookingRes> getBookingResList = bookingList.getContent().stream().map(booking -> {
@@ -241,19 +247,31 @@ public class BookingService {
         return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
 
-    public GetConcertDetailRes getBookingById(Long bookingId) {
+    public GetConcertDetailRes getBookingById(Long getUserId, String role, Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
+            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
+        if (!role.equals("ROLE_MANAGER")) {
+            if (!getUserId.equals(booking.getUserId())) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
         GetScheduleDetailRes getScheduleDetailRes = concertClient.getScheduleDetail(booking.getScheduleId());
 
         return bookingMapper.toGetConcertDetailRes(booking, getScheduleDetailRes);
     }
 
     @Transactional
-    public void cancelBooking(Long bookingId) {
+    public void cancelBooking(Long getUserId, String role, Long bookingId) {
+
+        // TODO : 이거 좀 애매함 확인 필요 -> 결제 취소
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
-        // TODO: 예약 취소 가능한지 확인
+            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
+
+        if (!role.equals("ROLE_MANAGER")) {
+            if (!getUserId.equals(booking.getUserId())) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
         GetScheduleDetailRes scheduleRes = concertClient.getScheduleDetail(booking.getScheduleId());
 
         // 공연이 끝났는지 체크 필요
@@ -261,13 +279,13 @@ public class BookingService {
             throw new GlobalException(ErrorCase.CANNOT_CANCEL_BOOKING);
         }
 
-        paymentService.cancelPayment(booking.getPayment().getId());
+        paymentService.cancelPayment(getUserId, role, booking.getPayment().getId());
     }
 
     @Transactional
     public void deleteBooking(String email, Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
+            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
         booking.delete(email);
     }
 

@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -41,14 +42,17 @@ public class PaymentController {
      * 결제 요청
      */
     @PatchMapping("/request")
-    public CommonResponse<CommonEmptyRes> requestPayment(@Valid @RequestBody RequestPaymentReq requestPaymentReq) {
-        paymentService.requestPayment(requestPaymentReq);
+    public CommonResponse<CommonEmptyRes> requestPayment(
+        @RequestHeader("X-User-Id") String getUserId,
+        @Valid @RequestBody RequestPaymentReq requestPaymentReq) {
+        paymentService.requestPayment(Long.valueOf(getUserId), requestPaymentReq);
         return CommonResponse.success();
     }
 
     /**
      * 결제 내역 전체 조회 (Manager)
      */
+    @PreAuthorize("hasAnyRole('MANAGER')")
     @GetMapping
     public CommonResponse<Page<GetPaymentRes>> getPayments(
         @RequestParam(required = false, name = "nickname") String nickname,
@@ -60,42 +64,57 @@ public class PaymentController {
     /**
      * 결제 내역 전체 조회 (Seller)
      */
+    @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @GetMapping("/seller/{sellerId}")
     public CommonResponse<Page<GetPaymentRes>> getPaymentsBySeller(
+        @RequestHeader("X-Role") String role,
+        @RequestHeader("X-User-Id") String getUserId,
+        @PathVariable Long sellerId,
         @RequestParam(required = false, name = "nickname") String nickname,
         Pageable pageable
     ) {
-        return CommonResponse.success(paymentService.getPayments(nickname, pageable));
+        return CommonResponse.success(paymentService.getPaymentsBySeller(Long.valueOf(getUserId), role, sellerId, nickname, pageable));
     }
 
     /**
      * 결제 내역 전체 조회 (User)
      */
     @GetMapping("/me/{userId}")
-    public CommonResponse<Page<GetPaymentRes>> getBookingByUser(@PathVariable Long userId, Pageable pageable) {
-        return CommonResponse.success(paymentService.getPaymentByUser(userId, pageable));
+    @PreAuthorize("hasAnyRole('MANAGER', 'USER')")
+    public CommonResponse<Page<GetPaymentRes>> getBookingByUser(
+        @RequestHeader("X-Role") String role,
+        @RequestHeader("X-User-Id") String getUserId,
+        @PathVariable Long userId, Pageable pageable) {
+        return CommonResponse.success(paymentService.getPaymentByUser(Long.valueOf(getUserId), role, userId, pageable));
     }
 
     /**
      * 결제 단일 조회
      */
     @GetMapping("/{paymentId}")
-    public CommonResponse<GetPaymentDetailRes> getPayment(@PathVariable Long paymentId) {
-        return CommonResponse.success(paymentService.getPayment(paymentId));
+    public CommonResponse<GetPaymentDetailRes> getPayment(
+        @RequestHeader("X-Role") String role,
+        @RequestHeader("X-User-Id") String getUserId,
+        @PathVariable Long paymentId) {
+        return CommonResponse.success(paymentService.getPayment(Long.valueOf(getUserId), role, paymentId));
     }
 
     /**
      * 결제 취소
      */
     @PatchMapping("/{paymentId}")
-    public CommonResponse<CommonEmptyRes> cancelPayment(@PathVariable Long paymentId) {
-        paymentService.cancelPayment(paymentId);
+    public CommonResponse<CommonEmptyRes> cancelPayment(
+        @RequestHeader("X-Role") String role,
+        @RequestHeader("X-User-Id") String getUserId,
+        @PathVariable Long paymentId) {
+        paymentService.cancelPayment(Long.valueOf(getUserId), role, paymentId);
         return CommonResponse.success();
     }
 
     /**
      * 결제 내역 삭제
      */
+    @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{paymentId}")
     public CommonResponse<CommonEmptyRes> deletePayment(
         @RequestHeader("X-Email") String email,
