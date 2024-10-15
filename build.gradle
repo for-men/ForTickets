@@ -62,16 +62,12 @@ subprojects {
             implementation 'org.springframework.boot:spring-boot-starter'
             implementation 'org.springframework.boot:spring-boot-starter-web'
         }
-        if (project.name != 'common') {
 
-        }
         if (project.path.startsWith(':application:')) {
             if (project.name == 'eureka') {
                 //eureka server
                 implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
-            } else if (project.name == 'prometheus-service') {
-                
-            } else {
+            }  else {
                 //eureka client
                 implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
                 implementation project(':component:redis')
