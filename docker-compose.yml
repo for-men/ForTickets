@@ -1,21 +1,140 @@
+version: '3.8'
+
 services:
+  eureka-service:
+    image: uzjaee/eureka:0.2  # 빌드한 eureka 이미지 이름
+    ports:
+      - '12001:12001'  # Eureka의 기본 포트
+    networks:
+      - service-network
+
+  gateway-service:
+    image: uzjaee/gateway-service:0.2  # 빌드한 gateway 이미지 이름
+    ports:
+      - '12011:12011'  # Gateway의 포트
+    environment:
+      - SPRING_CLOUD_GATEWAY_DISCOVERY_CLIENT_ENABLED=true
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+    depends_on:
+      - eureka-service
+    networks:
+      - service-network
+
+  user-service:
+    image: uzjaee/user-service:0.4
+    ports:
+      - '12021:12021'
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5432/fortickets
+      - SPRING_DATASOURCE_USERNAME=forman
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+    depends_on:
+      - postgres-user
+      - eureka-service
+      - redis
+    networks:
+      - service-network
+
+
+
+  postgres-user:
+    image: 'postgres:16.4'
+    environment:
+      - 'POSTGRES_DB=fortickets'
+      - 'POSTGRES_PASSWORD=1234'
+      - 'POSTGRES_USER=forman'
+    ports:
+      - '54322:5432'
+    volumes:
+      - ../db/user-service:/var/lib/postgresql/data
+    networks:
+      - service-network
+
+  concert-service:
+    image: uzjaee/concert-service:0.2  # 빌드한 concert-service 이미지 이름
+    ports:
+      - '12031:12031'  # Concert 서비스의 포트
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-concert:5432/fortickets
+      - SPRING_DATASOURCE_USERNAME=forman
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+    depends_on:
+      - postgres-concert
+      - eureka-service
+    networks:
+      - service-network
+
+  postgres-concert:
+    image: 'postgres:16.4'
+    environment:
+      - 'POSTGRES_DB=fortickets'
+      - 'POSTGRES_PASSWORD=1234'
+      - 'POSTGRES_USER=forman'
+    ports:
+      - '54323:5432'
+    volumes:
+      - ../db/concert-service:/var/lib/postgresql/data
+    networks:
+      - service-network
+
+  order-service:
+    image: uzjaee/order-service:0.4  # 빌드한 order-service 이미지 이름
+    ports:
+      - '12041:12041'  # Order 서비스의 포트
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-order:5432/fortickets
+      - SPRING_DATASOURCE_USERNAME=forman
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+      - KAFKA_BOOTSTRAPSERVERS=kafka:9092  # Kafka 브로커 URL
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+    depends_on:
+      - postgres-order
+      - eureka-service
+      - redis
+      - kafka
+    networks:
+      - service-network
+
+  postgres-order:
+    image: 'postgres:16.4'
+    environment:
+      - 'POSTGRES_DB=fortickets'
+      - 'POSTGRES_PASSWORD=1234'
+      - 'POSTGRES_USER=forman'
+    ports:
+      - '54324:5432'
+    volumes:
+      - ../db/order-service:/var/lib/postgresql/data
+    networks:
+      - service-network
+
   zipkin:
     image: openzipkin/zipkin
     ports:
-      - "9411:9411" # Zipkin UI 접근 포트
+      - "9411:9411" # Zipkin UI에 접근할 포트
+    networks:
+      - service-network
 
   zookeeper:
-    image: wurstmeister/zookeeper:latest
-    platform: linux/amd64
+    image: zookeeper:latest
+#    platform: linux/amd64
     ports:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - service-network
 
   kafka:
     image: wurstmeister/kafka:latest
-    platform: linux/amd64
+#    platform: linux/arm64/v8
     ports:
       - "9092:9092"
     environment:
@@ -26,61 +145,45 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - service-network
 
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    platform: linux/amd64
-    ports:
-      - "8080:8080"
-    environment:
-      KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-      KAFKA_CLUSTERS_0_READONLY: "false"
+#  kafka-ui:
+#    image: provectuslabs/kafka-ui:latest
+#    platform: linux/amd64
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      KAFKA_CLUSTERS_0_NAME: local
+#      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+#      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+#      KAFKA_CLUSTERS_0_READONLY: "false"
+#    networks:
+#      - service-network
 
 
-
-  redis-stack:
-    image: redis/redis-stack
-    container_name: redis-stack-compose
-    restart: always
-    environment:
-      REDIS_ARGS: "--requirepass systempass"
-    volumes:
-      - ./redis_data:/data
-
-  # Redis 마스터 노드 1
   redis:
-    image: redis:7
+    image: redis:latest
     container_name: redis
-#    command: [ "redis-server", "--appendonly", "yes", "--requirepass", "systempass" ]
     ports:
       - "6379:6379"
     volumes:
       - ./redis_data:/data
-
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./docker-config/prometheus.yml:/etc/prometheus/prometheus.yml  # 상대 경로 수정
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
     networks:
-      - grafana-network
+      - service-network
 
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    depends_on:
-      - prometheus
-    networks:
-      - grafana-network
+#  redis-stack:
+#    image: redis/redis-stack
+#    container_name: redis-stack-compose
+#    restart: always
+#    environment:
+#      REDIS_ARGS: "--requirepass systempass"
+#    volumes:
+#      - ./redis_data:/data
+#    networks:
+#      - service-network
+
+  # Redis 마스터 노드 1
 
 networks:
-  grafana-network:
-    external: false  # 내부 네트워크로 설정
+  service-network:
