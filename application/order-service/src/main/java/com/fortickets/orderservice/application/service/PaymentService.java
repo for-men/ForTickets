@@ -1,8 +1,8 @@
 package com.fortickets.orderservice.application.service;
 
 import com.fortickets.common.GlobalUtil;
-import com.fortickets.common.util.ErrorCase;
 import com.fortickets.common.exception.GlobalException;
+import com.fortickets.common.util.ErrorCase;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
@@ -73,8 +73,30 @@ public class PaymentService {
         return payments.map(paymentMapper::toGetPaymentRes);
     }
 
+    public Page<GetPaymentRes> getPaymentsBySeller(Long getUserId, String role, Long userId, String nickname, Pageable pageable) {
+        if (!role.equals("ROLE_MANAGER")) {
+            if (!getUserId.equals(userId)) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
+        List<GetUserRes> userResList = new ArrayList<>();
+        Page<Payment> payments = null;
+        if (nickname != null) {
+            userResList = userClient.searchNickname(nickname);
+            payments = paymentRepository.findByUserIdIn(userResList.stream().map(GetUserRes::userId).toList(), pageable);
+        } else {
+            payments = paymentRepository.findAll(pageable);
+        }
 
-    public Page<GetPaymentRes> getPaymentByUser(Long userId, Pageable pageable) {
+        return payments.map(paymentMapper::toGetPaymentRes);
+    }
+
+    public Page<GetPaymentRes> getPaymentByUser(Long getUserId, String role, Long userId, Pageable pageable) {
+        if (!role.equals("ROLE_MANAGER")) {
+            if (!getUserId.equals(userId)) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
         Page<Payment> paymentList = paymentRepository.findByUserId(userId, pageable);
 
         List<GetPaymentRes> getPaymentResList = paymentList.getContent().stream().map(payment -> {
@@ -85,9 +107,15 @@ public class PaymentService {
         return new PageImpl<>(getPaymentResList, pageable, paymentList.getTotalElements());
     }
 
-    public GetPaymentDetailRes getPayment(Long paymentId) {
+    public GetPaymentDetailRes getPayment(Long getUserId, String role, Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
+
+        if (!role.equals("ROLE_MANAGER")) {
+            if (!getUserId.equals(payment.getUserId())) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
 
         var getScheduleRes = concertClient.getScheduleDetail(payment.getScheduleId());
         var getUserRes = userClient.getUser(payment.getUserId());
@@ -96,10 +124,16 @@ public class PaymentService {
     }
 
     @Transactional
-    public void cancelPayment(Long paymentId) {
+    public void cancelPayment(Long getUserId, String role, Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
 
+        // TODO : 결제 취소
+        if (!role.equals("ROLE_MANAGER")) {
+            if (!getUserId.equals(payment.getUserId())) {
+                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+            }
+        }
         payment.cancel();
 
         // 예매 취소
@@ -116,16 +150,25 @@ public class PaymentService {
     }
 
     @Transactional
-    public void requestPayment(RequestPaymentReq requestPaymentReq) {
+    public void requestPayment(Long getUserId, RequestPaymentReq requestPaymentReq) {
         // 결제 요청 -> 결제 완료
         Payment payment = paymentRepository.findById(requestPaymentReq.paymentId())
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
+
+        if (!getUserId.equals(payment.getUserId())) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
 
         try {
             payment.complete(GlobalUtil.hash(requestPaymentReq.card()));
         } catch (NoSuchAlgorithmException e) {
             throw new GlobalException(ErrorCase.INVALID_INPUT);
         }
+
+        // 결제 완료 시 예매 확정
+        List<Booking> bookingList = bookingRepository.findByPaymentId(requestPaymentReq.paymentId());
+        bookingList.forEach(Booking::confirm);
+
     }
     //                                          카드번호 받기
     // 좌석 선택 (예매 생성) -> 결제 요청(결제 ID를 예매에 넣어주고 결제 생성) -> 결제 완료 시 예매 확정
