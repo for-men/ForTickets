@@ -1,8 +1,8 @@
 package com.fortickets.orderservice.application.service;
 
 import com.fortickets.common.GlobalUtil;
-import com.fortickets.common.util.ErrorCase;
 import com.fortickets.common.exception.GlobalException;
+import com.fortickets.common.util.ErrorCase;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
@@ -164,6 +164,11 @@ public class PaymentService {
         } catch (NoSuchAlgorithmException e) {
             throw new GlobalException(ErrorCase.INVALID_INPUT);
         }
+
+        // 결제 완료 시 예매 확정
+        List<Booking> bookingList = bookingRepository.findByPaymentId(requestPaymentReq.paymentId());
+        bookingList.forEach(Booking::confirm);
+
     }
     //                                          카드번호 받기
     // 좌석 선택 (예매 생성) -> 결제 요청(결제 ID를 예매에 넣어주고 결제 생성) -> 결제 완료 시 예매 확정
