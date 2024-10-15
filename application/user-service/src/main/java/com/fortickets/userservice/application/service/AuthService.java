@@ -99,29 +99,17 @@ public class AuthService {
         }
 
         try {
-            // 사용자 인증 처리
-//            Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                    req.email(),
-//                    req.password()
-//                )
-//            );
-//
-//            // 인증 성공 시 사용자 정보 가져오기
-//            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//            User user = userDetails.getUser();
+            User user = userRepository.findByEmail(req.email())
+                .orElseThrow(() -> new GlobalException(ErrorCase.INVALID_EMAIL_OR_PASSWORD));
 
-            User user = userRepository.findByEmail(req.email()).orElseThrow();
             if (!passwordEncoder.matches(req.password(), user.getPassword())) {
                 throw new GlobalException(ErrorCase.INVALID_EMAIL_OR_PASSWORD);
             }
 
-            // JWT 토큰 생성 - 로그를위해 임시
-            String jwtToken = jwtUtil.createAccessToken(user.getUserId(), user.getEmail(), user.getRole());
-
-            log.info("Issued JWT Token: {}", jwtToken); // 발급된 JWT 로그 추가
             // JWT 토큰 생성
-//            return jwtUtil.createAccessToken(userId, username, role);
+            String jwtToken = jwtUtil.createAccessToken(user.getUserId(), user.getEmail(), user.getRole());
+            log.info("Issued JWT Token: {}", jwtToken); // 발급된 JWT 로그 추가
+
             return jwtToken;
         } catch (AuthenticationException e) {
             throw new GlobalException(ErrorCase.INVALID_EMAIL_OR_PASSWORD);

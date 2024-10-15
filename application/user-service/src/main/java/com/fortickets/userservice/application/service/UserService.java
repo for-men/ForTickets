@@ -70,9 +70,4 @@ public class UserService {
         var users = userRepository.findByNicknameContaining(nickname);
         return users.stream().map(userMapper::userToGetUserRes).toList();
     }
-
-    // feignClient test
-//    public String callOrderHello() {
-//        return orderClient.hello(); // OrderClient의 hello 메서드 호출
-//    }
 }
