@@ -1,8 +1,6 @@
 spring:
   application:
     name: order-service
-  config:
-    import: "classpath:application-credentials.yml"
   profiles:
     include: common
   datasource:
