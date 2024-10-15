@@ -1,7 +1,7 @@
 package com.fortickets.userservice.presentation.controller;
 
-import com.fortickets.common.CommonResponse;
-import com.fortickets.common.CommonResponse.CommonEmptyRes;
+import com.fortickets.common.util.CommonResponse;
+import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
 import com.fortickets.userservice.application.dto.requset.LoginReq;
 import com.fortickets.userservice.application.dto.requset.SignUpReq;
 import com.fortickets.userservice.application.security.JwtUtil;

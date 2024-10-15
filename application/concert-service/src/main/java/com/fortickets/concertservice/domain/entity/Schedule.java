@@ -1,9 +1,9 @@
 package com.fortickets.concertservice.domain.entity;
 
-import static com.fortickets.jpa.BaseEntity.DELETED_FALSE;
+import static com.fortickets.common.jpa.BaseEntity.DELETED_FALSE;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fortickets.jpa.BaseEntity;
+import com.fortickets.common.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

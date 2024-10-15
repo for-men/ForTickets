@@ -1,6 +1,7 @@
 package com.fortickets.orderservice.domain.repository;
 
-import com.fortickets.common.BookingStatus;
+
+import com.fortickets.common.util.BookingStatus;
 import com.fortickets.orderservice.domain.entity.Booking;
 import com.fortickets.orderservice.domain.entity.QBooking;
 import com.querydsl.core.types.dsl.BooleanExpression;

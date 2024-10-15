@@ -1,2 +1,0 @@
-config:
-  import: "classpath:application-credentials.yml"

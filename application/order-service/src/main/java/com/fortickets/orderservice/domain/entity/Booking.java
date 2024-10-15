@@ -1,8 +1,9 @@
 package com.fortickets.orderservice.domain.entity;
 
-import static com.fortickets.jpa.BaseEntity.DELETED_FALSE;
-import com.fortickets.common.BookingStatus;
-import com.fortickets.jpa.BaseEntity;
+import static com.fortickets.common.jpa.BaseEntity.DELETED_FALSE;
+
+import com.fortickets.common.util.BookingStatus;
+import com.fortickets.common.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -30,7 +31,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction(DELETED_FALSE)
 public class Booking extends BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_id")
@@ -52,7 +52,6 @@ public class Booking extends BaseEntity {
     public void updateStatus(BookingStatus status) {
         this.status = status;
     }
-
     public void setPayment(Payment payment) {
         this.payment = payment;
     }
@@ -72,5 +71,4 @@ public class Booking extends BaseEntity {
     public void confirm() {
         this.status = BookingStatus.CONFIRMED;
     }
-
 }

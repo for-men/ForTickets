@@ -1,6 +1,6 @@
 package com.fortickets.orderservice.application.dto.response;
 
-import com.fortickets.common.BookingStatus;
+import com.fortickets.common.util.BookingStatus;
 
 public record CreateBookingRes (
     Long id,

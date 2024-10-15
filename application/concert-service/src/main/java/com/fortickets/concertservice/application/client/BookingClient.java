@@ -1,6 +1,6 @@
 package com.fortickets.concertservice.application.client;
 
-import com.fortickets.common.CommonResponse;
+import com.fortickets.common.util.CommonResponse;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;

@@ -1,21 +1,18 @@
 package com.fortickets.userservice.application.service;
 
-import com.fortickets.common.ErrorCase;
-import com.fortickets.exception.GlobalException;
+import com.fortickets.common.util.ErrorCase;
+import com.fortickets.common.exception.GlobalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import com.fortickets.userservice.application.dto.requset.LoginReq;
 import com.fortickets.userservice.application.dto.requset.SignUpReq;
 import com.fortickets.userservice.application.security.JwtUtil;
-import com.fortickets.userservice.application.security.UserDetailsImpl;
 import com.fortickets.userservice.domain.entity.User;
 import com.fortickets.userservice.domain.entity.UserRoleEnum;
 import com.fortickets.userservice.domain.repository.UserRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -102,28 +99,17 @@ public class AuthService {
         }
 
         try {
-            // 사용자 인증 처리
-            Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    req.email(),
-                    req.password()
-                )
-            );
+            User user = userRepository.findByEmail(req.email())
+                .orElseThrow(() -> new GlobalException(ErrorCase.INVALID_EMAIL_OR_PASSWORD));
 
-            // 인증 성공 시 사용자 정보 가져오기
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            User user = userDetails.getUser();
+            if (!passwordEncoder.matches(req.password(), user.getPassword())) {
+                throw new GlobalException(ErrorCase.INVALID_EMAIL_OR_PASSWORD);
+            }
 
-            Long userId = userDetails.getUser().getUserId();
-            String username = userDetails.getUsername(); // 메서드는 getUsername 이지만 return값은 email 입니다.
-            UserRoleEnum role = userDetails.getUser().getRole();
-
-            // JWT 토큰 생성 - 로그를위해 임시
-            String jwtToken = jwtUtil.createAccessToken(userId, username, role);
-
-            log.info("Issued JWT Token: {}", jwtToken); // 발급된 JWT 로그 추가
             // JWT 토큰 생성
-//            return jwtUtil.createAccessToken(userId, username, role);
+            String jwtToken = jwtUtil.createAccessToken(user.getUserId(), user.getEmail(), user.getRole());
+            log.info("Issued JWT Token: {}", jwtToken); // 발급된 JWT 로그 추가
+
             return jwtToken;
         } catch (AuthenticationException e) {
             throw new GlobalException(ErrorCase.INVALID_EMAIL_OR_PASSWORD);
