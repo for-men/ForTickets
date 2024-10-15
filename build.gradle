@@ -36,6 +36,11 @@ subprojects {
 
     // 모든 서브 모듈에서 사용될 공통 의존성들을 추가함
     dependencies {
+        // 유레카와 게이트웨이를 제외한 서비스에 common 모듈 추가
+        if (project.path.startsWith(':application:') && project.name != 'eureka' && project.name != 'gateway-service') {
+            implementation project(':component:common')
+        }
+
         // zipkin 관련 의존성 추가
         implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
         implementation 'io.micrometer:micrometer-tracing-bridge-brave'
@@ -57,23 +62,18 @@ subprojects {
             implementation 'org.springframework.boot:spring-boot-starter'
             implementation 'org.springframework.boot:spring-boot-starter-web'
         }
-        if (project.name != 'common') {
-            implementation project(':component:common')
-        }
+
         if (project.path.startsWith(':application:')) {
             if (project.name == 'eureka') {
                 //eureka server
                 implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
-            } else if (project.name == 'prometheus-service') {
-                
-            } else {
+            }  else {
                 //eureka client
                 implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
                 implementation project(':component:redis')
             }
             //openFeign
             implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-            implementation project(':component:exception')
         }
 
         // actuator

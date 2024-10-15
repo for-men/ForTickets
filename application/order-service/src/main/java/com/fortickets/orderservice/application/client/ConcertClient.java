@@ -2,7 +2,7 @@ package com.fortickets.orderservice.application.client;
 
 import com.fortickets.orderservice.application.dto.response.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.GetScheduleDetailRes;
-import com.fortickets.security.FeignClientConfig;
+import com.fortickets.common.security.FeignClientConfig;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;

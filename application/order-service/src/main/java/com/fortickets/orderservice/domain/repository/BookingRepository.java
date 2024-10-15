@@ -1,6 +1,6 @@
 package com.fortickets.orderservice.domain.repository;
 
-import com.fortickets.common.BookingStatus;
+import com.fortickets.common.util.BookingStatus;
 import com.fortickets.orderservice.domain.entity.Booking;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,5 +20,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Booking
 
     List<Booking> findByPaymentId(Long paymentId);
 
-     List<Booking> findAllByIdInAndStatus(List<Long> bookingIds, BookingStatus status);
+
+    List<Booking> findAllByIdInAndStatusAndUserId(List<Long> bookingIds, BookingStatus status, Long userId);
+
+    List<Booking> findAllByStatusAndCreatedAtBefore(BookingStatus bookingStatus, LocalDateTime deleteTime);
 }

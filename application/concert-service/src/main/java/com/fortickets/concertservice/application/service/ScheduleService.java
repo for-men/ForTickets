@@ -1,12 +1,11 @@
 package com.fortickets.concertservice.application.service;
 
-import com.fortickets.common.ErrorCase;
+import com.fortickets.common.util.ErrorCase;
 import com.fortickets.concertservice.application.client.BookingClient;
 import com.fortickets.concertservice.application.dto.request.CreateScheduleReq;
 import com.fortickets.concertservice.application.dto.request.UpdateScheduleReq;
 import com.fortickets.concertservice.application.dto.response.CreateScheduleRes;
 import com.fortickets.concertservice.application.dto.response.GetScheduleDetailRes;
-import com.fortickets.concertservice.application.dto.response.GetScheduleRes;
 import com.fortickets.concertservice.application.dto.response.GetScheduleSeatRes;
 import com.fortickets.concertservice.domain.entity.Concert;
 import com.fortickets.concertservice.domain.entity.Schedule;
@@ -15,7 +14,7 @@ import com.fortickets.concertservice.domain.mapper.ScheduleMapper;
 import com.fortickets.concertservice.domain.repository.ConcertRepository;
 import com.fortickets.concertservice.domain.repository.ScheduleRepository;
 import com.fortickets.concertservice.domain.repository.StageRepository;
-import com.fortickets.exception.GlobalException;
+import com.fortickets.common.exception.GlobalException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,18 +1,18 @@
 package com.fortickets.orderservice.application.service;
 
-import com.fortickets.common.BookingStatus;
-import com.fortickets.common.ErrorCase;
+import com.fortickets.common.util.BookingStatus;
+import com.fortickets.common.util.ErrorCase;
+import com.fortickets.common.exception.GlobalException;
 import com.fortickets.common.GlobalUtil;
-import com.fortickets.exception.GlobalException;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
 import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
-import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
-import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertRes;
+import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
+import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetScheduleDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetUserRes;
 import com.fortickets.orderservice.domain.entity.Booking;
@@ -38,15 +38,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

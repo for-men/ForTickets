@@ -1,6 +1,6 @@
 package com.fortickets.concertservice.presentation;
 
-import com.fortickets.common.CommonResponse;
+import com.fortickets.common.util.CommonResponse;
 import com.fortickets.concertservice.application.dto.request.CreateConcertReq;
 import com.fortickets.concertservice.application.dto.request.UpdateConcertReq;
 import com.fortickets.concertservice.application.dto.response.CreateConcertRes;
