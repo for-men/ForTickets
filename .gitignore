@@ -51,3 +51,4 @@ redis_data_slave2/
 redis_data_slave3/
 
 *.log
+*.zip

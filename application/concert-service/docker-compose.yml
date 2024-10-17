@@ -11,20 +11,20 @@ services:
     volumes:
       - ../db/concert-service:/var/lib/postgresql/data
 
-
-  concert-service:
-    container_name: concert-service
-    build:
-      context: ../application/concert-service
-      dockerfile: Dockerfile
-    environment:
-      SPRING_PROFILES_ACTIVE: local
-    ports:
-      - '11000:11000'
-    restart: always
-    depends_on:
-      - postgres-conert
-    volumes:
-      - ../logs/concertservice:/logs/concertservice
-    networks:
-      - service-network
+#
+#  concert-service:
+#    container_name: concert-service
+#    build:
+#      context: ../application/concert-service
+#      dockerfile: Dockerfile
+#    environment:
+#      SPRING_PROFILES_ACTIVE: local
+#    ports:
+#      - '11000:11000'
+#    restart: always
+#    depends_on:
+#      - postgres-conert
+#    volumes:
+#      - ../logs/concertservice:/logs/concertservice
+#    networks:
+#      - service-network
