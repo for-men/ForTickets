@@ -44,7 +44,7 @@ base-package:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:12001/eureka/
+      defaultZone: http://eureka-server:12001/eureka/
 
 management:
   endpoints:

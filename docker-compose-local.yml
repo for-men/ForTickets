@@ -1,44 +1,82 @@
 version: '3.8'
 
 services:
-  eureka-service:
-    image: uzjaee/eureka:0.2  # 빌드한 eureka 이미지 이름
+  eureka-server:
+    container_name: eureka-server
+    build:
+      context: ./application/eureka
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: local
     ports:
-      - '12001:12001'  # Eureka의 기본 포트
+      - '12001:12001'
+    restart: always
+    volumes:
+      - ./log/eureka:/app/log/eureka
     networks:
       - service-network
 
   gateway-service:
-    image: uzjaee/gateway-service:0.2  # 빌드한 gateway 이미지 이름
-    ports:
-      - '12011:12011'  # Gateway의 포트
+    container_name: gateway-service
+    build:
+      context: ./application/gateway-service
+      dockerfile: Dockerfile
     environment:
-      - SPRING_CLOUD_GATEWAY_DISCOVERY_CLIENT_ENABLED=true
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
-    depends_on:
-      - eureka-service
+      SPRING_PROFILES_ACTIVE: local
+    ports:
+      - '12011:12011'
+    restart: always
+    volumes:
+      - ./log/eureka:/app/log/eureka
     networks:
       - service-network
 
   user-service:
-    image: uzjaee/user-service:0.4
-    ports:
-      - '12021:12021'
+    container_name: user-service
+    build:
+      context: ./application/user-service
+      dockerfile: Dockerfile
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5432/fortickets
-      - SPRING_DATASOURCE_USERNAME=forman
-      - SPRING_DATASOURCE_PASSWORD=1234
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PORT=6379
-    depends_on:
-      - postgres-user
-      - eureka-service
-      - redis
+      SPRING_PROFILES_ACTIVE: local
+    ports:
+      - '12021'
+    restart: always
+    volumes:
+      - ./log/user:/app/log/user
     networks:
       - service-network
 
+  concert-service:
+    container_name: concert-service
+    build:
+      context: ./application/concert-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    ports:
+      - '12031'
+    restart: always
+    depends_on:
+      - postgres-concert
+    volumes:
+      - ./log/concert:/app/log/concert
+    networks:
+      - service-network
 
+  order-service:
+    container_name: order-service
+    build:
+      context: ./application/order-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    ports:
+      - '12041:12041'
+    restart: always
+    volumes:
+      - ./log/order:/app/log/order
+    networks:
+      - service-network
 
   postgres-user:
     image: 'postgres:16.4'
@@ -53,22 +91,6 @@ services:
     networks:
       - service-network
 
-  concert-service:
-    container_name: concert-service
-    build:
-      context: ./application/concert-service
-      dockerfile: Dockerfile
-    environment:
-      SPRING_PROFILES_ACTIVE: local
-    ports:
-      - '12031:12031'
-    restart: always
-    depends_on:
-      - postgres-concert
-    volumes:
-      - ../logs/concertservice:/logs/concertservice
-    networks:
-      - service-network
 
   postgres-concert:
     image: 'postgres:16.4'
@@ -83,25 +105,6 @@ services:
     networks:
       - service-network
 
-  order-service:
-    image: uzjaee/order-service:0.4  # 빌드한 order-service 이미지 이름
-    ports:
-      - '12041:12041'  # Order 서비스의 포트
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-order:5432/fortickets
-      - SPRING_DATASOURCE_USERNAME=forman
-      - SPRING_DATASOURCE_PASSWORD=1234
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
-      - KAFKA_BOOTSTRAPSERVERS=kafka:9092  # Kafka 브로커 URL
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PORT=6379
-    depends_on:
-      - postgres-order
-      - eureka-service
-      - redis
-      - kafka
-    networks:
-      - service-network
 
   postgres-order:
     image: 'postgres:16.4'
@@ -210,6 +213,6 @@ services:
     networks:
       - service-network
 
-##############
+
 networks:
   service-network:
