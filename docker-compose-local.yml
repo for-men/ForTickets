@@ -54,17 +54,19 @@ services:
       - service-network
 
   concert-service:
-    image: uzjaee/concert-service:0.2  # 빌드한 concert-service 이미지 이름
-    ports:
-      - '12031:12031'  # Concert 서비스의 포트
+    container_name: concert-service
+    build:
+      context: ./application/concert-service
+      dockerfile: Dockerfile
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-concert:5432/fortickets
-      - SPRING_DATASOURCE_USERNAME=forman
-      - SPRING_DATASOURCE_PASSWORD=1234
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+      SPRING_PROFILES_ACTIVE: local
+    ports:
+      - '12031:12031'
+    restart: always
     depends_on:
       - postgres-concert
-      - eureka-service
+    volumes:
+      - ../logs/concertservice:/logs/concertservice
     networks:
       - service-network
 

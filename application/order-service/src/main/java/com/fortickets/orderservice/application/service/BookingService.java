@@ -37,7 +37,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -58,7 +57,7 @@ public class BookingService {
 
     private final RedissonClient redissonClient;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public List<CreateBookingRes> createBooking(Long userId, CreateBookingReq createBookingReq) {
 
         log.info("createBookingReq : {}", createBookingReq);
