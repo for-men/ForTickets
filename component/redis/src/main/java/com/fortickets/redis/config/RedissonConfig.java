@@ -3,6 +3,8 @@ package com.fortickets.redis.config;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 
 public class RedissonConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(RedissonConfig.class);
     @Value("${SPRING_REDIS_HOST:localhost}") // 기본값은 localhost
     private String redisHost;
 
@@ -20,7 +24,8 @@ public class RedissonConfig {
     public RedissonClient redissonClient() {
         Config config = new Config();
 
-
+        log.info("RedissonConfig redisHost: " + redisHost);
+        log.info("RedissonConfig redisPort: " + redisPort);
         // Redis 서버 주소와 비밀번호 설정 (필요에 따라 변경)
 //        config.useSingleServer()
 //                .setAddress("redis://localhost:6379") // Redis 서버 주소
