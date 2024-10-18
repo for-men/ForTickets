@@ -1,16 +1,23 @@
 package com.fortickets.concertservice.application.dto.response;
 
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record GetConcertsRes(
-    Long id,
-    Long userId,
-    String concertName,
-    String concertImage,
-    int runtime,
-    LocalDate startDate,
-    LocalDate endDate,
-    Long price
-) {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class GetConcertsRes {
+    private Long id;
+    private Long userId;
+    private String concertName;
+    private String concertImage;
+    private int runtime;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Long price;
 
 }

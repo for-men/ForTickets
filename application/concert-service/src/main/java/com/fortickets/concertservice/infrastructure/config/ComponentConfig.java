@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
     "com.fortickets.common.exception",
     "com.fortickets.common.jpa",
     "com.fortickets.common.security",
+    "com.fortickets.redis"
 })
 public class ComponentConfig {
 }
