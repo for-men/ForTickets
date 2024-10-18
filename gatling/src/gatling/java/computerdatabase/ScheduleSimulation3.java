@@ -46,6 +46,6 @@ public class ScheduleSimulation3 extends Simulation {
 
     {
         // 시뮬레이션 설정: 한 번에 n명의 사용자가 스케줄 조회 시도
-        setUp(scn.injectOpen(rampUsers(1000).during(1))).protocols(httpProtocol);
+        setUp(scn.injectOpen(rampUsers(10000).during(10))).protocols(httpProtocol);
     }
 }

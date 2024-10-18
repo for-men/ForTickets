@@ -11,8 +11,8 @@ spring:
   cloud:
     gateway:
       default-filters:
-        - name: TicketFilter
-#        - name: KafkaRequestFilter
+#        - name: TicketFilter
+        - name: KafkaFilter
       routes:
         - id: user-service
           uri: lb://user-service
@@ -49,3 +49,7 @@ management:
 
 kafka:
   bootstrap-servers: localhost:9092
+
+logging:
+  level:
+    org.apache.kafka.clients.producer.ProducerConfig: WARN
