@@ -8,9 +8,9 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 WORKDIR /app
 
 # 호스트의 JAR 파일을 컨테이너의 /app 디렉토리로 복사합니다.
-COPY build/libs/order-service.jar app.jar
+COPY build/libs/order-service.jar order.jar
 
 ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
 
 # 컨테이너가 시작될 때 실행할 명령을 지정합니다.
-CMD ["java", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "-jar", "app.jar"]
+CMD ["java", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "-jar", "order.jar"]
