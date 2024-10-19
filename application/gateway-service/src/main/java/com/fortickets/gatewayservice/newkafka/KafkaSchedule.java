@@ -25,16 +25,19 @@ public class KafkaSchedule {
     // 대기표 확인 및 재전송 스케줄
     @Scheduled(fixedRate = 3000) // 3초마다 실행
     public void checkWaitingTickets() {
-        for (Map.Entry<Long, ServerWebExchange> entry : waitingTickets.entrySet()) {
-            Long ticketNumber = entry.getKey();
-            ServerWebExchange exchange = entry.getValue();
+        // 대기건수가 1건이라도 남아있으면 재요청
+        if (!waitingTickets.isEmpty()) {
+            for (Map.Entry<Long, ServerWebExchange> entry : waitingTickets.entrySet()) {
+                Long ticketNumber = entry.getKey();
+                ServerWebExchange exchange = entry.getValue();
 
-            long currentOffset = kafkaConsumerManager.getCurrentOffsetFromKafka(0); // 기본 파티션 사용
+                long currentOffset = kafkaConsumerManager.getCurrentOffsetFromKafka(0); // 기본 파티션 사용
 
-            if (ticketNumber <= currentOffset) {
-                // 현재 오프셋이 대기표 번호보다 크거나 같으면 요청 재전송
-                kafkaProducer.sendTicket(exchange, exchange.getRequest().getPath().toString()); // 요청 재전송
-                waitingTickets.remove(ticketNumber); // 대기표에서 제거
+                if (ticketNumber <= currentOffset) {
+                    // 현재 오프셋이 대기표 번호보다 크거나 같으면 요청 재전송
+                    kafkaProducer.sendTicket(exchange, exchange.getRequest().getPath().toString()); // 요청 재전송
+                    waitingTickets.remove(ticketNumber); // 대기표에서 제거
+                }
             }
         }
     }

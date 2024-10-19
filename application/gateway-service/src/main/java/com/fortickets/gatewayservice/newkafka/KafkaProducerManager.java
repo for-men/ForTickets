@@ -33,7 +33,6 @@ public class KafkaProducerManager {
 
         return Mono.fromFuture(future)
             .flatMap(sendResult -> {
-                log.info("hi");
                 RecordMetadata metadata = sendResult.getRecordMetadata();
                 long offset = metadata.offset(); // Kafka Offset을 대기표로 사용
                 ServerHttpResponse response = exchange.getResponse();
@@ -46,7 +45,7 @@ public class KafkaProducerManager {
 
                 // 429 상태 반환 -> 200으로 변경
                 response.setStatusCode(HttpStatus.OK);
-                log.info("Ticket issued: {}", randomUUID); // 대기표 발급 정보 로그 출력
+                log.info("Ticket issued: {}, with Kafka Offset: {}", randomUUID, offset);
                 return response.setComplete();
             })
         .doOnError(error -> log.error("Error issuing ticket to Kafka: {}", error.getMessage()));

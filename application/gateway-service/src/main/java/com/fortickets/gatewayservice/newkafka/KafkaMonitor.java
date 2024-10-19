@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class KafkaMonitor {
 
-    private static final int REQUEST_THRESHOLD = 3000; // 예제 임계치
+    private static final int REQUEST_THRESHOLD = 10; // 예제 임계치
     private final AtomicInteger currentRequestCount = new AtomicInteger(0);
     private final Map<String, Long> waitingTickets = new ConcurrentHashMap<>(); // UUID와 offset 매핑
     private final Map<String, ServerWebExchange> exchangeMap = new ConcurrentHashMap<>(); // UUID와 exchange 매핑

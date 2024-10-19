@@ -33,6 +33,8 @@ public class KafkaConsumerManager implements ConsumerSeekAware {
     public void listen(String message) {
         log.info("Received message: {}", message);
         handleMessage(message);
+        //리트라이 로직 추가 (임계치 기준으로 작동하도록)
+        // 카프카가 아닌 queeu에 대기열을 쌓도록 설정
     }
 
     // 메시지 처리 로직
