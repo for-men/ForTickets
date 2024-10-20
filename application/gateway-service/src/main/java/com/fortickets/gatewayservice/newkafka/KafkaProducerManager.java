@@ -69,7 +69,7 @@ public class KafkaProducerManager {
                         response.getHeaders().add("X-Random-UUID", randomUUID); // UUID 추가
                         kafkaMonitor.addWaitingTicket(randomUUID, offset, exchange); // 대기표 추가
 
-                        response.setStatusCode(HttpStatus.OK); // 200 상태 반환
+                        response.setStatusCode(HttpStatus.ACCEPTED); // 202 상태 반환
                         log.info("Ticket issued: {}, with Kafka Offset: {}", randomUUID, offset);
                         return response.setComplete();
                     })

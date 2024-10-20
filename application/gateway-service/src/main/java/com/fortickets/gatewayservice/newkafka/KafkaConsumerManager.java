@@ -72,10 +72,14 @@ public class KafkaConsumerManager implements ConsumerSeekAware {
         return webClient.post()
             .uri(requestData.getUrl())
             .headers(httpHeaders -> {
+                httpHeaders.set("X-Resend-Request", "true");
                 // 헤더 정보 추가 (안전한 파싱)
-                String[] headerPairs = requestData.getHeaders().split(", ");
+                String[] headerPairs = requestData.getHeaders()
+                    .replaceAll("[\\[\\]\"]", "") // 대괄호와 따옴표 제거
+                    .split(", ");
                 for (String header : headerPairs) {
-                    String[] keyValue = header.split(": ", 2); // 2개로 제한해 split 수행
+                    // "accept: application/json" 형식으로 분리
+                    String[] keyValue = header.split(":\\s*", 2); // 콜론과 공백으로 분리
                     if (keyValue.length == 2) { // 유효한 키-값인지 체크
                         httpHeaders.set(keyValue[0].trim(), keyValue[1].trim());
                     } else {

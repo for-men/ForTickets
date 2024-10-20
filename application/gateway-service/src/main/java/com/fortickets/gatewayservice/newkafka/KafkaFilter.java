@@ -33,9 +33,16 @@ public class KafkaFilter extends AbstractGatewayFilterFactory<KafkaFilter.Config
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
             String ticketHeader = request.getHeaders().getFirst("X-Ticket-Number");
+            String resendHeader = request.getHeaders().getFirst("X-Resend-Request"); // 재전송 요
 
             // 트래픽 모니터링 시작
             kafkaMonitor.incrementRequestCount();
+
+            // 재전송 요청인 경우
+            if (resendHeader != null) {
+                // 재전송된 요청을 처리
+                return chain.filter(exchange).doFinally(signalType -> kafkaMonitor.decrementRequestCount());
+            }
 
             // 트래픽이 임계치를 초과할 경우
             if (kafkaMonitor.isOverloaded()) {

@@ -67,7 +67,7 @@ public class UserSignUpSimulation extends Simulation {
         );
 
     {
-        setUp(signUpScenario.injectOpen(atOnceUsers(35)).protocols(httpProtocol));
+        setUp(signUpScenario.injectOpen(atOnceUsers(100)).protocols(httpProtocol));
     }
 }
 
