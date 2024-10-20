@@ -31,7 +31,7 @@ public class ConcertSimulation extends Simulation {
             // 1. 데이터 생성
             .exec(session -> {
                 // JWT 토큰을 포스트맨에서 복사하여 입력
-                String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjUsImVtYWlsIjoibWFuYWdlcjNAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfTUFOQUdFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyOTQxODM5OSwiZXhwIjoxNzI5NDIxOTk5fQ.l-VLTMP8tu4yKkmOU_-8QR3VFhjGfLAGIcx-2qpzzU0"; // 포스트맨에서 받은 JWT 토큰
+                String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjUsImVtYWlsIjoibWFuYWdlcjNAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfTUFOQUdFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyOTQzMDAzOCwiZXhwIjoxNzI5NDMzNjM4fQ.jSYZW26tbCJQX18zLDdjt-QhtJOuytUZxZrTxWchI54"; // 포스트맨에서 받은 JWT 토큰
                 Long concertId = getRandomConcertId(); // 랜덤한 스케줄 ID 생성
                 return session.set("jwtToken", jwtToken).set("concertId", concertId); // 세션에 토큰과 콘서트 ID 저장
             })
@@ -46,6 +46,6 @@ public class ConcertSimulation extends Simulation {
 
     {
         // 시뮬레이션 설정: 한 번에 1000명의 사용자가 콘서트 조회 시도
-        setUp(scn.injectOpen(rampUsers(100).during(1))).protocols(httpProtocol);
+        setUp(scn.injectOpen(rampUsers(3000).during(1))).protocols(httpProtocol);
     }
 }

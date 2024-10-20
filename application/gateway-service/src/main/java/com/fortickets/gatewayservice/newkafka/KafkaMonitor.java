@@ -28,19 +28,19 @@ public class KafkaMonitor {
 
     // 요청 수 증가
     public void incrementRequestCount() {
-        currentRequestCount.incrementAndGet();
-        checkOverloaded(); // 과부하 체크
+        int currentCount = currentRequestCount.incrementAndGet();
+        checkOverloaded(currentCount); // 과부하 체크
     }
 
     // 요청 수 감소
     public void decrementRequestCount() {
-        currentRequestCount.decrementAndGet();
-        checkOverloaded(); // 과부하 체크
+        int currentCount = currentRequestCount.decrementAndGet();
+        checkOverloaded(currentCount); // 과부하 체크
     }
 
     // 과부하 체크
-    private void checkOverloaded() {
-        boolean overloaded = currentRequestCount.get() > REQUEST_THRESHOLD;
+    private void checkOverloaded(int currentCount) {
+        boolean overloaded = currentCount > REQUEST_THRESHOLD;
 
         // 상태 변화가 있을 경우에만 로그 출력
         if (overloaded != wasOverloaded) {
@@ -74,40 +74,11 @@ public class KafkaMonitor {
 //                resendRequest(uuid);
                 waitingTickets.remove(uuid);
                 exchangeMap.remove(uuid); // 대기표에서 제거할 때 exchange도 함께 제거
+                decrementRequestCount(); // 요청 수 감소
             }
         });
+        log.info("Current request count after processing: {}", currentRequestCount.get());
+        // 과부하 상태 체크
+        checkOverloaded(currentRequestCount.get()); // 현재 요청 수로 과부하 상태 체크
     }
 }
-
-//    // 요청 재전송 로직
-//    private void resendRequest(String uuid) {
-//        // UUID에 해당하는 사용자의 요청을 재전송하는 로직 구현
-//        log.info("Resending request for ticket UUID: {}", uuid);
-//
-//        // UUID에 해당하는 대기표의 오프셋 가져오기
-//        Long offset = waitingTickets.get(uuid);
-//        if (offset != null) {
-//            // WebClient를 사용하여 요청 재전송
-//            // 재전송할 요청의 정보가 필요
-//            ServerWebExchange exchange = exchangeMap.get(uuid);
-//
-//            if (exchange != null) {
-//                String requestPath = exchange.getRequest().getPath().toString();
-//                HttpMethod method = exchange.getRequest().getMethod();
-//
-//                WebClient webClient = WebClient.create();
-//                Mono<Void> response = webClient.method(method)
-//                    .uri(requestPath)
-//                    .retrieve()
-//                    .bodyToMono(Void.class);
-//
-//                response.doOnSuccess(aVoid -> log.info("Successfully resent request for ticket UUID: {}", uuid))
-//                    .doOnError(error -> log.error("Error resending request for ticket UUID: {}", uuid, error))
-//                    .subscribe();
-//            } else {
-//                log.warn("No request found for ticket UUID: {}", uuid);
-//            }
-//        } else {
-//            log.warn("No offset found for ticket UUID: {}", uuid);
-//        }
-//    }
