@@ -26,8 +26,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: "500m"
+          cpus: "1"
+          memory: "1G"
     build:
       context: ./application/gateway-service
       dockerfile: Dockerfile
@@ -65,7 +65,6 @@ services:
       - service-network
 
   concert-service:
-    container_name: concert-service
     deploy:
       resources:
         limits:
@@ -88,7 +87,6 @@ services:
       - service-network
 
   order-service:
-    container_name: order-service
     deploy:
       resources:
         limits:
@@ -278,6 +276,9 @@ services:
   grafana:
     image: grafana/grafana
     container_name: grafana
+    volumes:
+      - ./grafana-data:/var/lib/grafana  # 영구 저장을 위한 볼륨 매핑
+      - ./grafana/provisioning:/etc/grafana/provisioning  # 프로비저닝 설정 (추가)
     deploy:
       resources:
         limits:
