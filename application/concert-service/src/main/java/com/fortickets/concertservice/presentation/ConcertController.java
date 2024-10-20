@@ -11,9 +11,7 @@ import com.fortickets.concertservice.application.dto.response.GetConcertRes;
 import com.fortickets.concertservice.application.dto.response.GetConcertsRes;
 import com.fortickets.concertservice.application.service.ConcertService;
 import jakarta.validation.Valid;
-
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -61,7 +58,8 @@ public class ConcertController {
     // 특정 공연 수정
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @PatchMapping("/{concertId}")
-    public CommonResponse<GetConcertRes> updateConcertById(@PathVariable("concertId") Long concertId, @Valid @RequestBody UpdateConcertReq updateConcertReq) {
+    public CommonResponse<GetConcertRes> updateConcertById(@PathVariable("concertId") Long concertId,
+        @Valid @RequestBody UpdateConcertReq updateConcertReq) {
         concertService.updateConcertById(concertId, updateConcertReq);
         return CommonResponse.success(concertService.getConcertById(concertId));
     }
@@ -89,8 +87,8 @@ public class ConcertController {
     // 공연 이름으로 검색
     @GetMapping("/search")
     public CommonResponse<List<GetConcertDetailRes>> searchConcertByName(
-            @RequestParam(required = false, name = "concert-name") String concertName
-    ){
+        @RequestParam(required = false, name = "concert-name") String concertName
+    ) {
         return CommonResponse.success(concertService.searchConcertName(concertName));
     }
 
