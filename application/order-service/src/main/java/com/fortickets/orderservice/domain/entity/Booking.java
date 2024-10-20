@@ -1,9 +1,8 @@
 package com.fortickets.orderservice.domain.entity;
 
 import static com.fortickets.common.jpa.BaseEntity.DELETED_FALSE;
-
-import com.fortickets.common.util.BookingStatus;
 import com.fortickets.common.jpa.BaseEntity;
+import com.fortickets.common.util.BookingStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -70,5 +69,10 @@ public class Booking extends BaseEntity {
 
     public void confirm() {
         this.status = BookingStatus.CONFIRMED;
+    }
+
+    // Kafka 비동기 테스트용 코드
+    public void setStatus(BookingStatus bookingStatus) {
+        this.status = bookingStatus;
     }
 }
