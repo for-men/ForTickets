@@ -31,7 +31,7 @@ public class ConcertSimulation extends Simulation {
             // 1. 데이터 생성
             .exec(session -> {
                 // JWT 토큰을 포스트맨에서 복사하여 입력
-                String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidXNlcjEwQGVtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpc3MiOiJ1c2VyLXNlcnZpY2UiLCJpYXQiOjE3MjkzOTA5MzUsImV4cCI6MTcyOTM5NDUzNX0.c3Uc-e3ZQUdrNfbqDq-Ichyd-LtOypTn9G3n35rsYc4"; // 포스트맨에서 받은 JWT 토큰
+                String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjUsImVtYWlsIjoibWFuYWdlcjNAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfTUFOQUdFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyOTQxODM5OSwiZXhwIjoxNzI5NDIxOTk5fQ.l-VLTMP8tu4yKkmOU_-8QR3VFhjGfLAGIcx-2qpzzU0"; // 포스트맨에서 받은 JWT 토큰
                 Long concertId = getRandomConcertId(); // 랜덤한 스케줄 ID 생성
                 return session.set("jwtToken", jwtToken).set("concertId", concertId); // 세션에 토큰과 콘서트 ID 저장
             })
@@ -40,7 +40,7 @@ public class ConcertSimulation extends Simulation {
             .exec(http("Concert 조회 요청")
                     .get("/concert-service/concerts/#{concertId}") // 콘서트 조회 API
                     .header("Authorization", "Bearer #{jwtToken}") // 동적으로 생성된 JWT 토큰 사용
-                    .check(status().is(200)) // 응답 상태 코드 체크
+                    .check(status().in(200, 202)) // 응답 상태 코드 체크
                     .check(bodyString().saveAs("responseBody")) // 응답 본문 저장
             );
 

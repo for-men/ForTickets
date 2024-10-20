@@ -40,6 +40,7 @@ public class KafkaFilter extends AbstractGatewayFilterFactory<KafkaFilter.Config
 
             // 재전송 요청인 경우
             if (resendHeader != null) {
+                log.info("Processing resend request with X-Resend-Request header: {}", resendHeader);
                 // 재전송된 요청을 처리
                 return chain.filter(exchange).doFinally(signalType -> kafkaMonitor.decrementRequestCount());
             }

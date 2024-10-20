@@ -69,28 +69,64 @@ public class KafkaConsumerManager implements ConsumerSeekAware {
 
     // 재전송을 위한 HTTP 요청 메서드
     private String resendRequest(RequestData requestData) {
-        return webClient.post()
-            .uri(requestData.getUrl())
-            .headers(httpHeaders -> {
-                httpHeaders.set("X-Resend-Request", "true");
-                // 헤더 정보 추가 (안전한 파싱)
-                String[] headerPairs = requestData.getHeaders()
-                    .replaceAll("[\\[\\]\"]", "") // 대괄호와 따옴표 제거
-                    .split(", ");
-                for (String header : headerPairs) {
-                    // "accept: application/json" 형식으로 분리
-                    String[] keyValue = header.split(":\\s*", 2); // 콜론과 공백으로 분리
-                    if (keyValue.length == 2) { // 유효한 키-값인지 체크
-                        httpHeaders.set(keyValue[0].trim(), keyValue[1].trim());
-                    } else {
-                        log.warn("Skipping invalid header: {}", header);
-                    }
-                }
-            })
-            .bodyValue(requestData.getBody())
-            .retrieve()
-            .bodyToMono(String.class)
-            .block(); // 동기적으로 응답을 받기 위해 block() 사용
+        // 요청 메서드에 따라 WebClient 요청 변경
+        switch (requestData.getMethod().toUpperCase()) {
+            case "POST":
+                return webClient.post()
+                    .uri(requestData.getUrl())
+                    .headers(httpHeaders -> setHeaders(httpHeaders, requestData.getHeaders()))
+                    .bodyValue(requestData.getBody())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block(); // 동기적으로 응답을 받기 위해 block() 사용
+
+            case "PUT":
+                return webClient.put()
+                    .uri(requestData.getUrl())
+                    .headers(httpHeaders -> setHeaders(httpHeaders, requestData.getHeaders()))
+                    .bodyValue(requestData.getBody())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            case "DELETE":
+                return webClient.delete()
+                    .uri(requestData.getUrl())
+                    .headers(httpHeaders -> setHeaders(httpHeaders, requestData.getHeaders()))
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            case "GET":
+                return webClient.get()
+                    .uri(requestData.getUrl())
+                    .headers(httpHeaders -> setHeaders(httpHeaders, requestData.getHeaders()))
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            default:
+                log.error("Unsupported HTTP method: {}", requestData.getMethod());
+                throw new UnsupportedOperationException("Unsupported HTTP method: " + requestData.getMethod());
+        }
+    }
+
+    // 헤더 설정을 위한 메서드
+    private void setHeaders(org.springframework.http.HttpHeaders httpHeaders, String headers) {
+        httpHeaders.set("X-Resend-Request", "true");
+        // 헤더 정보 추가 (안전한 파싱)
+        String[] headerPairs = headers
+            .replaceAll("[\\[\\]\"]", "") // 대괄호와 따옴표 제거
+            .split(", ");
+        for (String header : headerPairs) {
+            // "accept: application/json" 형식으로 분리
+            String[] keyValue = header.split(":\\s*", 2); // 콜론과 공백으로 분리
+            if (keyValue.length == 2) { // 유효한 키-값인지 체크
+                httpHeaders.set(keyValue[0].trim(), keyValue[1].trim());
+            } else {
+                log.warn("Skipping invalid header: {}", header);
+            }
+        }
     }
 
     // 리트라이 로직
@@ -142,6 +178,7 @@ public class KafkaConsumerManager implements ConsumerSeekAware {
         private String url;
         private String headers;
         private String body;
+        private String method; // HTTP 메서드 추가
 
         public RequestData() { }
     }
