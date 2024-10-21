@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
       args:
         SERVICE_NAME: eureka
-    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/eureka-service
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/eureka
     platform: linux/amd64
     ports:
       - '12001:12001'
