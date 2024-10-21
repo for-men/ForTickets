@@ -35,8 +35,8 @@ jobs:
 
       - name: Build with Gradle
         run:
-          ./gradlew clean
-          ./gradlew build
+          ../../gradlew clean
+          ../../gradlew build
         working-directory: ./application/${{ matrix.service }}
 
   docker:
