@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  eureka-service:
+  eureka:
     build:
       context: .
       dockerfile: Dockerfile
