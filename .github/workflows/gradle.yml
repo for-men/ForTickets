@@ -4,6 +4,9 @@ on:
   create:
     branches:
       - 'release/mvp*'
+  push:
+    branches:
+      - 'feat/*'
 env:
   ECR_NAMESPACE : forticketing
 
@@ -26,8 +29,9 @@ jobs:
           distribution: 'temurin'
 
       - name: Build with Gradle
-        run: ./gradlew clean bootJar
-        working-directory: ${{ matrix.service }}
+        run:
+          ./gradlew clean
+          ./gradlew :application:${{ matrix.service }}:build
 
   docker:
     name: Buildand Push Docker Images to registry
