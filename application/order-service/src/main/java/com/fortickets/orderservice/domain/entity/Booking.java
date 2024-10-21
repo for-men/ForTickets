@@ -1,9 +1,8 @@
 package com.fortickets.orderservice.domain.entity;
 
 import static com.fortickets.common.jpa.BaseEntity.DELETED_FALSE;
-
-import com.fortickets.common.util.BookingStatus;
 import com.fortickets.common.jpa.BaseEntity;
+import com.fortickets.common.util.BookingStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -71,4 +70,9 @@ public class Booking extends BaseEntity {
     public void confirm() {
         this.status = BookingStatus.CONFIRMED;
     }
+
+    public void requestCancel() {
+        this.status = BookingStatus.CANCEL_REQUESTED;
+    }
+
 }
