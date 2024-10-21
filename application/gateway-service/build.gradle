@@ -10,8 +10,13 @@ dependencies {
 //    implementation project(":component:exception")
     //gateway
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+
+    //비동기 통신
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     //kafka
     implementation 'org.springframework.kafka:spring-kafka'
+
+    //WebSocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }

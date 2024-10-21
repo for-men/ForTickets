@@ -1,4 +1,4 @@
-package com.fortickets.gatewayservice.newkafka;
+package com.fortickets.gatewayservice.kafka;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,7 +14,7 @@ import org.springframework.web.server.ServerWebExchange;
 @Component
 public class KafkaMonitor {
 
-    private static final int REQUEST_THRESHOLD = 10; // 예제 임계치
+    private static final int REQUEST_THRESHOLD = 50; // 예제 임계치
     private final AtomicInteger currentRequestCount = new AtomicInteger(0);
     private final Map<String, Long> waitingTickets = new ConcurrentHashMap<>(); // UUID와 offset 매핑
     private final Map<String, ServerWebExchange> exchangeMap = new ConcurrentHashMap<>(); // UUID와 exchange 매핑
@@ -71,7 +71,6 @@ public class KafkaMonitor {
             long currentOffset = consumerManager.getCurrentOffsetFromKafka(0); // 예: 파티션 0의 현재 오프셋 확인
             if (offset <= currentOffset) {
                 // 사용자의 차례가 되었을 때 재요청
-//                resendRequest(uuid);
                 waitingTickets.remove(uuid);
                 exchangeMap.remove(uuid); // 대기표에서 제거할 때 exchange도 함께 제거
                 decrementRequestCount(); // 요청 수 감소

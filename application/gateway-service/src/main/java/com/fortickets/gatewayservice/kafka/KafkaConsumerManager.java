@@ -1,11 +1,11 @@
-package com.fortickets.gatewayservice.newkafka;
+package com.fortickets.gatewayservice.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.TopicPartition;
@@ -26,14 +26,17 @@ public class KafkaConsumerManager implements ConsumerSeekAware {
     private final int POOL_SIZE = 10; // 소비자 풀의 크기
     private final WebClient webClient; // WebClient 주입을 위한 필드 추가
     private final ObjectMapper objectMapper; // Jackson ObjectMapper 주입
+    //    private final SimpMessagingTemplate messagingTemplate; // WebSocket 메시지 전송을 위한 필드 추가
+    private final ConcurrentHashMap<String, String> resultStore = new ConcurrentHashMap<>(); // 결과 저장 맵
     private static final int MAX_RETRIES = 3; // 최대 재시도 횟수
 
     @Autowired
-    public KafkaConsumerManager(ConsumerFactory<String, String> consumerFactory, WebClient.Builder webClientBuilder) {
+    public KafkaConsumerManager(ConsumerFactory<String, String> consumerFactory, WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
         this.consumerFactory = consumerFactory;
         this.executorService = Executors.newFixedThreadPool(POOL_SIZE);
         this.webClient = webClientBuilder.build(); // WebClient 초기화
-        this.objectMapper = new ObjectMapper(); // ObjectMapper 초기화
+        this.objectMapper = objectMapper; // ObjectMapper 초기화
+//        this.messagingTemplate = messagingTemplate; // WebSocket 템플릿 초기화
     }
 
     // Kafka 메시지 수신 (스프링 관리)
@@ -59,6 +62,12 @@ public class KafkaConsumerManager implements ConsumerSeekAware {
             // 재전송 로직: HTTP 요청 보내기
             String response = resendRequest(requestData);
             log.info("Request resent with response: {}", response);
+
+            // 결과를 UUID를 키로 하여 저장
+            resultStore.put(requestData.getUuid(), response); // UUID를 추가로 전달해야 함
+
+            // WebSocket을 통해 결과 전송
+//            messagingTemplate.convertAndSend("/topic/results", response);
 
             return true; // 성공적으로 처리했을 경우
         } catch (Exception e) {
@@ -170,16 +179,5 @@ public class KafkaConsumerManager implements ConsumerSeekAware {
     // ExecutorService 종료 메서드
     public void shutdown() {
         executorService.shutdown();
-    }
-
-    // 요청 데이터 저장을 위한 내부 클래스
-    @Getter
-    public static class RequestData {
-        private String url;
-        private String headers;
-        private String body;
-        private String method; // HTTP 메서드 추가
-
-        public RequestData() { }
     }
 }

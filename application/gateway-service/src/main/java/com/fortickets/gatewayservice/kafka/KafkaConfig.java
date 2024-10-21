@@ -1,5 +1,6 @@
-package com.fortickets.gatewayservice.newkafka;
+package com.fortickets.gatewayservice.kafka;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -62,5 +63,10 @@ public class KafkaConfig {
         Map<String, Object> configs = new HashMap<>();
         configs.put("bootstrap.servers", bootstrapServers);
         return new KafkaAdmin(configs);
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 }
