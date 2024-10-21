@@ -3,6 +3,7 @@ package com.fortickets.gatewayservice.kafka;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -19,6 +20,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.annotation.EnableKafka;
 
+@Slf4j
 @Configuration
 @EnableKafka
 public class KafkaConfig {
@@ -43,6 +45,7 @@ public class KafkaConfig {
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> properties = new HashMap<>();
+        log.info("bootstrapt test i don't know why localhost" + bootstrapServers);
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, "ticket-consumer-group");
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());

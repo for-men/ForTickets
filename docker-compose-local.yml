@@ -200,29 +200,32 @@ services:
           memory: "500m"
     ports:
       - "9092:9092"
+    hostname: kafka
     environment:
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9092,OUTSIDE://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:29092,OUTSIDE://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_LISTENERS: INSIDE://0.0.0.0:9092,OUTSIDE://0.0.0.0:9092
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      HOSTNAME_COMMAND: "route -n | awk '/UG[ \t]/{print $$2}'"
+      KAFKA_ADVERTISED_HOST_NAME: kafka
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - service-network
 
-  #  kafka-ui:
-  #    image: provectuslabs/kafka-ui:latest
-  #    platform: linux/amd64
-  #    ports:
-  #      - "8080:8080"
-  #    environment:
-  #      KAFKA_CLUSTERS_0_NAME: local
-  #      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-  #      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-  #      KAFKA_CLUSTERS_0_READONLY: "false"
-  #    networks:
-  #      - service-network
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    platform: linux/amd64
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_READONLY: "false"
+    networks:
+      - service-network
 
 
   redis:

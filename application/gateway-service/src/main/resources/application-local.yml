@@ -11,8 +11,7 @@ spring:
   cloud:
     gateway:
       default-filters:
-        - name: TicketFilter
-      #        - name: KafkaRequestFilter
+        - name: KafkaFilter
       routes:
         - id: user-service
           uri: lb://user-service
