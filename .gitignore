@@ -49,3 +49,8 @@ redis_data_master3/
 redis_data_slave1/
 redis_data_slave2/
 redis_data_slave3/
+
+*.log
+*.zip
+/log
+/grafana-data

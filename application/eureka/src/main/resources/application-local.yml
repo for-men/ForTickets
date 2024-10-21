@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: eureka-server
+server:
+  port: 12001
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://eureka-server:12001/eureka/
+  instance:
+    hostname: eureka-server
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'prometheus'

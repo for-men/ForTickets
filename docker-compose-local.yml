@@ -1,0 +1,296 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    container_name: eureka-server
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    build:
+      context: ./application/eureka
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    ports:
+      - '12001:12001'
+    restart: always
+    volumes:
+      - ./log/eureka:/app/log/eureka
+    networks:
+      - service-network
+
+  gateway-service:
+    container_name: gateway-service
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: "1G"
+    build:
+      context: ./application/gateway-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    ports:
+      - '12011:12011'
+    restart: always
+    volumes:
+      - ./log/gateway:/app/log/gateway
+    networks:
+      - service-network
+
+  user-service:
+    container_name: user-service
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    build:
+      context: ./application/user-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_REDIS_HOST: redis
+    ports:
+      - '12021'
+    restart: always
+    depends_on:
+      - postgres-user
+    volumes:
+      - ./log/user:/app/log/user
+    networks:
+      - service-network
+
+  concert-service:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    build:
+      context: ./application/concert-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_REDIS_HOST: redis
+    ports:
+      - '12031'
+    restart: always
+    depends_on:
+      - postgres-concert
+    volumes:
+      - ./log/concert:/app/log/concert
+    networks:
+      - service-network
+
+  order-service:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    build:
+      context: ./application/order-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_REDIS_HOST: redis
+    ports:
+      - '12041'
+    restart: always
+    depends_on:
+      - postgres-order
+    volumes:
+      - ./log/order:/app/log/order
+    networks:
+      - service-network
+
+  postgres-user:
+    image: 'postgres:16.4'
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    environment:
+      - 'POSTGRES_DB=fortickets'
+      - 'POSTGRES_PASSWORD=1234'
+      - 'POSTGRES_USER=forman'
+    ports:
+      - '54322:5432'
+    volumes:
+      - ../db/user-service:/var/lib/postgresql/data
+    networks:
+      - service-network
+
+
+  postgres-concert:
+    image: 'postgres:16.4'
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    environment:
+      - 'POSTGRES_DB=fortickets'
+      - 'POSTGRES_PASSWORD=1234'
+      - 'POSTGRES_USER=forman'
+    ports:
+      - '54323:5432'
+    volumes:
+      - ../db/concert-service:/var/lib/postgresql/data
+    networks:
+      - service-network
+
+
+  postgres-order:
+    image: 'postgres:16.4'
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    environment:
+      - 'POSTGRES_DB=fortickets'
+      - 'POSTGRES_PASSWORD=1234'
+      - 'POSTGRES_USER=forman'
+    ports:
+      - '54324:5432'
+    volumes:
+      - ../db/order-service:/var/lib/postgresql/data
+    networks:
+      - service-network
+
+  zipkin:
+    image: openzipkin/zipkin
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    ports:
+      - "9411:9411" # Zipkin UI에 접근할 포트
+    networks:
+      - service-network
+
+  zookeeper:
+    image: zookeeper:latest
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - service-network
+
+  kafka:
+    image: wurstmeister/kafka:latest
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9092,OUTSIDE://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9092,OUTSIDE://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - service-network
+
+  #  kafka-ui:
+  #    image: provectuslabs/kafka-ui:latest
+  #    platform: linux/amd64
+  #    ports:
+  #      - "8080:8080"
+  #    environment:
+  #      KAFKA_CLUSTERS_0_NAME: local
+  #      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+  #      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+  #      KAFKA_CLUSTERS_0_READONLY: "false"
+  #    networks:
+  #      - service-network
+
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    environment:
+      SPRING_REDIS_HOST: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis_data:/data
+    networks:
+      - service-network
+
+  #  redis-stack:
+  #    image: redis/redis-stack
+  #    container_name: redis-stack-compose
+  #    restart: always
+  #    environment:
+  #      REDIS_ARGS: "--requirepass systempass"
+  #    volumes:
+  #      - ./redis_data:/data
+  #    networks:
+  #      - service-network
+
+  # Redis 마스터 노드 1
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker-config/prometheus.yml:/etc/prometheus/prometheus.yml  # 상대 경로 수정
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - service-network
+
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    volumes:
+      - ./grafana-data:/var/lib/grafana  # 영구 저장을 위한 볼륨 매핑
+      - ./grafana/provisioning:/etc/grafana/provisioning  # 프로비저닝 설정 (추가)
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500m"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - service-network
+
+
+networks:
+  service-network:

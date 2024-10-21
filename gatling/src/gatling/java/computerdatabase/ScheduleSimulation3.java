@@ -31,7 +31,7 @@ public class ScheduleSimulation3 extends Simulation {
             // 1. 데이터 생성
             .exec(session -> {
                 // JWT 토큰을 포스트맨에서 복사하여 입력
-                String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjUsImVtYWlsIjoibWFuYWdlcjNAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfTUFOQUdFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyOTQ4MzY0OSwiZXhwIjoxNzI5NDg3MjQ5fQ.hjfHEKBAed7jlqL7UyxXCXeagQVOKby5hQs9GiVSUSw"; // 포스트맨에서 받은 JWT 토큰
+                String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidXNlcjEwQGVtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpc3MiOiJ1c2VyLXNlcnZpY2UiLCJpYXQiOjE3Mjg0Njg4MDcsImV4cCI6MTcyODQ3MjQwN30.dbs4MCDlLuITKb2wIgIj8XNKM7oMPLDKR3k7Zs7MrHw"; // 포스트맨에서 받은 JWT 토큰
                 Long scheduleId = getRandomScheduleId(); // 랜덤한 스케줄 ID 생성
                 return session.set("jwtToken", jwtToken).set("scheduleId", scheduleId); // 세션에 토큰과 스케줄 ID 저장
             })
@@ -46,6 +46,6 @@ public class ScheduleSimulation3 extends Simulation {
 
     {
         // 시뮬레이션 설정: 한 번에 n명의 사용자가 스케줄 조회 시도
-        setUp(scn.injectOpen(rampUsers(100).during(1))).protocols(httpProtocol);
+        setUp(scn.injectOpen(rampUsers(1000).during(1))).protocols(httpProtocol);
     }
 }

@@ -29,7 +29,7 @@ public class CustomPreFilter extends OncePerRequestFilter {
         String requestURI = req.getRequestURI();
 
         // 토큰이 없이 통과시켜야 할 경로에 대해서는 필터를 타지 않고 바로 통과시킴 ex) /auth/**
-        if (requestURI.startsWith("/auth")) {
+        if (requestURI.startsWith("/auth") || requestURI.startsWith("/actuator")) {
             filterChain.doFilter(req, res);
             return;
         }
@@ -64,7 +64,6 @@ public class CustomPreFilter extends OncePerRequestFilter {
 
         // SecurityContext에 인증 정보 저장
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
 
         // SecurityContext에 저장된 인증 객체 확인
         Authentication storedAuth = SecurityContextHolder.getContext().getAuthentication();
