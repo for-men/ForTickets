@@ -26,7 +26,7 @@ spring:
       file: application/order-service/docker-compose.yml
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
 
   #      password: "systempass"
