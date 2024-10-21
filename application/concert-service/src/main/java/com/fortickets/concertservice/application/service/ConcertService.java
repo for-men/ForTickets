@@ -1,5 +1,6 @@
 package com.fortickets.concertservice.application.service;
 
+import com.fortickets.common.exception.GlobalException;
 import com.fortickets.common.util.ErrorCase;
 import com.fortickets.concertservice.application.dto.request.CreateConcertReq;
 import com.fortickets.concertservice.application.dto.request.UpdateConcertReq;
@@ -10,9 +11,13 @@ import com.fortickets.concertservice.application.dto.response.GetConcertsRes;
 import com.fortickets.concertservice.domain.entity.Concert;
 import com.fortickets.concertservice.domain.mapper.ConcertMapper;
 import com.fortickets.concertservice.domain.repository.ConcertRepository;
-import com.fortickets.common.exception.GlobalException;
+import com.fortickets.redis.RestPage;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ConcertService {
+
     private final ConcertRepository concertRepository;
     private final ConcertMapper concertMapper;
 
@@ -37,12 +43,22 @@ public class ConcertService {
     }
 
     // 모든 공연 조회
+    @Cacheable(value = "concerts")
     public Page<GetConcertsRes> getAllConcerts(Pageable pageable) {
         Page<Concert> concertList = concertRepository.findAll(pageable);
-        return concertList.map(concertMapper::toGetConcertsRes);
+
+        // Page<Concert>를 List<GetConcertsRes>로 변환
+        List<GetConcertsRes> concertResponses = concertList.getContent()
+            .stream()
+            .map(concertMapper::toGetConcertsRes)
+            .collect(Collectors.toList());
+
+        // RestPage로 변환하여 반환
+        return new RestPage<>(concertResponses, concertList.getNumber(), concertList.getSize(), concertList.getTotalElements());
     }
 
     // 특정 공연 조회
+    @Cacheable(value = "concert")
     public GetConcertRes getConcertById(Long concertId) {
         Concert concert = getConcertUtil(concertId);
         return concertMapper.toGetConcertRes(concert);
@@ -51,14 +67,17 @@ public class ConcertService {
     // 특정 공연 수정
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @Transactional
-    public void updateConcertById(Long concertId, UpdateConcertReq updateConcertReq) {
-       Concert concert = getConcertUtil(concertId);
+    @CachePut(value = "concert", key = "#concertId")
+    public GetConcertRes updateConcertById(Long concertId, UpdateConcertReq updateConcertReq) {
+        Concert concert = getConcertUtil(concertId);
         changeConcert(updateConcertReq, concert);
+        return concertMapper.toGetConcertRes(concert);
     }
 
     // 특정 공연 삭제
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @Transactional
+    @CacheEvict(value = "concert", key = "#concertId")
     public void deleteConcertById(String email, Long concertId) {
         Concert concert = getConcertUtil(concertId);
         concert.delete(email);
@@ -84,7 +103,7 @@ public class ConcertService {
     // 콘서트 조회 유틸
     private Concert getConcertUtil(Long concertId) {
         return concertRepository.findById(concertId)
-            .orElseThrow(()-> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
+            .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
     }
 
     // 콘서트 ID로 콘서트 조회

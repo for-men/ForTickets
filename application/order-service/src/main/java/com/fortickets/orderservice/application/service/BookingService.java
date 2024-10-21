@@ -1,18 +1,19 @@
 package com.fortickets.orderservice.application.service;
 
+import com.fortickets.common.GlobalUtil;
+import com.fortickets.common.exception.GlobalException;
 import com.fortickets.common.util.BookingStatus;
 import com.fortickets.common.util.ErrorCase;
-import com.fortickets.common.exception.GlobalException;
-import com.fortickets.common.GlobalUtil;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
+import com.fortickets.orderservice.application.dto.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
-import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
-import com.fortickets.orderservice.application.dto.response.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
+import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
+import com.fortickets.orderservice.application.dto.response.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.GetScheduleDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetUserRes;
 import com.fortickets.orderservice.domain.entity.Booking;
@@ -117,7 +118,7 @@ public class BookingService {
     }
 
     @Transactional
-    public void confirmBooking(Long getUserId, ConfirmBookingReq confirmBookingReq) {
+    public CreatePaymentRes confirmBooking(Long getUserId, ConfirmBookingReq confirmBookingReq) {
         // 요청 사용자와 예약 사용자가 같은지 확인
         if (!getUserId.equals(confirmBookingReq.userId())) {
             throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
@@ -143,7 +144,7 @@ public class BookingService {
             .build();
 
         // 결제 생성
-        paymentService.createPayment(createPaymentReq);
+        return paymentService.createPayment(createPaymentReq);
     }
 
     public Page<GetBookingRes> getBooking(String nickname, String concertName, Pageable pageable) {

@@ -18,9 +18,11 @@ public interface BookingMapper {
     @Mapping(source = "booking.concertId", target = "concertId")
     @Mapping(source = "booking.id", target = "id")
     @Mapping(source = "booking.price", target = "price")
+    @Mapping(source = "booking.payment.id", target = "paymentId")
     GetBookingRes toGetBookingRes(Booking booking, GetConcertRes concertRes);
 
     @Mapping(source = "booking.concertId", target = "concertId")
     @Mapping(source = "booking.scheduleId", target = "scheduleId")
+    @Mapping(source = "booking.payment.id", target = "paymentId")
     GetConcertDetailRes toGetConcertDetailRes(Booking booking, GetScheduleDetailRes getScheduleDetailRes);
 }

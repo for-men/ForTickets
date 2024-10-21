@@ -4,6 +4,7 @@ import com.fortickets.common.security.CustomUser;
 import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
+import com.fortickets.orderservice.application.dto.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
 import com.fortickets.orderservice.application.dto.request.RequestPaymentReq;
 import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,8 +36,8 @@ public class PaymentController {
      * 결제 생성 내부에서 예매 생성 시 결제 생성
      */
     @PostMapping
-    public void createPayment(@Valid @RequestBody CreatePaymentReq createPaymentReq) {
-        paymentService.createPayment(createPaymentReq);
+    public CommonResponse<CreatePaymentRes> createPayment(@Valid @RequestBody CreatePaymentReq createPaymentReq) {
+        return CommonResponse.success(paymentService.createPayment(createPaymentReq));
     }
 
     /**
@@ -74,7 +74,8 @@ public class PaymentController {
         @RequestParam(required = false, name = "nickname") String nickname,
         Pageable pageable
     ) {
-        return CommonResponse.success(paymentService.getPaymentsBySeller(customUser.getUserId(), customUser.getRole(), sellerId, nickname, pageable));
+        return CommonResponse.success(
+            paymentService.getPaymentsBySeller(customUser.getUserId(), customUser.getRole(), sellerId, nickname, pageable));
     }
 
     /**

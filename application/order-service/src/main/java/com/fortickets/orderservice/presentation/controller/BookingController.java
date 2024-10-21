@@ -4,6 +4,7 @@ import com.fortickets.common.security.CustomUser;
 import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
+import com.fortickets.orderservice.application.dto.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,11 +52,11 @@ public class BookingController {
      * 예매 확정 본인만 가능
      */
     @PatchMapping("/confirm")
-    public CommonResponse<CommonEmptyRes> confirmBooking(
+    public CommonResponse<CreatePaymentRes> confirmBooking(
         @UseAuth CustomUser customUser,
         @Valid @RequestBody ConfirmBookingReq confirmBookingReq) {
-        bookingService.confirmBooking(customUser.getUserId(), confirmBookingReq);
-        return CommonResponse.success();
+
+        return CommonResponse.success(bookingService.confirmBooking(customUser.getUserId(), confirmBookingReq));
     }
 
     /**
