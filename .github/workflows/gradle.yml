@@ -28,6 +28,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Print current directory path
+        run: pwd
+      - name: List current directory files
+        run: ls -la
+
       - name: Build with Gradle
         run:
           ./gradlew clean
