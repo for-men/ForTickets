@@ -28,7 +28,7 @@ services:
       - SPRING_CLOUD_GATEWAY_DISCOVERY_CLIENT_ENABLED=true
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
     depends_on:
-      - eureka-service
+      - eureka
     networks:
       - service-network
 
@@ -51,7 +51,7 @@ services:
       - SPRING_REDIS_PORT=6379
     depends_on:
       - postgres-user
-      - eureka-service
+      - eureka
       - redis
     networks:
       - service-network
@@ -87,7 +87,7 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
     depends_on:
       - postgres-concert
-      - eureka-service
+      - eureka
     networks:
       - service-network
 
@@ -125,7 +125,7 @@ services:
       - SPRING_REDIS_PORT=6379
     depends_on:
       - postgres-order
-      - eureka-service
+      - eureka
       - redis
       - kafka
     networks:
