@@ -4,6 +4,9 @@ on:
   create:
     branches:
       - 'release/mvp*'
+  push:
+    branches:
+      - 'feat/*'
 env:
   ECR_NAMESPACE : forticketing
 
