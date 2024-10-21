@@ -38,6 +38,10 @@ jobs:
           ./gradlew clean
           ./gradlew :application:${{ matrix.service }}:build
 
+      - name: Check Jar File
+        working-directory: app
+        run: ls -la
+
 
   docker:
     name: Buildand Push Docker Images to registry
