@@ -71,8 +71,8 @@ public class Booking extends BaseEntity {
         this.status = BookingStatus.CONFIRMED;
     }
 
-    // Kafka 비동기 테스트용 코드
-    public void setStatus(BookingStatus bookingStatus) {
-        this.status = bookingStatus;
+    public void requestCancel() {
+        this.status = BookingStatus.CANCEL_REQUESTED;
     }
+
 }
