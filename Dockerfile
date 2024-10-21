@@ -1,6 +1,6 @@
 # Dockerfile
 
-FROM openjdk:17-jdk-slim
+FROM openjdk:17-jdk-slim as build
 
 # 작업 디렉토리 설정
 WORKDIR /app
