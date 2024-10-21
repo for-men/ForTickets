@@ -1,12 +1,10 @@
 spring:
   application:
-    name: user-service
-  config:
-    import: "classpath:application-credentials.yml"
+    name: concert-service
   # db 설정
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:54322/fortickets
+    url: jdbc:postgresql://postgres-concert:5432/fortickets
     username: forman
     password: 1234
   jpa:
@@ -27,25 +25,26 @@ spring:
       stop:
         command: down
         timeout: 1m
-      file: application/user-service/docker-compose.yml
+      file: application/concert-service/docker-compose.yml
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
-#      password: systempass
+#      password: "systempass"
 
 server:
-  port: 12021
+  port: 12031
 
 # auditing entity scan을 위한 base package 설정
 base-package:
-  jpa: "com.fortickets.userservice"
+  jpa: "com.fortickets.concertservice"
+  exception: "com.fortickets.concertservice"
 
 # euereka client 등록
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:12001/eureka/
+      defaultZone: http://eureka-server:12001/eureka/
 
 management:
   endpoints:
@@ -54,7 +53,7 @@ management:
         include: 'prometheus'
   zipkin:
     tracing:
-      endpoint: "http://localhost:9411/api/v2/spans"
+      endpoint: "http://zipkin:9411/api/v2/spans"
   tracing:
     sampling:
       probability: 1.0
