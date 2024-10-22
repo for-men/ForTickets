@@ -1,6 +1,9 @@
 name: CI/CD Pipeline
 
 on:
+  push:
+    branches:
+      - 'feat/*'
   create:
     branches:
       - main
