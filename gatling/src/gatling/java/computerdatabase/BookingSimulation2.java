@@ -20,7 +20,7 @@ public class BookingSimulation2 extends Simulation {
         .baseUrl("http://localhost:12011") // 기본 URL 설정
         .header("Content-Type", "application/json")
         .header("Authorization",
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidXNlcjFAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyOTMyNDc4MCwiZXhwIjoxNzI5MzI4MzgwfQ.17JAmX40cH6HN97rQ2_YcPN55l01D6N-_6__7thy9mE");
+            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidXNlcjFAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyOTUyMDc4NSwiZXhwIjoxNzI5NTI0Mzg1fQ.AryY2lcQJfIjeE0TB7fPK_t72gef3GJ-lsEeicF-LEA");
 
     // concertId와 scheduleId를 동적으로 매칭하는 방식
     private Map<Integer, int[]> concertScheduleMap = new HashMap<>();

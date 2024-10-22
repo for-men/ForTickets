@@ -51,4 +51,4 @@ management:
       probability: 1.0
 
 kafka:
-  bootstrap-servers: kafka:9092
+  bootstrap-servers: kafka:29092

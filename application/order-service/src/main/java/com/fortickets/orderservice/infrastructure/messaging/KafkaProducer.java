@@ -15,6 +15,7 @@ public class KafkaProducer {
     public void sendMessage(String topic, String message) {
         log.info("2. Kafka로 메시지를 전송 중입니다. Topic: {}, Message: {}", topic, message);
         kafkaTemplate.send(topic, message);
+        kafkaTemplate.flush();
         log.info("3. Kafka로 메시지가 성공적으로 전송되었습니다. Topic: {}, Message: {}", topic, message);
 
     }
