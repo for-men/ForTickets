@@ -65,6 +65,9 @@ jobs:
           name: jars
           path: ./artifacts
 
+      - name: check artifacts
+        run: ls -al ./artifacts
+
       # AWS ECR 에 이미지 업로드 권한을 얻기 위해 인증을 진행합니다.
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
