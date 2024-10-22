@@ -35,6 +35,8 @@ jobs:
 
       - name: Restore application-credentials.yml
         run: | 
+          touch application/gateway-service/src/resources/application-credentials.yml
+          touch application/user-service/src/resources/application-credentials.yml
           echo "${{ secrets.APPLICATION_CREDENTIAL_YML }}" | base64 --decode > application/gateway-service/src/resources/application-credentials.yml
           echo "${{ secrets.APPLICATION_CREDENTIAL_YML }}" | base64 --decode > application/user-service/src/resources/application-credentials.yml
 
