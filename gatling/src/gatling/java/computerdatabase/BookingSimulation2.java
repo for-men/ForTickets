@@ -1,5 +1,11 @@
 package computerdatabase;
 
+import static io.gatling.javaapi.core.CoreDsl.StringBody;
+import static io.gatling.javaapi.core.CoreDsl.exec;
+import static io.gatling.javaapi.core.CoreDsl.scenario;
+import static io.gatling.javaapi.core.OpenInjectionStep.atOnceUsers;
+import static io.gatling.javaapi.http.HttpDsl.http;
+import static io.gatling.javaapi.http.HttpDsl.status;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import io.gatling.javaapi.core.Simulation;
 import io.gatling.javaapi.http.HttpProtocolBuilder;
@@ -7,19 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static io.gatling.javaapi.core.CoreDsl.StringBody;
-import static io.gatling.javaapi.core.CoreDsl.rampUsers;
-import static io.gatling.javaapi.core.CoreDsl.scenario;
-import static io.gatling.javaapi.http.HttpDsl.http;
-import static io.gatling.javaapi.http.HttpDsl.status;
-
 public class BookingSimulation2 extends Simulation {
 
     // HTTP 프로토콜 설정
     HttpProtocolBuilder httpProtocol = http
-            .baseUrl("http://localhost:12011") // 기본 URL 설정
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidXNlcjEwQGVtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpc3MiOiJ1c2VyLXNlcnZpY2UiLCJpYXQiOjE3Mjg1NDE0NjcsImV4cCI6MTcyODU0NTA2N30.VZK6iGVFWjIQ7hZIE8k4WnvuDPbb8-CrMlyPhQMZ48g");
+        .baseUrl("http://localhost:12011") // 기본 URL 설정
+        .header("Content-Type", "application/json")
+        .header("Authorization",
+            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidXNlcjEwQGVtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpc3MiOiJ1c2VyLXNlcnZpY2UiLCJpYXQiOjE3Mjk1NjI0MzIsImV4cCI6MTcyOTU2NjAzMn0.pnIvGxoaWAA0EBx_KZPG3rNIBSiRpwZthc--biKfoBo");
 
     // concertId와 scheduleId를 동적으로 매칭하는 방식
     private Map<Integer, int[]> concertScheduleMap = new HashMap<>();
@@ -72,27 +73,31 @@ public class BookingSimulation2 extends Simulation {
 
     // 시나리오 정의
     ScenarioBuilder scn = scenario("Booking Scenario")
-        .exec(session -> {
-            // concertId와 scheduleId를 한 번만 호출하고 저장
-            int concertId = getRandomConcertId();
-            int scheduleId = getRandomScheduleId(concertId);
+        .repeat(1).on( // 10번 반복
+            exec(session -> {
+                // concertId와 scheduleId를 한 번만 호출하고 저장
+                int concertId = getRandomConcertId();
+                int scheduleId = getRandomScheduleId(concertId);
 
-            return session.set("concertId", concertId)
-                .set("scheduleId", scheduleId);
-        })
-        .exec(http("Create Booking") // 요청 이름 설정
-            .post("/order-service/bookings") // 요청 경로
-            .body(StringBody(session -> "{ \"scheduleId\": " + session.getInt("scheduleId") +
-                ", \"concertId\": " + session.getInt("concertId") +
-                ", \"userId\": " + getUserId() +
-                ", \"price\": " + getRandomPrice() +
-                ", \"seat\": [ \"" + getRandomSeat() + "\" ] }"))
-            .check(status().in(200, 400)) // 다양한 상태 코드 체크
-        );
+                return session.set("concertId", concertId)
+                    .set("scheduleId", scheduleId);
+            })
+                .exec(http("Create Booking") // 요청 이름 설정
+                    .post("/order-service/bookings") // 요청 경로
+                    .body(StringBody(session -> "{ \"scheduleId\": " + session.getInt("scheduleId") +
+                        ", \"concertId\": " + session.getInt("concertId") +
+                        ", \"userId\": " + getUserId() +
+                        ", \"price\": " + getRandomPrice() +
+                        ", \"seat\": [ \"" + getRandomSeat() + "\" ] }"))
+                    .check(status().in(200, 202, 400)) // 다양한 상태 코드 체크
+                ));
+
     {
         // 시나리오 설정: 시나리오를 Gatling에 등록
 //        setUp(scn.injectOpen(atOnceUsers(1000))).protocols(httpProtocol); // 1명의 사용자가 동시에 요청을 보냄
-        setUp(scn.injectOpen(rampUsers(3000).during(1))).protocols(httpProtocol); // 10초동안 1000건의 요청
-
+        // 시나리오 실행 설정
+        setUp(
+            scn.injectOpen(atOnceUsers(100)) // 사용자 수 설정 (예: 1명)
+        ).protocols(httpProtocol);
     }
 }

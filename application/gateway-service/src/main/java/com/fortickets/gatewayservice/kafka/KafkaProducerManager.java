@@ -1,12 +1,9 @@
-package com.fortickets.gatewayservice.newkafka;
+package com.fortickets.gatewayservice.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID; // UUID 추가
 import java.util.concurrent.CompletableFuture;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.http.HttpStatus;
@@ -29,10 +26,10 @@ public class KafkaProducerManager {
     private final KafkaMonitor kafkaMonitor;
     private final ObjectMapper objectMapper; // JSON 직렬화를 위한 ObjectMapper
 
-    public KafkaProducerManager(KafkaTemplate<String, String> kafkaTemplate, KafkaMonitor kafkaMonitor) {
+    public KafkaProducerManager(KafkaTemplate<String, String> kafkaTemplate, KafkaMonitor kafkaMonitor, ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.kafkaMonitor = kafkaMonitor;
-        this.objectMapper = new ObjectMapper(); // ObjectMapper 초기화
+        this.objectMapper = objectMapper; // ObjectMapper 초기화
     }
 
     public Mono<Void> sendTicket(ServerWebExchange exchange) {
@@ -47,8 +44,11 @@ public class KafkaProducerManager {
 
         return requestBodyMono.flatMap(requestBody -> {
             try {
+                //UUID
+                String randomUUID = UUID.randomUUID().toString();
+
                 // RequestData 객체에 메서드 추가
-                RequestData requestData = new RequestData(requestMethod, requestPath, headers, requestBody);
+                RequestData requestData = new RequestData(requestMethod, requestPath, headers, requestBody, randomUUID);
 
                 String jsonMessage = objectMapper.writeValueAsString(requestData);
                 CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, jsonMessage);
@@ -59,7 +59,6 @@ public class KafkaProducerManager {
                         long offset = metadata.offset();
                         ServerHttpResponse response = exchange.getResponse();
 
-                        String randomUUID = UUID.randomUUID().toString();
                         response.getHeaders().add("X-Ticket-Number", String.valueOf(offset));
                         response.getHeaders().add("X-Random-UUID", randomUUID);
                         kafkaMonitor.addWaitingTicket(randomUUID, offset, exchange);
@@ -74,15 +73,5 @@ public class KafkaProducerManager {
                 return Mono.error(e);
             }
         });
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public class RequestData {
-        private String method; // HTTP 메서드 추가
-        private String url;
-        private String headers;
-        private String body;
     }
 }

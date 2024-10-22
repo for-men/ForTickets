@@ -1,8 +1,9 @@
-package com.fortickets.gatewayservice.newkafka;
+package com.fortickets.gatewayservice.kafka;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -20,6 +21,7 @@ public class KafkaMonitor {
     private final Map<String, ServerWebExchange> exchangeMap = new ConcurrentHashMap<>(); // UUID와 exchange 매핑
     private boolean wasOverloaded = false; // 이전 과부하 상태
     private final KafkaConsumerManager consumerManager; // KafkaConsumerManager 객체 추가
+    private final ReentrantLock lock = new ReentrantLock();
 
     // 생성자 주입
     public KafkaMonitor(KafkaConsumerManager consumerManager) {
@@ -28,18 +30,29 @@ public class KafkaMonitor {
 
     // 요청 수 증가
     public void incrementRequestCount() {
-        int currentCount = currentRequestCount.incrementAndGet();
-        checkOverloaded(currentCount); // 과부하 체크
+        lock.lock();
+        try {
+            int currentCount = currentRequestCount.incrementAndGet();
+            checkOverloaded(); // 과부하 체크
+        } finally {
+            lock.unlock();
+        }
     }
 
     // 요청 수 감소
     public void decrementRequestCount() {
-        int currentCount = currentRequestCount.decrementAndGet();
-        checkOverloaded(currentCount); // 과부하 체크
+        lock.lock();
+        try {
+            int currentCount = currentRequestCount.decrementAndGet();
+            checkOverloaded(); // 과부하 체크
+        } finally {
+            lock.unlock();
+        }
     }
 
     // 과부하 체크
-    private void checkOverloaded(int currentCount) {
+    private void checkOverloaded() {
+        int currentCount = currentRequestCount.get();
         boolean overloaded = currentCount > REQUEST_THRESHOLD;
 
         // 상태 변화가 있을 경우에만 로그 출력
@@ -79,6 +92,6 @@ public class KafkaMonitor {
         });
         log.info("Current request count after processing: {}", currentRequestCount.get());
         // 과부하 상태 체크
-        checkOverloaded(currentRequestCount.get()); // 현재 요청 수로 과부하 상태 체크
+        checkOverloaded(); // 현재 요청 수로 과부하 상태 체크
     }
 }

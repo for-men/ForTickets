@@ -1,4 +1,4 @@
-package com.fortickets.gatewayservice.newkafka;
+package com.fortickets.gatewayservice.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
@@ -29,11 +29,11 @@ public class KafkaConsumerManager implements ConsumerSeekAware {
     private static final int MAX_RETRIES = 3; // 최대 재시도 횟수
 
     @Autowired
-    public KafkaConsumerManager(ConsumerFactory<String, String> consumerFactory, WebClient.Builder webClientBuilder) {
+    public KafkaConsumerManager(ConsumerFactory<String, String> consumerFactory, WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
         this.consumerFactory = consumerFactory;
         this.executorService = Executors.newFixedThreadPool(POOL_SIZE);
         this.webClient = webClientBuilder.build(); // WebClient 초기화
-        this.objectMapper = new ObjectMapper(); // ObjectMapper 초기화
+        this.objectMapper = objectMapper; // ObjectMapper 초기화
     }
 
     // Kafka 메시지 수신 (스프링 관리)
@@ -170,16 +170,5 @@ public class KafkaConsumerManager implements ConsumerSeekAware {
     // ExecutorService 종료 메서드
     public void shutdown() {
         executorService.shutdown();
-    }
-
-    // 요청 데이터 저장을 위한 내부 클래스
-    @Getter
-    public static class RequestData {
-        private String url;
-        private String headers;
-        private String body;
-        private String method; // HTTP 메서드 추가
-
-        public RequestData() { }
     }
 }
