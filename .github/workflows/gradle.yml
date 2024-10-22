@@ -50,9 +50,7 @@ jobs:
     name: Build and Push Docker Images to registry
     needs: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [ eureka, concert-service, order-service, user-service, gateway-service ]
+
 
 
     steps:
@@ -80,14 +78,6 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Prepare Docker build context
-        run: |
-          mkdir -p application/${{ matrix.service }}/build/libs
-          cp artifacts/${{ matrix.service }}.jar application/${{ matrix.service }}/build/libs/
-
-      - name: Check jar file to Use for Dockerfile
-        run: ls -al application/${{ matrix.service }}/build/libs
 
 
       # docker compose 를 이용해서 여러 이미지를 모두 빌드하고, 별도의 script를 사용해서 이미지를 push 합니다.
