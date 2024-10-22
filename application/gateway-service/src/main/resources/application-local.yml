@@ -32,7 +32,8 @@ spring:
             - Path=/order-service/**
           filters:
             - RewritePath=/order-service/(?<segment>.*), /${segment}
-
+  kafka:
+    bootstrap-servers: kafka:29092
 server:
   port: 12011
 
@@ -50,5 +51,3 @@ management:
     sampling:
       probability: 1.0
 
-kafka:
-  bootstrap-servers: kafka:29092
