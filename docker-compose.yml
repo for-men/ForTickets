@@ -28,7 +28,7 @@ services:
       - '12011:12011'
     environment:
       - SPRING_CLOUD_GATEWAY_DISCOVERY_CLIENT_ENABLED=true
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:12001/eureka/
       - SERVICE_NAME=gateway-service
     depends_on:
       - eureka
@@ -49,7 +49,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5432/fortickets
       - SPRING_DATASOURCE_USERNAME=forman
       - SPRING_DATASOURCE_PASSWORD=1234
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:12001/eureka/
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
       - SERVICE_NAME=user-service
@@ -88,7 +88,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-concert:5432/fortickets
       - SPRING_DATASOURCE_USERNAME=forman
       - SPRING_DATASOURCE_PASSWORD=1234
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:12001/eureka/
       - SERVICE_NAME=concert-service
     depends_on:
       - postgres-concert
@@ -124,7 +124,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-order:5432/fortickets
       - SPRING_DATASOURCE_USERNAME=forman
       - SPRING_DATASOURCE_PASSWORD=1234
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:12001/eureka/
       - KAFKA_BOOTSTRAPSERVERS=kafka:9092
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
