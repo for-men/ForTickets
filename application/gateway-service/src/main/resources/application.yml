@@ -31,6 +31,8 @@ spring:
             - Path=/order-service/**
           filters:
             - RewritePath=/order-service/(?<segment>.*), /${segment}
+  kafka:
+    bootstrap-servers: kafka:29092
 
 server:
   port: 12011
@@ -46,8 +48,6 @@ management:
       exposure:
         include: 'prometheus'
 
-kafka:
-  bootstrap-servers: localhost:9092
 
 logging:
   level:
