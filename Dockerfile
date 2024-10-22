@@ -7,6 +7,7 @@ WORKDIR /app
 
 # 서비스 이름 인자를 받아 해당 서비스의 JAR 파일을 복사
 ARG SERVICE_NAME
+COPY artifacts/${SERVICE_NAME}.jar /app/${SERVICE_NAME}.jar
 
 ENV SERVICE_NAME=${SERVICE_NAME}
 # 애플리케이션 실행
