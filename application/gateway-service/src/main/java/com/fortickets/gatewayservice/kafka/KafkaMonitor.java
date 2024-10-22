@@ -27,28 +27,40 @@ public class KafkaMonitor {
     public KafkaMonitor(KafkaConsumerManager consumerManager) {
         this.consumerManager = consumerManager;
     }
-
     // 요청 수 증가
     public void incrementRequestCount() {
-        lock.lock();
-        try {
-            int currentCount = currentRequestCount.incrementAndGet();
-            checkOverloaded(); // 과부하 체크
-        } finally {
-            lock.unlock();
-        }
+        int currentCount = currentRequestCount.incrementAndGet();
+        checkOverloaded(); // 과부하 체크
     }
 
     // 요청 수 감소
     public void decrementRequestCount() {
-        lock.lock();
-        try {
-            int currentCount = currentRequestCount.decrementAndGet();
-            checkOverloaded(); // 과부하 체크
-        } finally {
-            lock.unlock();
-        }
+        int currentCount = currentRequestCount.decrementAndGet();
+        checkOverloaded(); // 과부하 체크
     }
+
+    // 동시성 제어를 위해 나중에 수정 예정
+//    // 요청 수 증가
+//    public void incrementRequestCount() {
+//        lock.lock();
+//        try {
+//            int currentCount = currentRequestCount.incrementAndGet();
+//            checkOverloaded(); // 과부하 체크
+//        } finally {
+//            lock.unlock();
+//        }
+//    }
+//
+//    // 요청 수 감소
+//    public void decrementRequestCount() {
+//        lock.lock();
+//        try {
+//            int currentCount = currentRequestCount.decrementAndGet();
+//            checkOverloaded(); // 과부하 체크
+//        } finally {
+//            lock.unlock();
+//        }
+//    }
 
     // 과부하 체크
     private void checkOverloaded() {

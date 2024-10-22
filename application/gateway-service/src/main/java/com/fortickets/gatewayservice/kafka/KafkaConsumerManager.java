@@ -88,6 +88,15 @@ public class KafkaConsumerManager implements ConsumerSeekAware {
                     .bodyToMono(String.class)
                     .block();
 
+            case "PATCH": // PATCH 메서드 추가
+                return webClient.patch()
+                    .uri(requestData.getUrl())
+                    .headers(httpHeaders -> setHeaders(httpHeaders, requestData.getHeaders()))
+                    .bodyValue(requestData.getBody())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
             case "DELETE":
                 return webClient.delete()
                     .uri(requestData.getUrl())
