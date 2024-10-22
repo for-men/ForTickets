@@ -1,24 +1,24 @@
 package computerdatabase;
 
-import static io.gatling.javaapi.core.CoreDsl.bodyString;
-import static io.gatling.javaapi.core.CoreDsl.exec;
-import static io.gatling.javaapi.core.CoreDsl.scenario;
-import static io.gatling.javaapi.http.HttpDsl.http;
-import static io.gatling.javaapi.http.HttpDsl.status;
 import io.gatling.javaapi.core.OpenInjectionStep;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import io.gatling.javaapi.core.Simulation;
 import io.gatling.javaapi.http.HttpProtocolBuilder;
 import java.util.concurrent.ThreadLocalRandom;
+import static io.gatling.javaapi.core.CoreDsl.bodyString;
+import static io.gatling.javaapi.core.CoreDsl.exec;
+import static io.gatling.javaapi.core.CoreDsl.scenario;
+import static io.gatling.javaapi.http.HttpDsl.http;
+import static io.gatling.javaapi.http.HttpDsl.status;
 
 public class ScheduleSimulation3 extends Simulation {
 
     // HTTP 프로토콜 설정
     HttpProtocolBuilder httpProtocol = http
-        .baseUrl("http://localhost:12011") // API의 기본 URL
-        .acceptHeader("application/json")
-        .contentTypeHeader("application/json")
-        .userAgentHeader("Gatling");
+            .baseUrl("http://localhost:12011") // API의 기본 URL
+            .acceptHeader("application/json")
+            .contentTypeHeader("application/json")
+            .userAgentHeader("Gatling");
 
     // 랜덤 스케줄 아이디 생성
     private Long getRandomScheduleId() {
@@ -46,7 +46,6 @@ public class ScheduleSimulation3 extends Simulation {
 
     {
         // 시뮬레이션 설정: 한 번에 n명의 사용자가 스케줄 조회 시도
-//        setUp(scn.injectOpen(rampUsers(1000).during(1))).protocols(httpProtocol);
         setUp(
             scn.injectOpen(OpenInjectionStep.atOnceUsers(1000)) // 사용자 수 설정 (예: 1명)
         ).protocols(httpProtocol);

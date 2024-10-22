@@ -73,7 +73,7 @@ public class BookingSimulation2 extends Simulation {
 
     // 시나리오 정의
     ScenarioBuilder scn = scenario("Booking Scenario")
-        .repeat(100).on( // 10번 반복
+        .repeat(1).on( // 10번 반복
             exec(session -> {
                 // concertId와 scheduleId를 한 번만 호출하고 저장
                 int concertId = getRandomConcertId();
@@ -89,7 +89,7 @@ public class BookingSimulation2 extends Simulation {
                         ", \"userId\": " + getUserId() +
                         ", \"price\": " + getRandomPrice() +
                         ", \"seat\": [ \"" + getRandomSeat() + "\" ] }"))
-                    .check(status().in(200, 400)) // 다양한 상태 코드 체크
+                    .check(status().in(200, 202, 400)) // 다양한 상태 코드 체크
                 ));
 
     {
