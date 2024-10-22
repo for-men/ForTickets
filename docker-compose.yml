@@ -52,6 +52,7 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
+      - SERVICE_NAME=user-service
     depends_on:
       - postgres-user
       - eureka
@@ -88,6 +89,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=forman
       - SPRING_DATASOURCE_PASSWORD=1234
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+      - SERVICE_NAME=concert-service
     depends_on:
       - postgres-concert
       - eureka
@@ -126,6 +128,7 @@ services:
       - KAFKA_BOOTSTRAPSERVERS=kafka:9092
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
+      - SERVICE_NAME=order-service
     depends_on:
       - postgres-order
       - eureka
