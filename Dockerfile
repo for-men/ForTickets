@@ -18,7 +18,7 @@ WORKDIR /app
 
 ARG SERVICE_NAME
 
-COPY $SERVICE_NAME /app
+COPY application/$SERVICE_NAME /app
 
 RUN gradle clean bootJar
 
