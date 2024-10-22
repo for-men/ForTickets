@@ -179,6 +179,19 @@ public class PaymentService {
         bookingList.forEach(Booking::confirm);
 
     }
+
+    @Transactional
+    public void cancelPaymentTest(Long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+            .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
+
+        payment.cancel();
+
+        // 예매 취소
+        List<Booking> bookingList = bookingRepository.findByPaymentId(paymentId);
+        bookingList.forEach(booking -> { booking.cancel(); bookingRepository.save(booking); });
+    }
+
     //                                          카드번호 받기
     // 좌석 선택 (예매 생성) -> 결제 요청(결제 ID를 예매에 넣어주고 결제 생성) -> 결제 완료 시 예매 확정
     // 예매 생성 -> 결제 요청 (응답 결제 정보) -> (토스가쏴주는)결제완료 API (req 결제 ID , 예매 확정)

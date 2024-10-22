@@ -11,8 +11,7 @@ spring:
   cloud:
     gateway:
       default-filters:
-        - name: TicketFilter
-#        - name: KafkaRequestFilter
+        - name: KafkaFilter
       routes:
         - id: user-service
           uri: lb://user-service
@@ -32,6 +31,8 @@ spring:
             - Path=/order-service/**
           filters:
             - RewritePath=/order-service/(?<segment>.*), /${segment}
+  kafka:
+    bootstrap-servers: kafka:29092
 
 server:
   port: 12011
@@ -47,5 +48,7 @@ management:
       exposure:
         include: 'prometheus'
 
-kafka:
-  bootstrap-servers: localhost:9092
+
+logging:
+  level:
+    org.apache.kafka.clients.producer.ProducerConfig: WARN

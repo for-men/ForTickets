@@ -60,7 +60,8 @@ services:
     networks:
       - service-network
 
-  # Postgres for user-service
+
+
   postgres-user:
     image: postgres:16.4
     environment:
@@ -96,7 +97,7 @@ services:
     networks:
       - service-network
 
-  # Postgres for concert-service
+
   postgres-concert:
     image: postgres:16.4
     environment:
@@ -137,7 +138,6 @@ services:
     networks:
       - service-network
 
-  # Postgres for order-service
   postgres-order:
     image: postgres:16.4
     environment:
@@ -151,15 +151,13 @@ services:
     networks:
       - service-network
 
-  # Zipkin for distributed tracing
   zipkin:
     image: openzipkin/zipkin
     ports:
-      - "9411:9411"
+      - "9411:9411" # Zipkin UI에 접근할 포트
     networks:
       - service-network
 
-  # Zookeeper for Kafka
   zookeeper:
     image: zookeeper:latest
     ports:
@@ -170,9 +168,10 @@ services:
     networks:
       - service-network
 
-  # Kafka broker
+
   kafka:
     image: wurstmeister/kafka:latest
+#    platform: linux/arm64/v8
     ports:
       - "9092:9092"
     environment:
@@ -220,6 +219,8 @@ services:
 #      - ./redis_data:/data
 #    networks:
 #      - service-network
+
+  # Redis 마스터 노드 1
 
 networks:
   service-network:

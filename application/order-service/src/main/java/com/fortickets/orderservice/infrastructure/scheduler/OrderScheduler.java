@@ -15,8 +15,8 @@ public class OrderScheduler {
 
     private final BookingRepository bookingRepository;
 
-    // 1분에 한번씩 실행
-    @Scheduled(cron = "0 * * * * *")
+    // 10분마다 한번씩 실행
+    @Scheduled(cron = "0 0/10 * * * * ")
     @Transactional
     @Async
     public void cancelBooking() {

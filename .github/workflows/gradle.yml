@@ -3,10 +3,8 @@ name: CI/CD Pipeline
 on:
   create:
     branches:
+      - main
       - 'release/mvp*'
-  push:
-    branches:
-      - 'feat/*'
 env:
   ECR_NAMESPACE : forticketing
 
@@ -27,11 +25,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-
-      - name: Print current directory path
-        run: pwd
-      - name: List current directory files
-        run: ls -la application/${{ matrix.service }}/src/main/
 
       - name: Restore application-credentials.yml
         run: | 
@@ -58,8 +51,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
-
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -85,7 +76,6 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-
 
       # docker compose 를 이용해서 여러 이미지를 모두 빌드하고, 별도의 script를 사용해서 이미지를 push 합니다.
       - name: Build, Tag and Push docker image to AWS ECR

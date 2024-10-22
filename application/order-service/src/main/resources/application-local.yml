@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: order-service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgres-order:5432/fortickets
+    username: forman
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+  #        show_sql: true # sql 로깅
+  #        format_sql: true # SQL 문 정렬하여 출력
+  #        highlight_sql: true # SQL 문 색 부여
+  docker:
+    compose:
+      lifecycle-management: start_and_stop # start_only, start_and_stop 옵션이 있으며, 스프링 종료 시 컨테이너 종료 여부를 결정할 수 있음
+      start:
+        command: up
+      stop:
+        command: down
+        timeout: 1m
+      file: application/order-service/docker-compose.yml
+  data:
+    redis:
+      host: redis
+      port: 6379
+
+  #      password: "systempass"
+
+  # kafka
+  kafka:
+    bootstrap-servers: kafka:29092
+    consumer:
+      group-id: order-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+
+server:
+  port: 12041
+
+# auditing entity scan을 위한 base package 설정
+base-package:
+  jpa: "com.fortickets.orderservice"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:12001/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'prometheus'
+  tracing:
+    sampling:
+      probability: 1.0
