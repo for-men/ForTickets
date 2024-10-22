@@ -31,14 +31,14 @@ jobs:
       - name: Print current directory path
         run: pwd
       - name: List current directory files
-        run: ls -la application/${{ matrix.service }}/src/
+        run: ls -la application/${{ matrix.service }}/src/main/
 
       - name: Restore application-credentials.yml
         run: | 
-          touch application/gateway-service/src/resources/application-credentials.yml
-          touch application/user-service/src/resources/application-credentials.yml
-          echo "${{ secrets.APPLICATION_CREDENTIAL_YML }}" | base64 --decode > application/gateway-service/src/resources/application-credentials.yml
-          echo "${{ secrets.APPLICATION_CREDENTIAL_YML }}" | base64 --decode > application/user-service/src/resources/application-credentials.yml
+          touch application/gateway-service/src/main/resources/application-credentials.yml
+          touch application/user-service/src/main/resources/application-credentials.yml
+          echo "${{ secrets.APPLICATION_CREDENTIAL_YML }}" | base64 --decode > application/gateway-service/src/main/resources/application-credentials.yml
+          echo "${{ secrets.APPLICATION_CREDENTIAL_YML }}" | base64 --decode > application/user-service/src/main/resources/application-credentials.yml
 
       - name: Build with Gradle
         run: |
