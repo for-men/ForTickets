@@ -57,7 +57,7 @@ public class BookingService {
 
     private final RedissonClient redissonClient;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public List<CreateBookingRes> createBooking(Long userId, CreateBookingReq createBookingReq) {
 
         log.info("createBookingReq : {}", createBookingReq);
