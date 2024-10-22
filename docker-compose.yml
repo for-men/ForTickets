@@ -11,6 +11,8 @@ services:
     platform: linux/amd64
     ports:
       - '12001:12001'
+    environment:
+      - SERVICE_NAME=eureka
     networks:
       - service-network
 
@@ -27,6 +29,7 @@ services:
     environment:
       - SPRING_CLOUD_GATEWAY_DISCOVERY_CLIENT_ENABLED=true
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+      - SERVICE_NAME=gateway-service
     depends_on:
       - eureka
     networks:

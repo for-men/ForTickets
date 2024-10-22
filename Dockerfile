@@ -9,8 +9,9 @@ WORKDIR /app
 ARG SERVICE_NAME
 COPY artifacts/${SERVICE_NAME}.jar /app/${SERVICE_NAME}.jar
 
+ENV SERVICE_NAME = ${SERVICE_NAME}
 # 애플리케이션 실행
-ENTRYPOINT ["sh", "-c", "java -jar /app/${SERVICE_NAME}.jar"]
+ENTRYPOINT ["sh", "-c", "java -jar /app/$SERVICE_NAME.jar"]
 
 #FROM gradle:8.10.1-jdk17 AS build
 #
