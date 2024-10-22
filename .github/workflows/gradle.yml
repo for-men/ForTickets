@@ -1,13 +1,9 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - 'feat/*'
-  create:
+  pull_request:
     branches:
       - main
-      - 'release/mvp*'
 env:
   ECR_NAMESPACE : forticketing
 
