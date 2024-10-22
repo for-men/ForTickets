@@ -31,7 +31,7 @@ jobs:
       - name: Print current directory path
         run: pwd
       - name: List current directory files
-        run: ls -la application/${{ matrix.service }}/src/resources/
+        run: ls -la application/${{ matrix.service }}/src/
 
       - name: Restore application-credentials.yml
         run: | 
