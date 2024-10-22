@@ -1,11 +1,9 @@
 spring:
   application:
     name: order-service
-  profiles:
-    include: common
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:54324/fortickets
+    url: jdbc:postgresql://localhost:5432/fortickets
     username: forman
     password: 1234
   jpa:
@@ -31,9 +29,9 @@ spring:
       host: localhost
       port: 6379
 
-#      password: "systempass"
+  #      password: "systempass"
 
-# kafka
+  # kafka
   kafka:
     bootstrap-servers: localhost:9092
     consumer:

@@ -16,21 +16,21 @@ public interface ConcertClient {
     // TODO: 내부 API 생성 필요
     // Schedule(concert, stage) 정보 조회
     @GetMapping("/schedules/{scheduleId}/detail")
-    GetScheduleDetailRes getScheduleDetail(@PathVariable Long scheduleId);
+    GetScheduleDetailRes getScheduleDetail(@PathVariable(value = "scheduleId" ) Long scheduleId);
 
     // Concert 정보 조회 o
     @GetMapping("/concerts/{concertId}/detail")
-    GetConcertRes getConcert(@PathVariable Long concertId);
+    GetConcertRes getConcert(@PathVariable(value = "concertId" ) Long concertId);
 
     // Concert Name이 포함된 Concert 정보 조회
     @GetMapping("/concerts/{concertName}/search")
-    List<GetConcertRes> searchConcertName(@PathVariable String concertName);
+    List<GetConcertRes> searchConcertName(@PathVariable(value = "concertName") String concertName);
 
     // userId와 concertName이 포함된 Concert 정보 조회 o
     @GetMapping("/concerts/{userId}/{concertName}/search")
-    List<GetConcertRes> searchConcert(@PathVariable Long userId, @PathVariable String concertName);
+    List<GetConcertRes> searchConcert(@PathVariable(value = "userId") Long userId, @PathVariable(value = "concertName") String concertName);
 
     // userId로 Concert 정보 조회 o
     @GetMapping("/concerts/{userId}/seller")
-    List<GetConcertRes> getConcertBySeller(@PathVariable Long userId);
+    List<GetConcertRes> getConcertBySeller(@PathVariable(value ="userId")Long userId);
 }

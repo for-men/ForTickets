@@ -1,23 +1,25 @@
 package com.fortickets.orderservice.application.service;
 
+import com.fortickets.common.GlobalUtil;
+import com.fortickets.common.exception.GlobalException;
 import com.fortickets.common.util.BookingStatus;
 import com.fortickets.common.util.ErrorCase;
-import com.fortickets.common.exception.GlobalException;
-import com.fortickets.common.GlobalUtil;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
+import com.fortickets.orderservice.application.dto.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
-import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
-import com.fortickets.orderservice.application.dto.response.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
+import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
+import com.fortickets.orderservice.application.dto.response.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.GetScheduleDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetUserRes;
 import com.fortickets.orderservice.domain.entity.Booking;
 import com.fortickets.orderservice.domain.mapper.BookingMapper;
 import com.fortickets.orderservice.domain.repository.BookingRepository;
+import com.fortickets.orderservice.infrastructure.messaging.KafkaProducer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -36,7 +38,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -56,6 +57,8 @@ public class BookingService {
     private final PaymentService paymentService;
 
     private final RedissonClient redissonClient;
+
+    private final KafkaProducer kafkaProducer;
 
     @Transactional
     public List<CreateBookingRes> createBooking(Long userId, CreateBookingReq createBookingReq) {
@@ -117,7 +120,7 @@ public class BookingService {
     }
 
     @Transactional
-    public void confirmBooking(Long getUserId, ConfirmBookingReq confirmBookingReq) {
+    public CreatePaymentRes confirmBooking(Long getUserId, ConfirmBookingReq confirmBookingReq) {
         // 요청 사용자와 예약 사용자가 같은지 확인
         if (!getUserId.equals(confirmBookingReq.userId())) {
             throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
@@ -143,7 +146,7 @@ public class BookingService {
             .build();
 
         // 결제 생성
-        paymentService.createPayment(createPaymentReq);
+        return paymentService.createPayment(createPaymentReq);
     }
 
     public Page<GetBookingRes> getBooking(String nickname, String concertName, Pageable pageable) {
@@ -260,6 +263,36 @@ public class BookingService {
         return bookingMapper.toGetConcertDetailRes(booking, getScheduleDetailRes);
     }
 
+    // ================= 완성 코드 =================
+//    @Transactional
+//    public void cancelBooking(Long getUserId, String role, Long bookingId) {
+//
+//        // TODO : 이거 좀 애매함 확인 필요 -> 결제 취소
+//        Booking booking = bookingRepository.findById(bookingId)
+//            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
+//
+//        if (!role.equals("ROLE_MANAGER")) {
+//            if (!getUserId.equals(booking.getUserId())) {
+//                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+//            }
+//        }
+//        GetScheduleDetailRes scheduleRes = concertClient.getScheduleDetail(booking.getScheduleId());
+//
+//        // 공연이 끝났는지 체크 필요
+//        if (!possibleCancel(scheduleRes.concertDate(), scheduleRes.concertTime())) {
+//            throw new GlobalException(ErrorCase.CANNOT_CANCEL_BOOKING);
+//        }
+//
+//        paymentService.cancelPayment(getUserId, role, booking.getPayment().getId());
+//
+//        // Kafka에 예매 취소 메시지 전송
+//        String message = "Booking canceled for ID: " + bookingId;
+//        log.info("1. 예매 취소를 위한 Kafka 메시지 전송 준비 중입니다. Booking ID: {}", bookingId);
+//        kafkaProducer.sendMessage("booking-cancel-topic", message);
+//        log.info("4. 예매 취소를 위한 Kafka 메시지가 전송되었습니다. Booking ID: {}", bookingId);
+//    }
+
+    // ================= 테스트용 예매 취소 - 1 =================
     @Transactional
     public void cancelBooking(Long getUserId, String role, Long bookingId) {
 
@@ -279,8 +312,50 @@ public class BookingService {
             throw new GlobalException(ErrorCase.CANNOT_CANCEL_BOOKING);
         }
 
-        paymentService.cancelPayment(getUserId, role, booking.getPayment().getId());
+//        paymentService.cancelPayment(getUserId, role, booking.getPayment().getId());
+
+        // 취소 요청 됨(중간 상태) 상태로(사용자가 본인이 요청 중이라는 것을 알 수 있도록) 변경
+        booking.requestCancel();
+
+        // Kafka에 예매 취소 메시지 전송
+        String message = "Booking canceled for ID: " + bookingId;
+        log.info("1. 예매 취소를 위한 Kafka 메시지 전송 준비 중입니다. Booking ID: {}", bookingId);
+
+        kafkaProducer.sendMessage("booking-cancel-topic", message);
+
+        log.info("4. 예매 취소를 위한 Kafka 메시지가 전송되었습니다. Booking ID: {}", bookingId);
     }
+
+    // ================= 테스트용 예매 취소 - 1 =================
+//    @Transactional
+//    public void cancelBooking(Long getUserId, String role, Long bookingId) {
+//
+//        // TODO : 이거 좀 애매함 확인 필요 -> 결제 취소
+//        Booking booking = bookingRepository.findById(bookingId)
+//            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
+//
+//        if (!role.equals("ROLE_MANAGER")) {
+//            if (!getUserId.equals(booking.getUserId())) {
+//                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+//            }
+//        }
+//        GetScheduleDetailRes scheduleRes = concertClient.getScheduleDetail(booking.getScheduleId());
+//
+//        // 공연이 끝났는지 체크 필요
+////        if (!possibleCancel(scheduleRes.concertDate(), scheduleRes.concertTime())) {
+////            throw new GlobalException(ErrorCase.CANNOT_CANCEL_BOOKING);
+////        }
+//
+////        paymentService.cancelPayment(getUserId, role, booking.getPayment().getId());
+//
+//        // Kafka에 예매 취소 메시지 전송
+//        String message = "Booking canceled for ID: " + bookingId;
+//        log.info("1. 예매 취소를 위한 Kafka 메시지 전송 준비 중입니다. Booking ID: {}", bookingId);
+//
+//        kafkaProducer.sendMessage("booking-cancel-topic", message);
+//
+//        log.info("4. 예매 취소를 위한 Kafka 메시지가 전송되었습니다. Booking ID: {}", bookingId);
+//    }
 
     @Transactional
     public void deleteBooking(String email, Long bookingId) {

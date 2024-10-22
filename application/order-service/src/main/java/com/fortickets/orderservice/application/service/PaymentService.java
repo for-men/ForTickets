@@ -5,6 +5,7 @@ import com.fortickets.common.exception.GlobalException;
 import com.fortickets.common.util.ErrorCase;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
+import com.fortickets.orderservice.application.dto.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
 import com.fortickets.orderservice.application.dto.request.RequestPaymentReq;
 import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
@@ -42,7 +43,7 @@ public class PaymentService {
      * @param createPaymentReq
      */
     @Transactional
-    public void createPayment(CreatePaymentReq createPaymentReq) {
+    public CreatePaymentRes createPayment(CreatePaymentReq createPaymentReq) {
         // 결제 생성
         Payment payment = paymentMapper.toEntity(createPaymentReq);
         payment.waiting();
@@ -58,6 +59,8 @@ public class PaymentService {
 
         // 예매 저장
         bookingRepository.saveAll(bookingList);
+
+        return paymentMapper.toCreatePaymentRes(payment);
     }
 
     public Page<GetPaymentRes> getPayments(String nickname, Pageable pageable) {
@@ -69,8 +72,11 @@ public class PaymentService {
         } else {
             payments = paymentRepository.findAll(pageable);
         }
-
-        return payments.map(paymentMapper::toGetPaymentRes);
+        List<GetPaymentRes> getPaymentResList = payments.getContent().stream().map(payment -> {
+            var getConcertRes = concertClient.getConcert(payment.getConcertId());
+            return paymentMapper.toGetPaymentUser(payment, getConcertRes);
+        }).toList();
+        return new PageImpl<>(getPaymentResList, pageable, payments.getTotalElements());
     }
 
     public Page<GetPaymentRes> getPaymentsBySeller(Long getUserId, String role, Long userId, String nickname, Pageable pageable) {
@@ -87,8 +93,11 @@ public class PaymentService {
         } else {
             payments = paymentRepository.findAll(pageable);
         }
-
-        return payments.map(paymentMapper::toGetPaymentRes);
+        List<GetPaymentRes> getPaymentResList = payments.getContent().stream().map(payment -> {
+            var getConcertRes = concertClient.getConcert(payment.getConcertId());
+            return paymentMapper.toGetPaymentUser(payment, getConcertRes);
+        }).toList();
+        return new PageImpl<>(getPaymentResList, pageable, payments.getTotalElements());
     }
 
     public Page<GetPaymentRes> getPaymentByUser(Long getUserId, String role, Long userId, Pageable pageable) {
@@ -170,6 +179,19 @@ public class PaymentService {
         bookingList.forEach(Booking::confirm);
 
     }
+
+    @Transactional
+    public void cancelPaymentTest(Long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+            .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
+
+        payment.cancel();
+
+        // 예매 취소
+        List<Booking> bookingList = bookingRepository.findByPaymentId(paymentId);
+        bookingList.forEach(booking -> { booking.cancel(); bookingRepository.save(booking); });
+    }
+
     //                                          카드번호 받기
     // 좌석 선택 (예매 생성) -> 결제 요청(결제 ID를 예매에 넣어주고 결제 생성) -> 결제 완료 시 예매 확정
     // 예매 생성 -> 결제 요청 (응답 결제 정보) -> (토스가쏴주는)결제완료 API (req 결제 ID , 예매 확정)
