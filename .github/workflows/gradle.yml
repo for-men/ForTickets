@@ -39,8 +39,9 @@ jobs:
           ./gradlew :application:${{ matrix.service }}:build
 
       - name: Check Jar File
-        working-directory: application/${{ matrix.service }}/build/libs
-        run: ls -la
+        run: |
+          echo "Jar : "
+          ls -la application/${{ matrix.service }}/build/libs
 
 
   docker:
