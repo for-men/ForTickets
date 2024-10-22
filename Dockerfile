@@ -10,7 +10,7 @@ ARG SERVICE_NAME
 COPY artifacts/${SERVICE_NAME}.jar /app/${SERVICE_NAME}.jar
 
 # 애플리케이션 실행
-ENTRYPOINT ["java", "-jar", "/app/${SERVICE_NAME}.jar"]
+ENTRYPOINT ["sh", "-c", "java -jar /app/${SERVICE_NAME}.jar"]
 
 #FROM gradle:8.10.1-jdk17 AS build
 #
