@@ -33,17 +33,17 @@ jobs:
       - name: List current directory files
         run: ls -la
 
-      - name: Build with Gradle
-        run: |
-          ./gradlew clean
-          ./gradlew :application:${{ matrix.service }}:build
+#      - name: Build with Gradle
+#        run: |
+#          ./gradlew clean
+#          ./gradlew :application:${{ matrix.service }}:build
 
-      - name: Upload JAR artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: jars
-          path:
-            application/${{ matrix.service }}/build/libs/${{ matrix.service }}.jar
+#      - name: Upload JAR artifacts
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: jars
+#          path:
+#            application/${{ matrix.service }}/build/libs/${{ matrix.service }}.jar
 
 
   docker:
@@ -59,14 +59,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download JAR artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: jars
-          path: ./artifacts
-
-      - name: check artifacts
-        run: ls -al ./artifacts
+#      - name: Download JAR artifacts
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: jars
+#          path: ./artifacts
+#
+#      - name: check artifacts
+#        run: ls -al ./artifacts
 
       # AWS ECR 에 이미지 업로드 권한을 얻기 위해 인증을 진행합니다.
       - name: Configure AWS credentials
