@@ -20,7 +20,7 @@ public class BookingSimulation2 extends Simulation {
         .baseUrl("http://localhost:12011") // 기본 URL 설정
         .header("Content-Type", "application/json")
         .header("Authorization",
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidXNlcjFAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyOTU4MjgzNCwiZXhwIjoxNzI5NTg2NDM0fQ.sZbb_dofMoL7T6Es_aqjxrWOsyLjz-7h8ZfBjRDtTjs");
+            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidXNlcjFAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyOTMyNDc4MCwiZXhwIjoxNzI5MzI4MzgwfQ.17JAmX40cH6HN97rQ2_YcPN55l01D6N-_6__7thy9mE");
 
     // concertId와 scheduleId를 동적으로 매칭하는 방식
     private Map<Integer, int[]> concertScheduleMap = new HashMap<>();
@@ -73,7 +73,7 @@ public class BookingSimulation2 extends Simulation {
 
     // 시나리오 정의
     ScenarioBuilder scn = scenario("Booking Scenario")
-        .repeat(10).on( // 10번 반복
+        .repeat(1).on( // 10번 반복
             exec(session -> {
                 // concertId와 scheduleId를 한 번만 호출하고 저장
                 int concertId = getRandomConcertId();
@@ -89,7 +89,7 @@ public class BookingSimulation2 extends Simulation {
                         ", \"userId\": " + getUserId() +
                         ", \"price\": " + getRandomPrice() +
                         ", \"seat\": [ \"" + getRandomSeat() + "\" ] }"))
-                    .check(status().in(200, 400)) // 다양한 상태 코드 체크
+                    .check(status().in(200, 202, 400)) // 다양한 상태 코드 체크
                 ));
 
     {
@@ -97,7 +97,7 @@ public class BookingSimulation2 extends Simulation {
 //        setUp(scn.injectOpen(atOnceUsers(1000))).protocols(httpProtocol); // 1명의 사용자가 동시에 요청을 보냄
         // 시나리오 실행 설정
         setUp(
-            scn.injectOpen(atOnceUsers(10)) // 사용자 수 설정 (예: 1명)
+            scn.injectOpen(atOnceUsers(100)) // 사용자 수 설정 (예: 1명)
         ).protocols(httpProtocol);
     }
 }

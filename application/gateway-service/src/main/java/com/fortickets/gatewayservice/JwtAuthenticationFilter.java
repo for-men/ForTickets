@@ -51,8 +51,8 @@ public class JwtAuthenticationFilter implements GlobalFilter {
             Claims claims = getUserInfoFromToken(token, key);
 
             // 검증된 사용자 정보 출력
-            log.info("JWT 토큰에서 추출한 사용자 정보: userId = {}, email = {}, role = {}",
-                claims.get("userId"), claims.get("email"), claims.get("role"));
+//            log.info("JWT 토큰에서 추출한 사용자 정보: userId = {}, email = {}, role = {}",
+//                claims.get("userId"), claims.get("email"), claims.get("role"));
 
             Integer userId = claims.get("userId", Integer.class);
             String email = claims.get("email", String.class);
