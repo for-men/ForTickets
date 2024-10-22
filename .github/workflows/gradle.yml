@@ -79,7 +79,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Check Artifacts file
-        run: ls -al artifacts/${{matrix.service}}
+        run: ls -al artifacts/${{ matrix.service }}
 
       - name: Prepare Docker build context
         run: |
