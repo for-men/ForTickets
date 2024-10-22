@@ -94,7 +94,7 @@ jobs:
       - name: Build, Tag and Push docker image to AWS ECR
         run: |
            docker compose build
-          ./dockerTagAndPush.sh
+           ./dockerTagAndPush.sh
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
 
