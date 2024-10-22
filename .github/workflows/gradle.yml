@@ -54,6 +54,10 @@ jobs:
     name: Buildand Push Docker Images to registry
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [ eureka, concert-service, order-service, user-service, gateway-service ]
+
 
     steps:
       - name: Checkout
