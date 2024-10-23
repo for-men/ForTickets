@@ -3,9 +3,9 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - feat/*
 env:
-  ECR_NAMESPACE : forticketing
+  ECR_NAMESPACE: forticketing
 
 jobs:
   build:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [eureka, concert-service, order-service, user-service, gateway-service]
+        service: [ eureka, concert-service, order-service, user-service, gateway-service ]
 
     steps:
       - name: Checkout Code
@@ -26,7 +26,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Restore application-credentials.yml
-        run: | 
+        run: |
           touch application/gateway-service/src/main/resources/application-credentials.yml
           touch application/user-service/src/main/resources/application-credentials.yml
           echo "${{ secrets.APPLICATION_CREDENTIAL_YML }}" | base64 --decode > application/gateway-service/src/main/resources/application-credentials.yml
