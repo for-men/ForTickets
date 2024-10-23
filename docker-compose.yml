@@ -1,16 +1,18 @@
 version: '3.8'
 
 services:
-  eureka-service:
+  eureka:
     build:
       context: .
       dockerfile: Dockerfile
       args:
         SERVICE_NAME: eureka
-    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/eureka-service
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/eureka
     platform: linux/amd64
     ports:
       - '12001:12001'
+    environment:
+      - SERVICE_NAME=eureka
     networks:
       - service-network
 
@@ -26,9 +28,11 @@ services:
       - '12011:12011'
     environment:
       - SPRING_CLOUD_GATEWAY_DISCOVERY_CLIENT_ENABLED=true
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:12001/eureka/
+      - SPRING_KAFKA_BOOTSTRAPSERVERS=kafka:29092
+      - SERVICE_NAME=gateway-service
     depends_on:
-      - eureka-service
+      - eureka
     networks:
       - service-network
 
@@ -46,17 +50,19 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5432/fortickets
       - SPRING_DATASOURCE_USERNAME=forman
       - SPRING_DATASOURCE_PASSWORD=1234
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:12001/eureka/
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
+      - SERVICE_NAME=user-service
     depends_on:
       - postgres-user
-      - eureka-service
+      - eureka
       - redis
     networks:
       - service-network
 
-  # Postgres for user-service
+
+
   postgres-user:
     image: postgres:16.4
     environment:
@@ -84,14 +90,17 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-concert:5432/fortickets
       - SPRING_DATASOURCE_USERNAME=forman
       - SPRING_DATASOURCE_PASSWORD=1234
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:12001/eureka/
+      - SERVICE_NAME=concert-service
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
     depends_on:
       - postgres-concert
-      - eureka-service
+      - eureka
     networks:
       - service-network
 
-  # Postgres for concert-service
+
   postgres-concert:
     image: postgres:16.4
     environment:
@@ -119,19 +128,19 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-order:5432/fortickets
       - SPRING_DATASOURCE_USERNAME=forman
       - SPRING_DATASOURCE_PASSWORD=1234
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:12001/eureka/
-      - KAFKA_BOOTSTRAPSERVERS=kafka:9092
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:12001/eureka/
+      - SPRING_KAFKA_BOOTSTRAPSERVERS=kafka:29092
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
+      - SERVICE_NAME=order-service
     depends_on:
       - postgres-order
-      - eureka-service
+      - eureka
       - redis
       - kafka
     networks:
       - service-network
 
-  # Postgres for order-service
   postgres-order:
     image: postgres:16.4
     environment:
@@ -145,15 +154,13 @@ services:
     networks:
       - service-network
 
-  # Zipkin for distributed tracing
   zipkin:
     image: openzipkin/zipkin
     ports:
-      - "9411:9411"
+      - "9411:9411" # Zipkin UI에 접근할 포트
     networks:
       - service-network
 
-  # Zookeeper for Kafka
   zookeeper:
     image: zookeeper:latest
     ports:
@@ -164,9 +171,10 @@ services:
     networks:
       - service-network
 
-  # Kafka broker
+
   kafka:
     image: wurstmeister/kafka:latest
+#    platform: linux/arm64/v8
     ports:
       - "9092:9092"
     environment:
@@ -214,6 +222,8 @@ services:
 #      - ./redis_data:/data
 #    networks:
 #      - service-network
+
+  # Redis 마스터 노드 1
 
 networks:
   service-network:
