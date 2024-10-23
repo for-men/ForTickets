@@ -65,8 +65,12 @@ public class ConcertService {
     // 특정 공연 수정
     @Transactional
     @CachePut(value = "concert", key = "#concertId")
-    public GetConcertRes updateConcertById(Long concertId, UpdateConcertReq updateConcertReq) {
+    public GetConcertRes updateConcertById(Long userId, String role, Long concertId, UpdateConcertReq updateConcertReq) {
         Concert concert = getConcertUtil(concertId);
+        // 관리자 또는 본인만 수정 가능
+        if (!concert.getUserId().equals(userId) || !role.equals("MANAGER")) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
         changeConcert(updateConcertReq, concert);
         return concertMapper.toGetConcertRes(concert);
     }
@@ -74,8 +78,14 @@ public class ConcertService {
     // 특정 공연 삭제
     @Transactional
     @CacheEvict(value = "concert", key = "#concertId")
-    public void deleteConcertById(String email, Long concertId) {
+    public void deleteConcertById(Long userId, String role, String email, Long concertId) {
         Concert concert = getConcertUtil(concertId);
+
+        // 관리자 또는 본인만 삭제 가능
+        if (!concert.getUserId().equals(userId) || !role.equals("MANAGER")) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
+
         concert.delete(email);
     }
 
@@ -108,8 +118,13 @@ public class ConcertService {
     }
 
     // 콘서트 ID로 콘서트 조회
-    public GetConcertRes getConcert(Long concertId) {
+    public GetConcertRes getConcert(Long getUserId, String role, Long concertId) {
         Concert concert = concertRepository.findById(concertId).orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
+
+        // 관리자 또는 본인만 조회 가능
+        if (!concert.getUserId().equals(getUserId) || !role.equals("MANAGER")) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
         return concertMapper.toGetConcertRes(concert);
     }
 

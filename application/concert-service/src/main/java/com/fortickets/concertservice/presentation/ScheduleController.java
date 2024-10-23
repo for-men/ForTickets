@@ -47,17 +47,20 @@ public class ScheduleController {
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @PatchMapping("/{scheduleId}")
     public CommonResponse<GetScheduleSeatRes> updateScheduleById(
+        @UseAuth CustomUser customUser,
         @PathVariable("scheduleId") Long scheduleId,
         @Valid @RequestBody UpdateScheduleReq updateScheduleReq) {
-        scheduleService.updateScheduleById(scheduleId, updateScheduleReq);
+        scheduleService.updateScheduleById(customUser.getUserId(), customUser.getRole(), scheduleId, updateScheduleReq);
         return CommonResponse.success(scheduleService.getScheduleById(scheduleId));
     }
 
     // 스케줄 삭제
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @DeleteMapping("/{scheduleId}")
-    public CommonResponse<CommonEmptyRes> deleteScheduleById(@UseAuth CustomUser customUser, @PathVariable("scheduleId") Long scheduleId) {
-        scheduleService.deleteScheduleById(customUser.getEmail(), scheduleId);
+    public CommonResponse<CommonEmptyRes> deleteScheduleById(
+        @UseAuth CustomUser customUser,
+        @PathVariable("scheduleId") Long scheduleId) {
+        scheduleService.deleteScheduleById(customUser.getUserId(), customUser.getRole(), customUser.getEmail(), scheduleId);
         return CommonResponse.success();
     }
 
