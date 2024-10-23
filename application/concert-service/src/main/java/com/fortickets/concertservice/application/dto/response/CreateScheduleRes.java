@@ -8,7 +8,8 @@ public record CreateScheduleRes(
     Long concertId,
     Long stageId,
     LocalDate concertDate,
-    LocalTime concertTime ) {
+    LocalTime concertTime
+) {
 
 
 }

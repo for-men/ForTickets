@@ -10,8 +10,8 @@ import java.time.LocalDate;
 
 
 public record CreateConcertReq(
-    @NotBlank(message = "콘서트 이름은 비어 있을 수 없습니다.")
-    @Size(min = 1, max = 20, message = "공연 이름은 1자 이상 20자 이하이어야 합니다.")
+    @NotBlank(message = "공연 이름은 비어 있을 수 없습니다.")
+    @Size(min = 1, max = 20, message = "공연 이름이 너무 깁니다.")
     String concertName,
 
     @Positive(message = "런타임은 양수여야 합니다.")
