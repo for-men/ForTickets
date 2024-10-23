@@ -41,6 +41,16 @@ public class ScheduleService {
     if(!concert.getUserId().equals(userId)) {
       throw new GlobalException(ErrorCase.NOT_PERMITTED_TO_ADD_SCHEDULE);
     }
+
+    // 공연 시작 날짜 및 종료 날짜 검증
+    if (createScheduleReq.concertDate().isBefore(concert.getStartDate())) {
+      throw new GlobalException(ErrorCase.SCHEDULE_START_DATE_TOO_EARLY); // 시작 날짜가 너무 이르다는 오류
+    }
+
+    if (createScheduleReq.concertDate().isAfter(concert.getEndDate())) {
+      throw new GlobalException(ErrorCase.SCHEDULE_START_DATE_TOO_LATE); // 시작 날짜가 너무 늦다는 오류
+    }
+
     Schedule schedule = createScheduleReq.toEntity(concert,stage);
     return scheduleMapper.toCreateScheduleRes(scheduleRepository.save(schedule));
   }
@@ -77,6 +87,21 @@ public class ScheduleService {
   @Transactional
   public void updateScheduleById(Long scheduleId, UpdateScheduleReq updateScheduleReq) {
     Schedule schedule = getSchedule(scheduleId);
+
+    Concert concert = concertRepository.findById(schedule.getConcert().getId())
+        .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
+
+    if (updateScheduleReq.concertDate() != null) {
+      if (updateScheduleReq.concertDate().isBefore(concert.getStartDate())) {
+        throw new GlobalException(ErrorCase.SCHEDULE_START_DATE_TOO_EARLY);
+      }
+
+      if (updateScheduleReq.concertDate().isAfter(concert.getEndDate())) {
+        throw new GlobalException(ErrorCase.SCHEDULE_START_DATE_TOO_LATE);
+      }
+      schedule.changeConcertDate(updateScheduleReq.concertDate());
+    }
+
     changeSchedule(updateScheduleReq, schedule);
   }
 

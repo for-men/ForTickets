@@ -45,6 +45,10 @@ public enum ErrorCase {
     NOT_EXIST_STAGE(HttpStatus.NOT_FOUND, 3001, "존재하지 않는 공연장입니다."),
     NOT_EXIST_CONCERT(HttpStatus.NOT_FOUND, 3002, "존재하지 않는 공연입니다."),
     NOT_PERMITTED_TO_ADD_SCHEDULE(HttpStatus.FORBIDDEN, 3003, "해당 공연에 대한 스케줄을 추가할 권한이 없습니다."),
+    // 400
+    SCHEDULE_START_DATE_TOO_EARLY(HttpStatus.BAD_REQUEST, 3004, "스케줄은 공연 시작 날짜보다 빠를 수 없습니다."),
+    // 400
+    SCHEDULE_START_DATE_TOO_LATE(HttpStatus.BAD_REQUEST, 3005, "스케줄은 공연 종료 날짜보다 늦을 수 없습니다."),
 
 
     /* Order 4000번대 */

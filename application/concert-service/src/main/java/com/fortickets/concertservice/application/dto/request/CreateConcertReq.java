@@ -5,11 +5,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 
 public record CreateConcertReq (
     @NotBlank(message = "콘서트 이름은 비어 있을 수 없습니다.")
+    @Size(min = 1, max = 20, message = "공연장 이름은 1자 이상 20자 이하이어야 합니다.")
     String concertName,
 
     @Positive(message = "런타임은 양수여야 합니다.")
