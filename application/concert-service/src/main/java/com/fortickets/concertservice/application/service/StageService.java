@@ -22,28 +22,33 @@ public class StageService {
     private final StageRepository stageRepository;
     private final StageMapper stageMapper;
 
+    // 공연장 생성
     @Transactional
     public CreateStageRes createStage(CreateStageReq createStageReq) {
         Stage stage = createStageReq.toEntity();
         return stageMapper.toCreateStageRes(stageRepository.save(stage));
     }
 
+    // 공연장 전체 리스트 조회
     public List<GetStageRes> getAllStage() {
         List<Stage> stages = stageRepository.findAll();
         return stages.stream().map(stageMapper::toGetStageRes).toList();
     }
 
+    // 특정 공연장 조회
     public GetStageRes getStageById(Long stageId) {
         Stage stage = getStage(stageId);
         return stageMapper.toGetStageRes(stage);
     }
 
+    // 공연장 수정
     @Transactional
     public void updateStageById(Long stageId, UpdateStageReq updateStageReq) {
         Stage stage = getStage(stageId);
         changeStage(updateStageReq, stage);
     }
 
+    // 공연장 삭제
     @Transactional
     public void deleteStageById(String email, Long stageId) {
         Stage stage = getStage(stageId);

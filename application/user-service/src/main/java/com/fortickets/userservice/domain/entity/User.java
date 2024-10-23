@@ -1,7 +1,6 @@
 package com.fortickets.userservice.domain.entity;
 
 import static com.fortickets.common.jpa.BaseEntity.DELETED_FALSE;
-
 import com.fortickets.common.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

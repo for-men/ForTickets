@@ -16,20 +16,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class BookingCancelConsumer {
 
-//    @KafkaListener(topics = "booking-cancel-topic", groupId = "booking-group")
-//    public void consume(String message) {
-//        log.info("5. Kafka에서 메시지를 수신했습니다: {}", message);
-//
-//        // 메시지를 기반으로 비동기 작업 수행 추가(예: 알림 발송, 데이터베이스 상태 업데이트 등)
-//
-//    }
-//
-//    private void processBookingCancel(String message) {
-//        // 메시지 처리 로직 구현
-//        log.info("Processing booking cancel: {}", message);
-//    }
-
-    // ============== 테스트용 =================
     private final BookingRepository bookingRepository;
     private final PaymentService paymentService;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -45,7 +31,7 @@ public class BookingCancelConsumer {
 
         // 10초 후에 상태 변경 작업 수행
         log.info("6. 수신된 메시지를 기반으로 예약 취소 작업을 10초 후에 작동합니다. message: {}", message);
-        scheduler.schedule(() -> processBookingCancel(message), 10   , TimeUnit.SECONDS);
+        scheduler.schedule(() -> processBookingCancel(message), 10, TimeUnit.SECONDS);
     }
 
     private void processBookingCancel(String message) {

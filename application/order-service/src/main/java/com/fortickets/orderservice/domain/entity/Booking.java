@@ -30,6 +30,7 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction(DELETED_FALSE)
 public class Booking extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_id")
@@ -48,9 +49,6 @@ public class Booking extends BaseEntity {
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
-    public void updateStatus(BookingStatus status) {
-        this.status = status;
-    }
     public void setPayment(Payment payment) {
         this.payment = payment;
     }

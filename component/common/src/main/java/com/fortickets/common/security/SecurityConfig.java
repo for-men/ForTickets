@@ -1,6 +1,5 @@
 package com.fortickets.common.security;
 
-import com.fortickets.common.security.CustomPreFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -63,38 +62,10 @@ public class SecurityConfig {
                 .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
-        // 인증 실패 핸들러와 권한 없음 핸들러 등록
-//        http.exceptionHandling(exceptionHandling ->
-//            exceptionHandling
-//                .authenticationEntryPoint(authenticationEntryPoint())
-//                .accessDeniedHandler(accessDeniedHandler())
-//        );
-
         // 필터 관리
         http.addFilterBefore(customPreFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // 인증 실패 (401) 처리 핸들러
-//    @Bean
-//    public AuthenticationEntryPoint authenticationEntryPoint() {
-//        return (request, response, authException) -> {
-//            log.warn("인증 실패: {}", authException.getMessage());
-//            response.setStatus(HttpStatus.UNAUTHORIZED.value());  // 401 상태 설정
-//            response.getWriter().write("인증이 필요합니다.");
-//            response.getWriter().flush(); // Flush the response writer
-//        };
-//    }
-//
-//    // 권한 없음 (403) 처리 핸들러
-//    @Bean
-//    public AccessDeniedHandler accessDeniedHandler() {
-//        return (request, response, accessDeniedException) -> {
-//            log.warn("권한 부족: {}", accessDeniedException.getMessage());
-//            response.setStatus(HttpStatus.FORBIDDEN.value());  // 403 상태 설정
-//            response.getWriter().write("접근 권한이 없습니다.");
-//            response.getWriter().flush(); // Flush the response writer
-//        };
-//    }
 }

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Component
 public interface UserClient {
 
-    // TODO : 내부 API 생성 필요
     @GetMapping("/users/{userId}")
     GetUserRes getUser(@PathVariable(value = "userId") Long userId);
 

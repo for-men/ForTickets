@@ -31,6 +31,7 @@ public class ScheduleService {
     private final ConcertRepository concertRepository;
     private final BookingClient bookingClient;
 
+    // 스케줄 생성
     @Transactional
     public CreateScheduleRes createSchedule(Long userId, CreateScheduleReq createScheduleReq) {
         // 해당하는 콘서트 불러오기
@@ -56,6 +57,7 @@ public class ScheduleService {
         return scheduleMapper.toCreateScheduleRes(scheduleRepository.save(schedule));
     }
 
+    // 스케줄 단건 조회
     public GetScheduleSeatRes getScheduleById(Long scheduleId) {
         // 스케줄에 대한 공연 정보 가져오기
         // 스케줄에 대한 공연장 정보 가져오기
@@ -71,13 +73,10 @@ public class ScheduleService {
             throw new GlobalException(ErrorCase.SYSTEM_ERROR);
         }
 
-        // 스케줄 아이디를 통해 예매 조회 후 예매 상태 확인 및 조건에 맞는 해당 좌석 불러오기
-        // 조건 : status가 PENDING , CONFIRMED
-//    List<String> seatList = bookingClient.getSeatsWithBooking(scheduleId).getData();
-
         return scheduleMapper.toGetScheduleSeatRes(schedule, seatList);
     }
 
+    // 스케줄 상세 조회
     public GetScheduleDetailRes getScheduleDetail(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_SCHEDULE));
@@ -85,7 +84,7 @@ public class ScheduleService {
         return scheduleMapper.toGetScheduleDetailRes(schedule);
 
     }
-
+    // 스케줄 수정
     @Transactional
     public void updateScheduleById(Long getUserId, String role, Long scheduleId, UpdateScheduleReq updateScheduleReq) {
         Schedule schedule = getSchedule(scheduleId);
@@ -108,6 +107,7 @@ public class ScheduleService {
         changeSchedule(updateScheduleReq, schedule);
     }
 
+    // 스케줄 삭제
     @Transactional
     public void deleteScheduleById(Long getUserId, String role, String email, Long scheduleId) {
 

@@ -12,6 +12,6 @@ public record GetScheduleDetailRes(
     String location,
     LocalDate concertDate,
     LocalTime concertTime
-){
+) {
 
 }

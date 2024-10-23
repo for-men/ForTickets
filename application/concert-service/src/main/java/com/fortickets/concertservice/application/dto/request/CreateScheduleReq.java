@@ -3,9 +3,7 @@ package com.fortickets.concertservice.application.dto.request;
 import com.fortickets.concertservice.domain.entity.Concert;
 import com.fortickets.concertservice.domain.entity.Schedule;
 import com.fortickets.concertservice.domain.entity.Stage;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -23,8 +21,8 @@ public record CreateScheduleReq(
     LocalTime concertTime
 ) {
 
-  public Schedule toEntity(Concert concert, Stage stage) {
-    return Schedule.of(concert,stage,concertDate,concertTime);
-  }
+    public Schedule toEntity(Concert concert, Stage stage) {
+        return Schedule.of(concert, stage, concertDate, concertTime);
+    }
 
 }

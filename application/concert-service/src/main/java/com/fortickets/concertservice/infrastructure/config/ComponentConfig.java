@@ -11,4 +11,5 @@ import org.springframework.context.annotation.Configuration;
     "com.fortickets.redis"
 })
 public class ComponentConfig {
+
 }

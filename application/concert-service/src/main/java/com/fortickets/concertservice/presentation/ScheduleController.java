@@ -29,6 +29,7 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
+    // 스케줄 생성
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @PostMapping
     public CommonResponse<CreateScheduleRes> createSchedule(

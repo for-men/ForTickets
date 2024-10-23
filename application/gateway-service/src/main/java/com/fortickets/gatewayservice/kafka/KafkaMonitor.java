@@ -27,6 +27,7 @@ public class KafkaMonitor {
     public KafkaMonitor(KafkaConsumerManager consumerManager) {
         this.consumerManager = consumerManager;
     }
+
     // 요청 수 증가
     public void incrementRequestCount() {
         int currentCount = currentRequestCount.incrementAndGet();
