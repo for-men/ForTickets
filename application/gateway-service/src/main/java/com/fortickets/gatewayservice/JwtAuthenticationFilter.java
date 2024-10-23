@@ -8,6 +8,8 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import java.nio.charset.StandardCharsets;
+import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -15,13 +17,10 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.server.reactive.ServerHttpRequest; // 올바른 패키지
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
@@ -32,27 +31,19 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        // ToDo 요청에서 요청 주소 빼기
         String path = exchange.getRequest().getURI().getPath();
 
-        // ToDO 로그인 및 회원가입 경로는 토큰 검증을 통과합니다.
         if (isAuthorizationPassRequest(path)) {
             return chain.filter(exchange);
         }
-        // ToDo 해더에서 jwt 가져오기
         String token = getJwtTokenFromHeader(exchange);
         if (token == null) {
             return unauthorizedResponse(exchange, "JWT 토큰이 없습니다.");
         }
 
-        // ToDo 토큰 검증
         try {
             SecretKey key = getSecretKey();
             Claims claims = getUserInfoFromToken(token, key);
-
-            // 검증된 사용자 정보 출력
-//            log.info("JWT 토큰에서 추출한 사용자 정보: userId = {}, email = {}, role = {}",
-//                claims.get("userId"), claims.get("email"), claims.get("role"));
 
             Integer userId = claims.get("userId", Integer.class);
             String email = claims.get("email", String.class);
@@ -95,7 +86,8 @@ public class JwtAuthenticationFilter implements GlobalFilter {
     }
 
     // JWT 토큰에서 사용자 정보 추출 및 검증
-    public Claims getUserInfoFromToken(String token, SecretKey key) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
+    public Claims getUserInfoFromToken(String token, SecretKey key)
+        throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 

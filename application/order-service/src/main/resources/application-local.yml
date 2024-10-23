@@ -12,9 +12,6 @@ spring:
     show-sql: true
     properties:
       hibernate:
-  #        show_sql: true # sql 로깅
-  #        format_sql: true # SQL 문 정렬하여 출력
-  #        highlight_sql: true # SQL 문 색 부여
   docker:
     compose:
       lifecycle-management: start_and_stop # start_only, start_and_stop 옵션이 있으며, 스프링 종료 시 컨테이너 종료 여부를 결정할 수 있음
@@ -29,8 +26,6 @@ spring:
       host: redis
       port: 6379
 
-  #      password: "systempass"
-
   # kafka
   kafka:
     bootstrap-servers: kafka:29092
@@ -39,7 +34,6 @@ spring:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
 
 server:
   port: 12041

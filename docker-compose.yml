@@ -174,7 +174,6 @@ services:
 
   kafka:
     image: wurstmeister/kafka:latest
-#    platform: linux/arm64/v8
     ports:
       - "9092:9092"
     environment:
@@ -211,19 +210,6 @@ services:
       KAFKA_CLUSTERS_0_READONLY: "false"
     networks:
       - service-network
-
-#  redis-stack:
-#    image: redis/redis-stack
-#    container_name: redis-stack-compose
-#    restart: always
-#    environment:
-#      REDIS_ARGS: "--requirepass systempass"
-#    volumes:
-#      - ./redis_data:/data
-#    networks:
-#      - service-network
-
-  # Redis 마스터 노드 1
 
 networks:
   service-network:

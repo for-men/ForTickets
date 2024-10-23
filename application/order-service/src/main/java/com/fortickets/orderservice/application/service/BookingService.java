@@ -1,16 +1,16 @@
 package com.fortickets.orderservice.application.service;
 
-import com.fortickets.common.GlobalUtil;
 import com.fortickets.common.exception.GlobalException;
 import com.fortickets.common.util.BookingStatus;
 import com.fortickets.common.util.ErrorCase;
+import com.fortickets.common.util.GlobalUtil;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
-import com.fortickets.orderservice.application.dto.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
+import com.fortickets.orderservice.application.dto.response.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertRes;
@@ -60,6 +60,7 @@ public class BookingService {
 
     private final KafkaProducer kafkaProducer;
 
+    // 예매 생성 본인만 가능
     @Transactional
     public List<CreateBookingRes> createBooking(Long userId, CreateBookingReq createBookingReq) {
 
@@ -119,6 +120,7 @@ public class BookingService {
         }
     }
 
+    // 예매 확정 본인만 가능
     @Transactional
     public CreatePaymentRes confirmBooking(Long getUserId, ConfirmBookingReq confirmBookingReq) {
         // 요청 사용자와 예약 사용자가 같은지 확인
@@ -134,8 +136,6 @@ public class BookingService {
         if (bookingList.isEmpty()) {
             throw new GlobalException(ErrorCase.BOOKING_NOT_FOUND);
         }
-        // 예매 정보 상태 변경 CONFIRMED
-//        bookingList.forEach(Booking::confirm);
 
         CreatePaymentReq createPaymentReq = CreatePaymentReq.builder()
             .userId(bookingList.get(0).getUserId())
@@ -149,6 +149,7 @@ public class BookingService {
         return paymentService.createPayment(createPaymentReq);
     }
 
+    // 관리자 예매 내역 조회
     public Page<GetBookingRes> getBooking(String nickname, String concertName, Pageable pageable) {
         List<GetUserRes> userList = new ArrayList<>();
         List<GetConcertRes> concertList = new ArrayList<>();
@@ -161,11 +162,6 @@ public class BookingService {
             // 공연명으로 공연 조회
             concertList = concertClient.searchConcertName(concertName);
         }
-
-        // 사용자, 공연명으로 예약 조회 null일 경우는 메서드에서 처리함
-//        Page<Booking> bookingList = bookingRepository.findByBookingSearch(
-//                userList.stream().map(GetUserRes::userId).toList(),
-//                concertList.stream().map(GetConcertRes::id).toList(), BookingStatus.PENDING, pageable);
 
         List<Long> userIds = userList.stream().map(GetUserRes::userId).toList();
         List<Long> concertIds = concertList.stream().map(GetConcertRes::id).toList();
@@ -187,6 +183,7 @@ public class BookingService {
         return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
 
+    // 판매자 예매 내역 조회
     public Page<GetBookingRes> getBookingBySeller(Long sellerId, Long userId, String role, String nickname, String concertName,
         Pageable pageable) {
         // 판매자와 요청자가 같은지 확인
@@ -209,11 +206,6 @@ public class BookingService {
             concertList = concertClient.getConcertBySeller(sellerId);
         }
 
-        // 사용자, 공연명으로 예약 조회 null일 경우는 메서드에서 처리함
-//        Page<Booking> bookingList = bookingRepository.findByBookingSearch(
-//            userList.stream().map(GetUserRes::userId).toList(),
-//            concertList.stream().map(GetConcertRes::id).toList(), BookingStatus.PENDING, pageable);
-
         List<Long> userIds = userList.stream().map(GetUserRes::userId).toList();
         List<Long> concertIds = concertList.stream().map(GetConcertRes::id).toList();
 
@@ -234,6 +226,7 @@ public class BookingService {
         return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
 
+    // 사용자 예매 내역 조회
     public Page<GetBookingRes> getBookingByUser(Long getUserId, String role, Long userId, Pageable pageable) {
         // 요청 사용자와 예약 사용자가 같은지 확인
         if (!role.equals("ROLE_MANAGER")) {
@@ -242,7 +235,7 @@ public class BookingService {
             }
         }
         Page<Booking> bookingList = bookingRepository.findByUserId(userId, pageable);
-        // TODO: 성능 개선 필요 (한번에 받아와서 처리 가능할 듯?)
+
         List<GetBookingRes> getBookingResList = bookingList.getContent().stream().map(booking -> {
             GetConcertRes concertRes = concertClient.getConcert(booking.getConcertId());
             return bookingMapper.toGetBookingRes(booking, concertRes);
@@ -250,6 +243,7 @@ public class BookingService {
         return new PageImpl<>(getBookingResList, pageable, bookingList.getTotalElements());
     }
 
+    // 예매 단건 조회 (예매 상세 조회)
     public GetConcertDetailRes getBookingById(Long getUserId, String role, Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
             .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
@@ -263,40 +257,10 @@ public class BookingService {
         return bookingMapper.toGetConcertDetailRes(booking, getScheduleDetailRes);
     }
 
-    // ================= 완성 코드 =================
-//    @Transactional
-//    public void cancelBooking(Long getUserId, String role, Long bookingId) {
-//
-//        // TODO : 이거 좀 애매함 확인 필요 -> 결제 취소
-//        Booking booking = bookingRepository.findById(bookingId)
-//            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
-//
-//        if (!role.equals("ROLE_MANAGER")) {
-//            if (!getUserId.equals(booking.getUserId())) {
-//                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-//            }
-//        }
-//        GetScheduleDetailRes scheduleRes = concertClient.getScheduleDetail(booking.getScheduleId());
-//
-//        // 공연이 끝났는지 체크 필요
-//        if (!possibleCancel(scheduleRes.concertDate(), scheduleRes.concertTime())) {
-//            throw new GlobalException(ErrorCase.CANNOT_CANCEL_BOOKING);
-//        }
-//
-//        paymentService.cancelPayment(getUserId, role, booking.getPayment().getId());
-//
-//        // Kafka에 예매 취소 메시지 전송
-//        String message = "Booking canceled for ID: " + bookingId;
-//        log.info("1. 예매 취소를 위한 Kafka 메시지 전송 준비 중입니다. Booking ID: {}", bookingId);
-//        kafkaProducer.sendMessage("booking-cancel-topic", message);
-//        log.info("4. 예매 취소를 위한 Kafka 메시지가 전송되었습니다. Booking ID: {}", bookingId);
-//    }
-
-    // ================= 테스트용 예매 취소 - 1 =================
+    // 예매 취소
     @Transactional
     public void cancelBooking(Long getUserId, String role, Long bookingId) {
 
-        // TODO : 이거 좀 애매함 확인 필요 -> 결제 취소
         Booking booking = bookingRepository.findById(bookingId)
             .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
 
@@ -312,8 +276,6 @@ public class BookingService {
             throw new GlobalException(ErrorCase.CANNOT_CANCEL_BOOKING);
         }
 
-//        paymentService.cancelPayment(getUserId, role, booking.getPayment().getId());
-
         // 취소 요청 됨(중간 상태) 상태로(사용자가 본인이 요청 중이라는 것을 알 수 있도록) 변경
         booking.requestCancel();
 
@@ -326,37 +288,7 @@ public class BookingService {
         log.info("4. 예매 취소를 위한 Kafka 메시지가 전송되었습니다. Booking ID: {}", bookingId);
     }
 
-    // ================= 테스트용 예매 취소 - 1 =================
-//    @Transactional
-//    public void cancelBooking(Long getUserId, String role, Long bookingId) {
-//
-//        // TODO : 이거 좀 애매함 확인 필요 -> 결제 취소
-//        Booking booking = bookingRepository.findById(bookingId)
-//            .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
-//
-//        if (!role.equals("ROLE_MANAGER")) {
-//            if (!getUserId.equals(booking.getUserId())) {
-//                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-//            }
-//        }
-//        GetScheduleDetailRes scheduleRes = concertClient.getScheduleDetail(booking.getScheduleId());
-//
-//        // 공연이 끝났는지 체크 필요
-////        if (!possibleCancel(scheduleRes.concertDate(), scheduleRes.concertTime())) {
-////            throw new GlobalException(ErrorCase.CANNOT_CANCEL_BOOKING);
-////        }
-//
-////        paymentService.cancelPayment(getUserId, role, booking.getPayment().getId());
-//
-//        // Kafka에 예매 취소 메시지 전송
-//        String message = "Booking canceled for ID: " + bookingId;
-//        log.info("1. 예매 취소를 위한 Kafka 메시지 전송 준비 중입니다. Booking ID: {}", bookingId);
-//
-//        kafkaProducer.sendMessage("booking-cancel-topic", message);
-//
-//        log.info("4. 예매 취소를 위한 Kafka 메시지가 전송되었습니다. Booking ID: {}", bookingId);
-//    }
-
+    // 예매 내역 삭제
     @Transactional
     public void deleteBooking(String email, Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
@@ -364,14 +296,15 @@ public class BookingService {
         booking.delete(email);
     }
 
-    private boolean possibleCancel(LocalDate localDate, LocalTime localTime) {
-        return LocalDateTime.of(localDate, localTime).isAfter(LocalDateTime.now());
-    }
-
+    // 예매 불가 좌석 조회
     public List<String> getSeatsByScheduleId(Long scheduleId) {
         BookingStatus pending = BookingStatus.PENDING;
         BookingStatus confirmed = BookingStatus.CONFIRMED;
         return bookingRepository.findSeatByScheduleId(scheduleId, pending, confirmed);
+    }
+
+    private boolean possibleCancel(LocalDate localDate, LocalTime localTime) {
+        return LocalDateTime.of(localDate, localTime).isAfter(LocalDateTime.now());
     }
 
 }

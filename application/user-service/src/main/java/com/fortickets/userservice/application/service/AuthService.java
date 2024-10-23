@@ -1,17 +1,16 @@
 package com.fortickets.userservice.application.service;
 
-import com.fortickets.common.util.ErrorCase;
 import com.fortickets.common.exception.GlobalException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import com.fortickets.common.util.ErrorCase;
 import com.fortickets.userservice.application.dto.requset.LoginReq;
 import com.fortickets.userservice.application.dto.requset.SignUpReq;
 import com.fortickets.userservice.application.security.JwtUtil;
 import com.fortickets.userservice.domain.entity.User;
 import com.fortickets.userservice.domain.entity.UserRoleEnum;
 import com.fortickets.userservice.domain.repository.UserRepository;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,10 +28,10 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Value("${service.access.seller-code}")
-    private  String SELLER_CODE;
+    private String SELLER_CODE;
 
     @Value("${service.access.manager-code}")
-    private  String MANAGER_CODE;
+    private String MANAGER_CODE;
 
     // 회원가입
     @Transactional

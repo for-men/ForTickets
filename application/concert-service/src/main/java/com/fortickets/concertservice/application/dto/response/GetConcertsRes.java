@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetConcertsRes {
+
     private Long id;
     private Long userId;
     private String concertName;

@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 
-public record CreateConcertReq (
+public record CreateConcertReq(
     @NotBlank(message = "콘서트 이름은 비어 있을 수 없습니다.")
     @Size(min = 1, max = 20, message = "공연장 이름은 1자 이상 20자 이하이어야 합니다.")
     String concertName,
@@ -33,10 +33,10 @@ public record CreateConcertReq (
     @Pattern(regexp = "^(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|png)$|^$",
         message = "이미지는 유효한 URL이어야 하며, jpg, png 형식의 파일이어야 합니다.")
     String concertImage
-){
+) {
 
-  public Concert toEntity(Long userId) {
-    return Concert.of(userId,concertName,runTime,startDate,endDate,price,concertImage);
-  }
+    public Concert toEntity(Long userId) {
+        return Concert.of(userId, concertName, runTime, startDate, endDate, price, concertImage);
+    }
 
 }

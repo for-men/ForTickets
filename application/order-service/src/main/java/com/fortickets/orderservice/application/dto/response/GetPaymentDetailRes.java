@@ -12,7 +12,6 @@ public record GetPaymentDetailRes(
     Integer runtime,
     String seat,
     String nickname,
-    // TODO: 결제시간 추가 필요
     LocalDateTime createdAt
 ) {
 

@@ -1,10 +1,8 @@
 package com.fortickets.common.exception;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 import org.springframework.validation.FieldError;
 
 @Mapper(componentModel = SPRING) // 빈으로 주입받을 수 있음

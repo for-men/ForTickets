@@ -1,7 +1,7 @@
 package com.fortickets.userservice.application.service;
 
-import com.fortickets.common.util.ErrorCase;
 import com.fortickets.common.exception.GlobalException;
+import com.fortickets.common.util.ErrorCase;
 import com.fortickets.userservice.application.dto.requset.UpdateUserReq;
 import com.fortickets.userservice.application.dto.response.GetUserRes;
 import com.fortickets.userservice.application.mapper.UserMapper;
@@ -17,9 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class UserService {
-
-//    private final OrderClient orderClient;
-
+    
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder; // PasswordEncoder 추가
     private final UserMapper userMapper;

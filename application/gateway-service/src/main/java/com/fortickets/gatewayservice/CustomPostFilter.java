@@ -23,9 +23,6 @@ public class CustomPostFilter implements GlobalFilter, Ordered {
                 logger.info("Post Filter: Response status code is " + response.getStatusCode());
                 // Add any custom logic here
             }
-
-//            logger.info("Post Filter: Response status code is " + response.getStatusCode());
-            // Add any custom logic here
         }));
     }
 

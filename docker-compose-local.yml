@@ -241,19 +241,6 @@ services:
     networks:
       - service-network
 
-  #  redis-stack:
-  #    image: redis/redis-stack
-  #    container_name: redis-stack-compose
-  #    restart: always
-  #    environment:
-  #      REDIS_ARGS: "--requirepass systempass"
-  #    volumes:
-  #      - ./redis_data:/data
-  #    networks:
-  #      - service-network
-
-  # Redis 마스터 노드 1
-
   prometheus:
     image: prom/prometheus
     container_name: prometheus

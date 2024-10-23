@@ -4,9 +4,9 @@ import com.fortickets.common.security.CustomUser;
 import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
-import com.fortickets.orderservice.application.dto.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
 import com.fortickets.orderservice.application.dto.request.RequestPaymentReq;
+import com.fortickets.orderservice.application.dto.response.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentRes;
 import com.fortickets.orderservice.application.service.PaymentService;
@@ -32,17 +32,13 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    /**
-     * 결제 생성 내부에서 예매 생성 시 결제 생성
-     */
+    // 결제 생성 내부에서 예매 생성 시 결제 생성
     @PostMapping
     public CommonResponse<CreatePaymentRes> createPayment(@Valid @RequestBody CreatePaymentReq createPaymentReq) {
         return CommonResponse.success(paymentService.createPayment(createPaymentReq));
     }
 
-    /**
-     * 결제 요청
-     */
+    // 결제 요청
     @PatchMapping("/request")
     public CommonResponse<CommonEmptyRes> requestPayment(
         @UseAuth CustomUser customUser,
@@ -51,9 +47,7 @@ public class PaymentController {
         return CommonResponse.success();
     }
 
-    /**
-     * 결제 내역 전체 조회 (Manager)
-     */
+    // 결제 내역 전체 조회 (Manager)
     @PreAuthorize("hasAnyRole('MANAGER')")
     @GetMapping
     public CommonResponse<Page<GetPaymentRes>> getPayments(
@@ -63,9 +57,7 @@ public class PaymentController {
         return CommonResponse.success(paymentService.getPayments(nickname, pageable));
     }
 
-    /**
-     * 결제 내역 전체 조회 (Seller)
-     */
+    // 결제 내역 전체 조회 (Seller)
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @GetMapping("/seller/{sellerId}")
     public CommonResponse<Page<GetPaymentRes>> getPaymentsBySeller(
@@ -78,9 +70,7 @@ public class PaymentController {
             paymentService.getPaymentsBySeller(customUser.getUserId(), customUser.getRole(), sellerId, nickname, pageable));
     }
 
-    /**
-     * 결제 내역 전체 조회 (User)
-     */
+    // 결제 내역 전체 조회 (User)
     @GetMapping("/me/{userId}")
     @PreAuthorize("hasAnyRole('MANAGER', 'USER')")
     public CommonResponse<Page<GetPaymentRes>> getBookingByUser(
@@ -89,9 +79,7 @@ public class PaymentController {
         return CommonResponse.success(paymentService.getPaymentByUser(customUser.getUserId(), customUser.getRole(), userId, pageable));
     }
 
-    /**
-     * 결제 단일 조회
-     */
+    // 결제 단일 조회
     @GetMapping("/{paymentId}")
     public CommonResponse<GetPaymentDetailRes> getPayment(
         @UseAuth CustomUser customUser,
@@ -99,9 +87,7 @@ public class PaymentController {
         return CommonResponse.success(paymentService.getPayment(customUser.getUserId(), customUser.getRole(), paymentId));
     }
 
-    /**
-     * 결제 취소
-     */
+    // 결제 취소
     @PatchMapping("/{paymentId}")
     public CommonResponse<CommonEmptyRes> cancelPayment(
         @UseAuth CustomUser customUser,
@@ -110,9 +96,7 @@ public class PaymentController {
         return CommonResponse.success();
     }
 
-    /**
-     * 결제 내역 삭제
-     */
+    // 결제 내역 삭제
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{paymentId}")
     public CommonResponse<CommonEmptyRes> deletePayment(

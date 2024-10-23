@@ -1,9 +1,8 @@
 package com.fortickets.orderservice.domain.entity;
 
 import static com.fortickets.common.jpa.BaseEntity.DELETED_FALSE;
-
-import com.fortickets.common.util.PaymentStatus;
 import com.fortickets.common.jpa.BaseEntity;
+import com.fortickets.common.util.PaymentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -29,6 +28,7 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction(DELETED_FALSE)
 public class Payment extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")

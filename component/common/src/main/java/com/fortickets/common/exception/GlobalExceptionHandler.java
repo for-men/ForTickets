@@ -1,9 +1,10 @@
 package com.fortickets.common.exception;
-import feign.FeignException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
 import com.fortickets.common.util.ErrorCase;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class GlobalExceptionHandler {
     private final InvalidInputMapper mapper;
     private final HttpServletResponse response; // HttpStatus 설정을 위한 response 객체
     private final ObjectMapper objectMapper;
+
     /**
      * 권한 부족 (403) 발생 시 처리하는 핸들러
      */
@@ -38,7 +40,6 @@ public class GlobalExceptionHandler {
         response.setStatus(HttpStatus.FORBIDDEN.value());
         return CommonResponse.error(ErrorCase.NOT_AUTHORIZED);
     }
-
 
     /**
      * Business 오류 발생에 대한 핸들러
