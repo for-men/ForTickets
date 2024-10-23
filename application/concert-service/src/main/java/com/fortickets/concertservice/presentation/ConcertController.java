@@ -3,6 +3,7 @@ package com.fortickets.concertservice.presentation;
 import com.fortickets.common.security.CustomUser;
 import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
+import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
 import com.fortickets.concertservice.application.dto.request.CreateConcertReq;
 import com.fortickets.concertservice.application.dto.request.UpdateConcertReq;
 import com.fortickets.concertservice.application.dto.response.CreateConcertRes;
@@ -37,8 +38,8 @@ public class ConcertController {
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @PostMapping
     public CommonResponse<CreateConcertRes> createConcert(
-        @UseAuth CustomUser customUser, @Valid
-    @RequestBody CreateConcertReq createConcertReq) {
+        @UseAuth CustomUser customUser,
+        @Valid @RequestBody CreateConcertReq createConcertReq) {
         var createConcertRes = concertService.createConcert(customUser.getUserId(), createConcertReq);
         return CommonResponse.success(createConcertRes);
     }
@@ -58,23 +59,28 @@ public class ConcertController {
     // 특정 공연 수정
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @PatchMapping("/{concertId}")
-    public CommonResponse<GetConcertRes> updateConcertById(@PathVariable("concertId") Long concertId,
+    public CommonResponse<GetConcertRes> updateConcertById(
+        @UseAuth CustomUser customUser,
+        @PathVariable("concertId") Long concertId,
         @Valid @RequestBody UpdateConcertReq updateConcertReq) {
-        concertService.updateConcertById(concertId, updateConcertReq);
-        return CommonResponse.success(concertService.getConcertById(concertId));
+        return CommonResponse.success(
+            concertService.updateConcertById(customUser.getUserId(), customUser.getRole(), concertId, updateConcertReq));
     }
 
     // 특정 공연 삭제
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @DeleteMapping("/{concertId}")
-    public CommonResponse deleteConcertById(@UseAuth CustomUser customUser, @PathVariable("concertId") Long concertId) {
-        concertService.deleteConcertById(customUser.getEmail(), concertId);
+    public CommonResponse<CommonEmptyRes> deleteConcertById(
+        @UseAuth CustomUser customUser,
+        @PathVariable("concertId") Long concertId) {
+        concertService.deleteConcertById(customUser.getUserId(), customUser.getRole(), customUser.getEmail(), concertId);
         return CommonResponse.success();
     }
 
     // Concert 정보 조회
     @GetMapping("/{concertId}/detail")
-    public GetConcertRes getConcert(@PathVariable Long concertId) {
+    public GetConcertRes getConcert(
+        @PathVariable Long concertId) {
         return concertService.getConcert(concertId);
     }
 

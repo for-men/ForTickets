@@ -84,14 +84,14 @@ public class ScheduleService {
         return scheduleMapper.toGetScheduleDetailRes(schedule);
 
     }
-
     // 스케줄 수정
     @Transactional
-    public void updateScheduleById(Long scheduleId, UpdateScheduleReq updateScheduleReq) {
+    public void updateScheduleById(Long getUserId, String role, Long scheduleId, UpdateScheduleReq updateScheduleReq) {
         Schedule schedule = getSchedule(scheduleId);
-
-        Concert concert = concertRepository.findById(schedule.getConcert().getId())
-            .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
+        Concert concert = schedule.getConcert();
+        if (!concert.getUserId().equals(getUserId) || !role.equals("MANAGER")) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
 
         if (updateScheduleReq.concertDate() != null) {
             if (updateScheduleReq.concertDate().isBefore(concert.getStartDate())) {
@@ -109,8 +109,13 @@ public class ScheduleService {
 
     // 스케줄 삭제
     @Transactional
-    public void deleteScheduleById(String email, Long scheduleId) {
+    public void deleteScheduleById(Long getUserId, String role, String email, Long scheduleId) {
+
         Schedule schedule = getSchedule(scheduleId);
+        Concert concert = schedule.getConcert();
+        if (!concert.getUserId().equals(getUserId) || !role.equals("MANAGER")) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
         schedule.delete(email);
     }
 
