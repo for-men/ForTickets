@@ -41,6 +41,7 @@ public enum ErrorCase {
     INVALID_MANAGER_CODE(HttpStatus.BAD_REQUEST, 2007, "잘못된 관리자 코드입니다."),
 
     /* Concert 3000번대 */
+
     NOT_EXIST_SCHEDULE(HttpStatus.NOT_FOUND, 3000, "존재하지 않는 스케줄입니다."),
     NOT_EXIST_STAGE(HttpStatus.NOT_FOUND, 3001, "존재하지 않는 공연장입니다."),
     NOT_EXIST_CONCERT(HttpStatus.NOT_FOUND, 3002, "존재하지 않는 공연입니다."),
@@ -50,8 +51,8 @@ public enum ErrorCase {
     // 400
     SCHEDULE_START_DATE_TOO_LATE(HttpStatus.BAD_REQUEST, 3005, "스케줄은 공연 종료 날짜보다 늦을 수 없습니다."),
 
-
     /* Order 4000번대 */
+
     ALREADY_BOOKED_SEAT(HttpStatus.BAD_REQUEST, 4000, "이미 예매가 완료된 좌석입니다."),
     BOOKING_NOT_FOUND(HttpStatus.NOT_FOUND, 4001, "예매를 찾을 수 없습니다."),
     CANNOT_CANCEL_BOOKING(HttpStatus.BAD_REQUEST, 4002, "취소할 수 없는 예매입니다."),
@@ -60,7 +61,6 @@ public enum ErrorCase {
     INVALID_SEAT_FORMAT(HttpStatus.BAD_REQUEST, 4005, "좌석 형식이 잘못되었습니다."),
 
     ;
-
 
     private final HttpStatus httpStatus; // 응답 상태 코드
     private final Integer code; // 응답 코드. 도메인에 따라 1000번대로 나뉨

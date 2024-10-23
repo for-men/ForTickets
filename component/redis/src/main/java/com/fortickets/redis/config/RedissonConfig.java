@@ -26,15 +26,6 @@ public class RedissonConfig {
 
         log.info("RedissonConfig redisHost: " + redisHost);
         log.info("RedissonConfig redisPort: " + redisPort);
-        // Redis 서버 주소와 비밀번호 설정 (필요에 따라 변경)
-//        config.useSingleServer()
-//                .setAddress("redis://localhost:6379") // Redis 서버 주소
-//                .setAddress("redis://localhost:6380") // Redis 서버 주소
-//                .setAddress("redis://localhost:6381") // Redis 서버 주소
-//                .setAddress("redis://localhost:6382") // Redis 서버 주소
-//                .setAddress("redis://localhost:6383") // Redis 서버 주소
-//                .setAddress("redis://localhost:6384") // Redis 서버 주소
-//                .setPassword("systempass"); // Redis 비밀번호
 
         config.useSingleServer()
             .setAddress("redis://" + redisHost + ":" + redisPort);

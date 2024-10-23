@@ -24,8 +24,8 @@ public record CreateStageReq(
     Integer col
 ) {
 
-  public Stage toEntity() {
-    return Stage.of(name,location,row,col);
-  }
+    public Stage toEntity() {
+        return Stage.of(name, location, row, col);
+    }
 
 }

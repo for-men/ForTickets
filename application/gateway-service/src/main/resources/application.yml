@@ -48,7 +48,6 @@ management:
       exposure:
         include: 'prometheus'
 
-
 logging:
   level:
     org.apache.kafka.clients.producer.ProducerConfig: WARN

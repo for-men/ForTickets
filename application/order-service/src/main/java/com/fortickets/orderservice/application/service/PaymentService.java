@@ -1,13 +1,13 @@
 package com.fortickets.orderservice.application.service;
 
-import com.fortickets.common.GlobalUtil;
 import com.fortickets.common.exception.GlobalException;
 import com.fortickets.common.util.ErrorCase;
+import com.fortickets.common.util.GlobalUtil;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
-import com.fortickets.orderservice.application.dto.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
 import com.fortickets.orderservice.application.dto.request.RequestPaymentReq;
+import com.fortickets.orderservice.application.dto.response.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetPaymentRes;
 import com.fortickets.orderservice.application.dto.response.GetUserRes;
@@ -37,11 +37,7 @@ public class PaymentService {
     private final UserClient userClient;
     private final ConcertClient concertClient;
 
-    /**
-     * 결제 생성 (예매 확정 시 결제 생성)
-     *
-     * @param createPaymentReq
-     */
+    // 결제 생성 (예매 확정 시 결제 생성)
     @Transactional
     public CreatePaymentRes createPayment(CreatePaymentReq createPaymentReq) {
         // 결제 생성
@@ -63,6 +59,7 @@ public class PaymentService {
         return paymentMapper.toCreatePaymentRes(payment);
     }
 
+    // 결제 내역 전체 조회 (Manager)
     public Page<GetPaymentRes> getPayments(String nickname, Pageable pageable) {
         List<GetUserRes> userResList = new ArrayList<>();
         Page<Payment> payments = null;
@@ -79,6 +76,7 @@ public class PaymentService {
         return new PageImpl<>(getPaymentResList, pageable, payments.getTotalElements());
     }
 
+    // 결제 내역 전체 조회 (Seller)
     public Page<GetPaymentRes> getPaymentsBySeller(Long getUserId, String role, Long userId, String nickname, Pageable pageable) {
         if (!role.equals("ROLE_MANAGER")) {
             if (!getUserId.equals(userId)) {
@@ -100,6 +98,7 @@ public class PaymentService {
         return new PageImpl<>(getPaymentResList, pageable, payments.getTotalElements());
     }
 
+    // 결제 내역 전체 조회 (User)
     public Page<GetPaymentRes> getPaymentByUser(Long getUserId, String role, Long userId, Pageable pageable) {
         if (!role.equals("ROLE_MANAGER")) {
             if (!getUserId.equals(userId)) {
@@ -116,6 +115,7 @@ public class PaymentService {
         return new PageImpl<>(getPaymentResList, pageable, paymentList.getTotalElements());
     }
 
+    // 결제 단일 조회
     public GetPaymentDetailRes getPayment(Long getUserId, String role, Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
@@ -132,12 +132,12 @@ public class PaymentService {
         return paymentMapper.toGetPaymentDetailRes(payment, getScheduleRes, getUserRes);
     }
 
+    // 결제 취소
     @Transactional
     public void cancelPayment(Long getUserId, String role, Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
 
-        // TODO : 결제 취소
         if (!role.equals("ROLE_MANAGER")) {
             if (!getUserId.equals(payment.getUserId())) {
                 throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
@@ -150,6 +150,7 @@ public class PaymentService {
         bookingList.forEach(Booking::cancel);
     }
 
+    // 결제 내역 삭제
     @Transactional
     public void deletePayment(String email, Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
@@ -158,6 +159,7 @@ public class PaymentService {
         payment.delete(email);
     }
 
+    // 결제 요청
     @Transactional
     public void requestPayment(Long getUserId, RequestPaymentReq requestPaymentReq) {
         // 결제 요청 -> 결제 완료
@@ -189,10 +191,10 @@ public class PaymentService {
 
         // 예매 취소
         List<Booking> bookingList = bookingRepository.findByPaymentId(paymentId);
-        bookingList.forEach(booking -> { booking.cancel(); bookingRepository.save(booking); });
+        bookingList.forEach(booking -> {
+            booking.cancel();
+            bookingRepository.save(booking);
+        });
     }
 
-    //                                          카드번호 받기
-    // 좌석 선택 (예매 생성) -> 결제 요청(결제 ID를 예매에 넣어주고 결제 생성) -> 결제 완료 시 예매 확정
-    // 예매 생성 -> 결제 요청 (응답 결제 정보) -> (토스가쏴주는)결제완료 API (req 결제 ID , 예매 확정)
 }

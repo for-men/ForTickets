@@ -30,7 +30,6 @@ spring:
     redis:
       host: redis
       port: 6379
-#      password: "systempass"
 
 server:
   port: 12031

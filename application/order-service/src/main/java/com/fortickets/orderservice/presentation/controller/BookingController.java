@@ -4,10 +4,10 @@ import com.fortickets.common.security.CustomUser;
 import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
-import com.fortickets.orderservice.application.dto.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
+import com.fortickets.orderservice.application.dto.response.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.service.BookingService;
@@ -36,10 +36,7 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-
-    /**
-     * 예매 생성 본인만 가능
-     */
+    // 예매 생성 본인만 가능
     @PostMapping
     public CommonResponse<List<CreateBookingRes>> createBooking(
         @UseAuth CustomUser customUser,
@@ -48,9 +45,7 @@ public class BookingController {
         return CommonResponse.success(createBookingRes);
     }
 
-    /**
-     * 예매 확정 본인만 가능
-     */
+    // 예매 확정 본인만 가능
     @PatchMapping("/confirm")
     public CommonResponse<CreatePaymentRes> confirmBooking(
         @UseAuth CustomUser customUser,
@@ -59,11 +54,7 @@ public class BookingController {
         return CommonResponse.success(bookingService.confirmBooking(customUser.getUserId(), confirmBookingReq));
     }
 
-    /**
-     * 관리자 예매 내역 조회
-     *
-     * @ROLE :MANAGER
-     */
+    // 관리자 예매 내역 조회
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping
     public CommonResponse<Page<GetBookingRes>> getBooking(
@@ -75,9 +66,7 @@ public class BookingController {
         return CommonResponse.success(bookingService.getBooking(nickname, concertName, pageable));
     }
 
-    /**
-     * 판매자 예매 내역 조회
-     */
+    // 판매자 예매 내역 조회
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @GetMapping("/seller/{sellerId}")
     public CommonResponse<Page<GetBookingRes>> getBookingBySeller(
@@ -92,9 +81,7 @@ public class BookingController {
             bookingService.getBookingBySeller(sellerId, customUser.getUserId(), customUser.getRole(), nickname, concertName, pageable));
     }
 
-    /**
-     * 사용자 예매 내역 조회
-     */
+    // 사용자 예매 내역 조회
     @GetMapping("/me/{userId}")
     public CommonResponse<Page<GetBookingRes>> getBookingByUser(
         @UseAuth CustomUser customUser,
@@ -102,9 +89,7 @@ public class BookingController {
         return CommonResponse.success(bookingService.getBookingByUser(customUser.getUserId(), customUser.getRole(), userId, pageable));
     }
 
-    /**
-     * 예매 단건 조회 (예매 상세 조회)
-     */
+    // 예매 단건 조회 (예매 상세 조회)
     @GetMapping("/{bookingId}")
     public CommonResponse<GetConcertDetailRes> getBookingById(
         @UseAuth CustomUser customUser,
@@ -113,9 +98,7 @@ public class BookingController {
     }
 
 
-    /**
-     * 예매 취소
-     */
+    // 예매 취소
     @PatchMapping("/cancel/{bookingId}")
     public CommonResponse<CommonEmptyRes> cancelBooking(
         @UseAuth CustomUser customUser,
@@ -124,9 +107,7 @@ public class BookingController {
         return CommonResponse.success();
     }
 
-    /**
-     * 예매 내역 삭제
-     */
+    // 예매 내역 삭제
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{bookingId}")
     public CommonResponse<CommonEmptyRes> deleteBooking(
@@ -136,9 +117,7 @@ public class BookingController {
         return CommonResponse.success();
     }
 
-    /**
-     * 예매 불가 좌석 조회
-     */
+    // 예매 불가 좌석 조회
     @GetMapping("/seats/{scheduleId}")
     public CommonResponse<List<String>> getSeatsByScheduleId(@PathVariable Long scheduleId) {
         return CommonResponse.success(bookingService.getSeatsByScheduleId(scheduleId));
