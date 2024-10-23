@@ -169,6 +169,50 @@ MSA를 기반으로 한 고성능 티켓팅 플랫폼을 개발합니다.<br>
 
 </details>
 
+<details>
+    <summary>Redis Caching Page 객체 직렬화 문제</summary>
+
+> ### 문제 상황 :
+>   - 조회 api에 Redis Caching처리하여 성능 개선을 시도하던 중 Page 객체를 Redis로 반환할 시 직렬화 문제로 조회되지 않는 현상을 발견.<br>
+>   ![](https://velog.velcdn.com/images/lswoo0705/post/e6f93cfb-6aa4-461c-958c-b4fabd0468b4/image.png)<br>
+>   처음 요청은 DB에서 데이터를 제대로 가져오지만
+>   ![](https://velog.velcdn.com/images/lswoo0705/post/8c39343a-42c1-48fb-91d4-5ec024199dd7/image.png)
+>   바로 두번 째 요청에서 500 에러를 발생<br><br>
+>
+>   - 직렬화/역직렬화 문제:<br>
+>     Redis에 저장될 때 객체가 직렬화되고 다시 읽을 때 역직렬화되는데, 만약 직렬화 방식이 잘못 설정되어 있거나 Page 객체가 올바르게 직렬화되지 않는 경우, 캐시에서 가져올 때 LinkedHashMap으로 변환될 수 있다.<br><br>
+>   ![](https://velog.velcdn.com/images/lswoo0705/post/6dd04df4-7486-4835-a7c6-eaf7355bc092/image.png)
+>   참고로 단일 조회의 경우 두번 째 요청에서 Cache에서 조회해오기 때문에 쿼리문이 생략되는걸 확인할 수 있다.
+> ---
+> ### 해결 방법 : PageImpl을 의존하는 RestPage 객체 생성
+> - Page<T> 데이터를 캐싱하기 위한 객체. Page<T>를 리턴하는 부분을 감싸서 사용한다.
+> ```java
+> @JsonIgnoreProperties(ignoreUnknown = true, value = {"pageable"})
+> public class RestPage<T> extends PageImpl<T> {
+> 
+>     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+>     public RestPage(@JsonProperty("content") List<T> content,
+>         @JsonProperty("number") int page,
+>         @JsonProperty("size") int size,
+>         @JsonProperty("totalElements") long total) {
+>         super(content, PageRequest.of(page, size), total);
+>     }
+>
+>     public RestPage(Page<T> page) {
+>         super(page.getContent(), page.getPageable(), page.getTotalElements());
+>     }
+> }
+> ```
+> 
+> 하지만
+> ![](https://velog.velcdn.com/images/lswoo0705/post/19f6cd29-68d9-4a52-a5f3-60844b64533a/image.png)
+> 팀이 사용하는 dto는 record 형식인데 record는 제네릭을 지원하지 않아서 에러가 발생했다.<br>
+> -> record 형식을 class로 변경 <br><br>
+> ![](https://velog.velcdn.com/images/lswoo0705/post/b11bc6b7-321e-4b17-b1f3-24872f3d69ef/image.png)
+> 처음 요청은 쿼리문이 날아가고 두번째는 Redis에서 조회하는데 성공
+
+</details>
+
 ---
 
 ## 📊 테스트 결과
