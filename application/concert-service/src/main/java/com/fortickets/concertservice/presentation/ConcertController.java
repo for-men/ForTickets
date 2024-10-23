@@ -70,7 +70,9 @@ public class ConcertController {
     // 특정 공연 삭제
     @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @DeleteMapping("/{concertId}")
-    public CommonResponse<CommonEmptyRes> deleteConcertById(@UseAuth CustomUser customUser, @PathVariable("concertId") Long concertId) {
+    public CommonResponse<CommonEmptyRes> deleteConcertById(
+        @UseAuth CustomUser customUser,
+        @PathVariable("concertId") Long concertId) {
         concertService.deleteConcertById(customUser.getUserId(), customUser.getRole(), customUser.getEmail(), concertId);
         return CommonResponse.success();
     }
@@ -78,9 +80,8 @@ public class ConcertController {
     // Concert 정보 조회
     @GetMapping("/{concertId}/detail")
     public GetConcertRes getConcert(
-        @UseAuth CustomUser customUser,
         @PathVariable Long concertId) {
-        return concertService.getConcert(customUser.getUserId(), customUser.getRole(), concertId);
+        return concertService.getConcert(concertId);
     }
 
     // 특정 판매자의 공연 조회

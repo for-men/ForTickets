@@ -118,13 +118,9 @@ public class ConcertService {
     }
 
     // 콘서트 ID로 콘서트 조회
-    public GetConcertRes getConcert(Long getUserId, String role, Long concertId) {
+    public GetConcertRes getConcert(Long concertId) {
         Concert concert = concertRepository.findById(concertId).orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
 
-        // 관리자 또는 본인만 조회 가능
-        if (!concert.getUserId().equals(getUserId) || !role.equals("MANAGER")) {
-            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-        }
         return concertMapper.toGetConcertRes(concert);
     }
 
