@@ -20,7 +20,6 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +33,6 @@ public class ConcertService {
     private final ConcertMapper concertMapper;
 
     // 공연 생성
-    @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @Transactional
     public CreateConcertRes createConcert(Long userId, CreateConcertReq createConcertReq) {
         Concert concert = createConcertReq.toEntity(userId);
@@ -65,7 +63,6 @@ public class ConcertService {
     }
 
     // 특정 공연 수정
-    @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @Transactional
     @CachePut(value = "concert", key = "#concertId")
     public GetConcertRes updateConcertById(Long concertId, UpdateConcertReq updateConcertReq) {
@@ -75,7 +72,6 @@ public class ConcertService {
     }
 
     // 특정 공연 삭제
-    @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @Transactional
     @CacheEvict(value = "concert", key = "#concertId")
     public void deleteConcertById(String email, Long concertId) {
@@ -84,20 +80,25 @@ public class ConcertService {
     }
 
     // 콘서트 부분 수정
-    @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     private static void changeConcert(UpdateConcertReq updateConcertReq, Concert concert) {
-        if(updateConcertReq.concertImage() !=null)
-          concert.changeImage(updateConcertReq.concertImage());
-        if(updateConcertReq.concertName() != null)
-          concert.changeName(updateConcertReq.concertName());
-        if(updateConcertReq.runtime() != null)
-          concert.changeRuntime(updateConcertReq.runtime());
-        if(updateConcertReq.startDate() != null)
-          concert.changeStartDate(updateConcertReq.startDate());
-        if(updateConcertReq.endDate() != null)
-          concert.changeEndDate(updateConcertReq.endDate());
-        if(updateConcertReq.price() != null)
-          concert.changePrice(updateConcertReq.price());
+        if (updateConcertReq.concertImage() != null) {
+            concert.changeImage(updateConcertReq.concertImage());
+        }
+        if (updateConcertReq.concertName() != null) {
+            concert.changeName(updateConcertReq.concertName());
+        }
+        if (updateConcertReq.runtime() != null) {
+            concert.changeRuntime(updateConcertReq.runtime());
+        }
+        if (updateConcertReq.startDate() != null) {
+            concert.changeStartDate(updateConcertReq.startDate());
+        }
+        if (updateConcertReq.endDate() != null) {
+            concert.changeEndDate(updateConcertReq.endDate());
+        }
+        if (updateConcertReq.price() != null) {
+            concert.changePrice(updateConcertReq.price());
+        }
     }
 
     // 콘서트 조회 유틸
