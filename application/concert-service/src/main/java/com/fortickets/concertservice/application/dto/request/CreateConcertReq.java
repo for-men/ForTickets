@@ -5,11 +5,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 
-public record CreateConcertReq (
-    @NotBlank(message = "콘서트 이름은 비어 있을 수 없습니다.")
+public record CreateConcertReq(
+    @NotBlank(message = "공연 이름은 비어 있을 수 없습니다.")
+    @Size(min = 1, max = 200, message = "공연 이름이 너무 깁니다.")
     String concertName,
 
     @Positive(message = "런타임은 양수여야 합니다.")
@@ -31,10 +33,10 @@ public record CreateConcertReq (
     @Pattern(regexp = "^(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|png)$|^$",
         message = "이미지는 유효한 URL이어야 하며, jpg, png 형식의 파일이어야 합니다.")
     String concertImage
-){
+) {
 
-  public Concert toEntity(Long userId) {
-    return Concert.of(userId,concertName,runTime,startDate,endDate,price,concertImage);
-  }
+    public Concert toEntity(Long userId) {
+        return Concert.of(userId, concertName, runTime, startDate, endDate, price, concertImage);
+    }
 
 }

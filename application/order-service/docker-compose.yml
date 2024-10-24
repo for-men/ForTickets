@@ -10,4 +10,3 @@ services:
       - '54324:5432'
     volumes:
       - ../db/order-service:/var/lib/postgresql/data
-

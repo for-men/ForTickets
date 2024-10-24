@@ -20,7 +20,6 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +33,6 @@ public class ConcertService {
     private final ConcertMapper concertMapper;
 
     // 공연 생성
-    @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @Transactional
     public CreateConcertRes createConcert(Long userId, CreateConcertReq createConcertReq) {
         Concert concert = createConcertReq.toEntity(userId);
@@ -65,39 +63,52 @@ public class ConcertService {
     }
 
     // 특정 공연 수정
-    @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @Transactional
     @CachePut(value = "concert", key = "#concertId")
-    public GetConcertRes updateConcertById(Long concertId, UpdateConcertReq updateConcertReq) {
+    public GetConcertRes updateConcertById(Long userId, String role, Long concertId, UpdateConcertReq updateConcertReq) {
         Concert concert = getConcertUtil(concertId);
+        // 관리자 또는 본인만 수정 가능
+        if (!concert.getUserId().equals(userId) || !role.equals("MANAGER")) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
         changeConcert(updateConcertReq, concert);
         return concertMapper.toGetConcertRes(concert);
     }
 
     // 특정 공연 삭제
-    @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     @Transactional
     @CacheEvict(value = "concert", key = "#concertId")
-    public void deleteConcertById(String email, Long concertId) {
+    public void deleteConcertById(Long userId, String role, String email, Long concertId) {
         Concert concert = getConcertUtil(concertId);
+
+        // 관리자 또는 본인만 삭제 가능
+        if (!concert.getUserId().equals(userId) || !role.equals("MANAGER")) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
+
         concert.delete(email);
     }
 
     // 콘서트 부분 수정
-    @PreAuthorize("hasAnyRole('MANAGER', 'SELLER')")
     private static void changeConcert(UpdateConcertReq updateConcertReq, Concert concert) {
-        if(updateConcertReq.concertImage() !=null)
-          concert.changeImage(updateConcertReq.concertImage());
-        if(updateConcertReq.concertName() != null)
-          concert.changeName(updateConcertReq.concertName());
-        if(updateConcertReq.runtime() != null)
-          concert.changeRuntime(updateConcertReq.runtime());
-        if(updateConcertReq.startDate() != null)
-          concert.changeStartDate(updateConcertReq.startDate());
-        if(updateConcertReq.endDate() != null)
-          concert.changeEndDate(updateConcertReq.endDate());
-        if(updateConcertReq.price() != null)
-          concert.changePrice(updateConcertReq.price());
+        if (updateConcertReq.concertImage() != null) {
+            concert.changeImage(updateConcertReq.concertImage());
+        }
+        if (updateConcertReq.concertName() != null) {
+            concert.changeName(updateConcertReq.concertName());
+        }
+        if (updateConcertReq.runtime() != null) {
+            concert.changeRuntime(updateConcertReq.runtime());
+        }
+        if (updateConcertReq.startDate() != null) {
+            concert.changeStartDate(updateConcertReq.startDate());
+        }
+        if (updateConcertReq.endDate() != null) {
+            concert.changeEndDate(updateConcertReq.endDate());
+        }
+        if (updateConcertReq.price() != null) {
+            concert.changePrice(updateConcertReq.price());
+        }
     }
 
     // 콘서트 조회 유틸
@@ -109,6 +120,7 @@ public class ConcertService {
     // 콘서트 ID로 콘서트 조회
     public GetConcertRes getConcert(Long concertId) {
         Concert concert = concertRepository.findById(concertId).orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_CONCERT));
+
         return concertMapper.toGetConcertRes(concert);
     }
 
