@@ -91,6 +91,7 @@ MSA를 기반으로 한 고성능 티켓팅 플랫폼을 개발합니다.<br>
 ---
 
 ## 🛠️ 적용 기술
+
 > **Backend** : Java, Spring Boot, Spring Cloud, SpringDataJPA, QueryDSL, Docker
 > 
 > **Database** : PostgreSQL, Redis
