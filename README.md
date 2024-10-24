@@ -1,17 +1,20 @@
 # 💳 ForTickets
 
----
+<br>
 
 ## 📋 목차
 1. [프로젝트 소개](#-프로젝트-소개)
 2. [프로젝트 목표](#-프로젝트-목표)
 3. [개발 인원](#-개발-인원)
 4. [프로젝트 주요 기능](#-프로젝트-주요-기능)
-5. [적용 기술](#-적용-기술)
-6. [기술적 의사결정](#-기술적-의사결정)
-7. [트러블 슈팅](#-트러블슈팅)
-8. [테스트 결과](#-테스트-결과)
-9. [기타 명세서 및 설계서](#-기타-명세서-및-설계서)
+5. [인프라 설계도](#-인프라-설계도)
+6. [적용 기술](#-적용-기술)
+7. [기술적 의사결정](#-기술적-의사결정)
+8. [트러블 슈팅](#-트러블슈팅)
+9. [테스트 결과](#-테스트-결과)
+10. [기타 명세서 및 설계서](#-기타-명세서-및-설계서)
+
+<br>
 
 ---
 
@@ -19,19 +22,40 @@
 MSA를 기반으로 한 고성능 티켓팅 플랫폼을 개발합니다.<br>
 공연, 콘서트 등의 티켓을 구매할 수 있는 온라인 플랫폼으로, 사용자에게 빠르고 안정적인 티켓팅 서비스를 제공하는 것을 목표로 합니다.
 
+<br>
+
 ---
 
 ## 🏆 프로젝트 목표
 - 공연, 콘서트 등의 티켓을 구매할 수 있는 온라인 플랫폼으로, 사용자에게 빠르고 안정적인 티켓팅 서비스를 제공합니다.
 - 저희 프로젝트는 MVP 단계별 성능 개선을 목표로, Caching, DB 최적화, Scale Out 등을 통해 부하 테스트로 성능 개선을 눈으로 확인하여 대용량 트래픽을 효율적으로 처리할 수 있는 고성능 시스템을 구축하는 것을 목표로 합니다.
 
+<br>
+
 ---
 
 ## 👥 개발 인원
-* 박주창 - [Github 링크](https://github.com/joo-chang)
-* 이상우 - [Github 링크](https://github.com/lswoo0705)
-* 김용재 - [Github 링크](https://github.com/uzjaee)
-* 김휘수 - [Github 링크](https://github.com/notitle12)
+
+<markdown-accessiblity-table data-catalyst=""><table>
+<thead>
+    <tr>
+        <th align="center"><img src="https://github.com/user-attachments/assets/f49d3e46-f774-4fe3-b206-6ed713fe9fe7" width="150" height="150" style="max-width: 100%;"></a></th>
+        <th align="center"><img src="https://github.com/user-attachments/assets/5a6263c5-1ff5-460b-94b5-34ff50ca40b9" width="150" height="150" style="max-width: 100%;"></a></th>
+        <th align="center"><img src="https://github.com/user-attachments/assets/0c288756-09d1-41fc-8647-bdf8d63013a5" width="150" height="150" style="max-width: 100%;"></a></th>
+        <th align="center"><img src="https://github.com/user-attachments/assets/4de21cf9-eb63-4888-85db-5526644d452c" width="150" height="150" style="max-width: 100%;"></a></th>
+    </tr>
+</thead>
+<tbody>
+    <tr>
+        <td align="center"><a href="https://github.com/joo-chang">박주창</a></td>
+        <td align="center"><a href="https://github.com/lswoo0705">이상우</a></td>
+        <td align="center"><a href="https://github.com/uzjaee">김용재</a></td>
+        <td align="center"><a href="https://github.com/notitle12">김휘수</a></td>
+    </tr>
+</tbody>
+</table></markdown-accessiblity-table>
+
+<br>
 
 ---
 
@@ -53,6 +77,16 @@ MSA를 기반으로 한 고성능 티켓팅 플랫폼을 개발합니다.<br>
 > - 과부하 상태 비활성화:
 >   - 요청 수가 임계값 이하로 내려가면 과부하 상태가 비활성화됩니다.
 > <img width="769" alt="스크린샷 2024-10-22 오후 2 29 57" src="https://github.com/user-attachments/assets/68a893f5-6cbe-4c8b-bd2e-b31dcb31c1c2">
+
+<br>
+
+---
+
+## 📜 인프라 설계도
+
+![image](https://github.com/user-attachments/assets/ead61c90-3d8d-41c1-9df8-e84ab352210a)
+
+<br>
 
 ---
 
@@ -118,6 +152,8 @@ MSA를 기반으로 한 고성능 티켓팅 플랫폼을 개발합니다.<br>
 
 </details>
  
+<br>
+
 ---
 
 ## 💡 기술적 의사결정
@@ -160,6 +196,8 @@ MSA를 기반으로 한 고성능 티켓팅 플랫폼을 개발합니다.<br>
 >     - Gatling은 대규모 부하 테스트에 최적화되어 있으며, 성능이 중요하다 생각하여 선택
 
 </details>
+
+<br>
 
 ---
 
@@ -234,6 +272,8 @@ MSA를 기반으로 한 고성능 티켓팅 플랫폼을 개발합니다.<br>
 
 </details>
 
+<br>
+
 ---
 
 ## 📊 테스트 결과
@@ -299,6 +339,8 @@ MSA를 기반으로 한 고성능 티켓팅 플랫폼을 개발합니다.<br>
 ![image](https://github.com/user-attachments/assets/76334bc1-2233-40bb-89da-6b3cbc1f7d43)
 ![image](https://github.com/user-attachments/assets/1a60f988-c6fd-4574-801a-5c8398adbe5f)
 ![image](https://github.com/user-attachments/assets/54302e6a-fcb6-4265-881c-3dff03b6480b)
+
+<br>
 
 ---
 
