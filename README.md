@@ -57,14 +57,21 @@ MSA를 기반으로 한 고성능 티켓팅 플랫폼을 개발합니다.<br>
 ---
 
 ## 🛠️ 적용 기술
+> **Backend** : Java, Spring Boot, Spring Cloud, SpringDataJPA, QueryDSL, Docker
+> 
+> **Database** : PostgreSQL, Redis
+> 
+> **Messaging** : Kafka
+>
+> **Monitoring** : Grafana Prometheus Zipkin
+> 
+> **Testing** : Gatling
+> 
+> **Infra** : Github Actions, AWS (ECR, EC2)
+> 
+> **Tools** : GitHub Postman Notion
 
-- **Backend** : Java, Spring Boot, Spring Cloud, SpringDataJPA, QueryDSL, Docker
-- **Database** : PostgreSQL, Redis
-- **Messaging** : Kafka
-- **Monitoring** : Grafana Prometheus Zipkin
-- **Testing** : Gatling
-- **Infra** : Github Actions, AWS (ECR, EC2)
-- **Tools** : GitHub Postman Notion
+<br>
 
 <details>
     <summary>기술 상세</summary> 
