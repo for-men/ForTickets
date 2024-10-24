@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-      - 'release/mvp*'
-  create:
-    branches:
-      - 'release/mvp*'
 env:
   ECR_NAMESPACE : forticketing
 
@@ -29,17 +25,43 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Restore application-credentials.yml
+        run: | 
+          touch application/gateway-service/src/main/resources/application-credentials.yml
+          touch application/user-service/src/main/resources/application-credentials.yml
+          echo "${{ secrets.APPLICATION_CREDENTIAL_YML }}" | base64 --decode > application/gateway-service/src/main/resources/application-credentials.yml
+          echo "${{ secrets.APPLICATION_CREDENTIAL_YML }}" | base64 --decode > application/user-service/src/main/resources/application-credentials.yml
+
       - name: Build with Gradle
-        run: ./gradlew clean build :application/${{ matrix.service }}:build
+        run: |
+          ./gradlew clean
+          ./gradlew :application:${{ matrix.service }}:build
+
+      - name: Upload JAR artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: jars
+          path:
+            application/${{ matrix.service }}/build/libs/${{ matrix.service }}.jar
+
 
   docker:
-    name: Buildand Push Docker Images to registry
+    name: Build and Push Docker Images to registry
     needs: build
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Download JAR artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: jars
+          path: ./artifacts
+
+      - name: check artifacts
+        run: ls -al ./artifacts
 
       # AWS ECR 에 이미지 업로드 권한을 얻기 위해 인증을 진행합니다.
       - name: Configure AWS credentials
@@ -61,8 +83,6 @@ jobs:
           ./dockerTagAndPush.sh
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-
-
 
 
   Deploy:
@@ -99,6 +119,6 @@ jobs:
           envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, ECR_REGISTRY, ECR_NAMESPACE
           script: |
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
-            docker compose down
-            docker compose pull
-            docker compose up -d
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d
