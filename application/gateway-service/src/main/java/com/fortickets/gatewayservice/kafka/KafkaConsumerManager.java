@@ -28,7 +28,9 @@ public class KafkaConsumerManager implements ConsumerSeekAware {
     private static final int MAX_RETRIES = 3; // 최대 재시도 횟수
 
     @Autowired
-    public KafkaConsumerManager(ConsumerFactory<String, String> consumerFactory, WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
+    public KafkaConsumerManager(ConsumerFactory<String, String> consumerFactory,
+                                WebClient.Builder webClientBuilder,
+                                ObjectMapper objectMapper) {
         this.consumerFactory = consumerFactory;
         this.executorService = Executors.newFixedThreadPool(POOL_SIZE);
         this.webClient = webClientBuilder.build(); // WebClient 초기화

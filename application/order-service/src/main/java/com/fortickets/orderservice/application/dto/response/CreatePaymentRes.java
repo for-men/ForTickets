@@ -1,4 +1,4 @@
-package com.fortickets.orderservice.application.dto;
+package com.fortickets.orderservice.application.dto.response;
 
 public record CreatePaymentRes(
     Long paymentId,

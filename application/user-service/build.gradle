@@ -26,6 +26,7 @@ dependencies {
 
     // postgresql
     runtimeOnly 'org.postgresql:postgresql'
+
     // docker compose support
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 

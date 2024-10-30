@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "order-service")
 @Component
 public interface BookingClient {
-  // status가 PENDING , CONFIRMED 상태인 좌석
-  @GetMapping("/bookings/seats/{scheduleId}")
-  CommonResponse<List<String>> getSeatsWithBooking(@PathVariable("scheduleId") Long scheduleId);
+
+    // status가 PENDING , CONFIRMED 상태인 좌석
+    @GetMapping("/bookings/seats/{scheduleId}")
+    CommonResponse<List<String>> getSeatsWithBooking(@PathVariable("scheduleId") Long scheduleId);
 
 }

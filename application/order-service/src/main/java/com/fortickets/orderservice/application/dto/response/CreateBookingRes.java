@@ -2,7 +2,7 @@ package com.fortickets.orderservice.application.dto.response;
 
 import com.fortickets.common.util.BookingStatus;
 
-public record CreateBookingRes (
+public record CreateBookingRes(
     Long id,
     Long concertId,
     Long scheduleId,

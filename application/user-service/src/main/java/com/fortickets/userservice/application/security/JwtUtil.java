@@ -28,8 +28,7 @@ public class JwtUtil {
     public static final String BEARER_PREFIX = "Bearer ";
     // access 토큰 만료시간
     private final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; // 60분
-    // refresh 토큰 만료시간
-    private final long REFRESH_TOKEN_TIME = 24 * 60 * 60 * 1000L; // 24시간
+    // 알고리즘
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @Value("${spring.application.name}")
@@ -49,7 +48,7 @@ public class JwtUtil {
     // 토큰 생성
     public String createAccessToken(Long userId, String email, UserRoleEnum role) {
         Date date = new Date();
-        String authority  = "ROLE_" + role; // 역할에 접두어 추가
+        String authority = "ROLE_" + role; // 역할에 접두어 추가
         // JWT Claims 확인 로그 추가
         log.info("JWT Claims - userId: {}, email: {}, role: {}", userId, email, authority);
 

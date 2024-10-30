@@ -1,4 +1,4 @@
-package com.fortickets.common;
+package com.fortickets.common.util;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

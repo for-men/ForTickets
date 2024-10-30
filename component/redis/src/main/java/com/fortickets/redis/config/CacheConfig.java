@@ -26,7 +26,9 @@ public class CacheConfig {
         // registerModule : Java 8의 날짜 및 시간 API (LocalDate, LocalDateTime 등)를 직렬화
         objectMapper.registerModule(new JavaTimeModule());
         // activateDefaultTyping : 객체가 직렬화될 때 해당 타입 정보를 JSON에 포함시킬 수 있고, 이를 이용해 역직렬화 할 때 어떤 클래스의 인스턴스인지 확읺한다.
-        objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+        objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(),
+                                           ObjectMapper.DefaultTyping.NON_FINAL,
+                                           JsonTypeInfo.As.PROPERTY);
 
         // Redis를 이용해서 Spring Cache를 사용할 때 Redis 관련 설정을 모아두는 클래스
         RedisCacheConfiguration configuration = RedisCacheConfiguration
