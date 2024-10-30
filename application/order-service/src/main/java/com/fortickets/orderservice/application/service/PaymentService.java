@@ -214,7 +214,7 @@ public class PaymentService {
 
 
     /**
-     * 주어진 닉네임으로 사용자 ID 리스트를 가져옵니다. 닉네임이 null인 경우 빈 리스트를 반환합니다.
+     * 주어진 닉네임으로 사용자 ID 리스트 가져오기. 닉네임이 null인 경우 빈 리스트를 반환
      */
     private List<Long> getUserIdsByNickname(String nickname) {
         if (nickname == null) {
@@ -235,7 +235,7 @@ public class PaymentService {
     }
 
     /**
-     * 주어진 콘서트 ID 리스트로 콘서트 정보를 일괄 조회하여 Map으로 반환합니다.
+     * 주어진 콘서트 ID 리스트로 콘서트 정보를 일괄 조회하여 Map으로 반환
      */
     private Map<Long, GetConcertRes> fetchConcertsByIds(List<Long> concertIds) {
         // 콘서트 ID가 없으면 빈 맵 반환
