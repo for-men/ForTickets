@@ -200,7 +200,6 @@ services:
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
-    platform: linux/amd64
     ports:
       - "8080:8080"
     environment:
