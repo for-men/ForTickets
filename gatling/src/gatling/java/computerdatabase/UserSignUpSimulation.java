@@ -22,7 +22,7 @@ public class UserSignUpSimulation extends Simulation {
     // Feeder로 사용할 랜덤 데이터 생성 메서드
     private Iterator<Map<String, Object>> createFeeder() {
         List<Map<String, Object>> feederData = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {  // 100명의 데이터를 생성
+        for (int i = 0; i < 1000; i++) {  // 100명의 데이터를 생성
             Map<String, Object> data = new HashMap<>();
             data.put("email", getRandomEmail());
             data.put("nickname", getRandomNickname());
@@ -67,7 +67,7 @@ public class UserSignUpSimulation extends Simulation {
         );
 
     {
-        setUp(signUpScenario.injectOpen(atOnceUsers(100)).protocols(httpProtocol));
+        setUp(signUpScenario.injectOpen(atOnceUsers(1000)).protocols(httpProtocol));
     }
 }
 
