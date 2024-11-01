@@ -120,14 +120,21 @@ public class PaymentService {
                 throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
             }
         }
-        Page<Payment> paymentList = paymentRepository.findByUserId(userId, pageable);
+        Page<Payment> payments = paymentRepository.findByUserId(userId, pageable);
 
-        List<GetPaymentRes> getPaymentResList = paymentList.getContent().stream().map(payment -> {
-            var getConcertRes = concertClient.getConcert(payment.getConcertId());
-            return paymentMapper.toGetPaymentUser(payment, getConcertRes);
-        }).toList();
+        // 콘서트 ID 리스트를 생성
+        List<Long> concertIds = payments.getContent().stream()
+            .map(Payment::getConcertId)
+            .distinct() // 중복된 콘서트 ID 제거
+            .toList();
 
-        return new PageImpl<>(getPaymentResList, pageable, paymentList.getTotalElements());
+        // 콘서트 정보를 일괄 조회
+        Map<Long, GetConcertRes> concertMap = fetchConcertsByIds(concertIds);
+
+        // 결제를 GetPaymentRes 객체로 매핑
+        List<GetPaymentRes> getPaymentResList = mapPaymentsToResponse(payments, concertMap);
+
+        return new PageImpl<>(getPaymentResList, pageable, payments.getTotalElements());
     }
 
     // 결제 단일 조회

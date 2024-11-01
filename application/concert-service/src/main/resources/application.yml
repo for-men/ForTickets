@@ -13,8 +13,8 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        show_sql: false # sql 로깅
-        format_sql: true # SQL 문 정렬하여 출력
+        show_sql: true # sql 로깅
+        format_sql: false # SQL 문 정렬하여 출력
         highlight_sql: true # SQL 문 색 부여
   # docker compose lifecycle 설정
   docker:

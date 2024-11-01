@@ -142,9 +142,9 @@ public class ConcertService {
         return concertMapper.toGetConcertResList(concertList);
     }
 
-    public List<GetConcertRes> getConcertsByIds(List<Long> concertIds) {
+    public List<GetConcertDetailRes> getConcertsByIds(List<Long> concertIds) {
         List<Concert> concertList = concertRepository.findByIdIn(concertIds);
-        return concertMapper.toGetConcertResList(concertList);
+        return concertMapper.toGetConcertDetailResList(concertList);
 
     }
 }

@@ -112,7 +112,7 @@ public class ConcertController {
 
     // 공연 ID List로 공연 정보 조회
     @PostMapping("/list")
-    List<GetConcertRes> getConcertsByIds(@RequestBody List<Long> concertIds) {
+    List<GetConcertDetailRes> getConcertsByIds(@RequestBody List<Long> concertIds) {
         return concertService.getConcertsByIds(concertIds);
     }
 
