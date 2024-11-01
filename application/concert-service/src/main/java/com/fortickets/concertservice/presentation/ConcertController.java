@@ -92,7 +92,7 @@ public class ConcertController {
 
     // 공연 이름으로 검색
     @GetMapping("/search")
-    public CommonResponse<List<GetConcertDetailRes>> searchConcertByName(
+    public CommonResponse<List<GetConcertRes>> searchConcertByName(
         @RequestParam(required = false, name = "concert-name") String concertName
     ) {
         return CommonResponse.success(concertService.searchConcertName(concertName));
@@ -100,14 +100,20 @@ public class ConcertController {
 
     // 특정 판매자의 공연중 해당 문자가 들어간 공연 조회
     @GetMapping("/{userId}/{concertName}/search")
-    List<GetConcertDetailRes> searchConcert(@PathVariable Long userId, @PathVariable String concertName) {
+    List<GetConcertRes> searchConcert(@PathVariable Long userId, @PathVariable String concertName) {
         return concertService.searchConcert(userId, concertName);
     }
 
     // 해당 문자가 들어간 공연 조회
     @GetMapping("/{concertName}/search")
-    List<GetConcertDetailRes> searchConcertName(@PathVariable String concertName) {
+    List<GetConcertRes> searchConcertName(@PathVariable String concertName) {
         return concertService.searchConcertName(concertName);
+    }
+
+    // 공연 ID List로 공연 정보 조회
+    @PostMapping("/list")
+    List<GetConcertRes> getConcertsByIds(@RequestBody List<Long> concertIds) {
+        return concertService.getConcertsByIds(concertIds);
     }
 
 }

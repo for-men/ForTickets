@@ -131,14 +131,20 @@ public class ConcertService {
     }
 
     // 특정 판매자가 등록한 콘서트 중 해당 문자를 제목에 포함한 콘서트 조회
-    public List<GetConcertDetailRes> searchConcert(Long userId, String concertName) {
+    public List<GetConcertRes> searchConcert(Long userId, String concertName) {
         List<Concert> concertList = concertRepository.findByUserIdAndConcertNameContaining(userId, concertName);
         return concertMapper.toGetConcertResList(concertList);
     }
 
     // 해당 문자를 포함한 콘서트 조회
-    public List<GetConcertDetailRes> searchConcertName(String concertName) {
+    public List<GetConcertRes> searchConcertName(String concertName) {
         List<Concert> concertList = concertRepository.findByConcertNameContaining(concertName);
         return concertMapper.toGetConcertResList(concertList);
+    }
+
+    public List<GetConcertRes> getConcertsByIds(List<Long> concertIds) {
+        List<Concert> concertList = concertRepository.findByIdIn(concertIds);
+        return concertMapper.toGetConcertResList(concertList);
+
     }
 }

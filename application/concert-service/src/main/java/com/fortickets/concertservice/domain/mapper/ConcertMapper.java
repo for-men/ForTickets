@@ -22,5 +22,5 @@ public interface ConcertMapper {
 
     List<GetConcertDetailRes> toGetConcertDetailResList(List<Concert> concertList);
 
-    List<GetConcertDetailRes> toGetConcertResList(List<Concert> concertList);
+    List<GetConcertRes> toGetConcertResList(List<Concert> concertList);
 }
