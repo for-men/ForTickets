@@ -84,14 +84,13 @@ public class ScheduleService {
         return scheduleMapper.toGetScheduleDetailRes(schedule);
 
     }
+
     // 스케줄 수정
     @Transactional
     public void updateScheduleById(Long getUserId, String role, Long scheduleId, UpdateScheduleReq updateScheduleReq) {
         Schedule schedule = getSchedule(scheduleId);
         Concert concert = schedule.getConcert();
-        if (!concert.getUserId().equals(getUserId) || !role.equals("MANAGER")) {
-            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-        }
+        validateAuthorization(role, getUserId, concert.getUserId());
 
         if (updateScheduleReq.concertDate() != null) {
             if (updateScheduleReq.concertDate().isBefore(concert.getStartDate())) {
@@ -113,9 +112,7 @@ public class ScheduleService {
 
         Schedule schedule = getSchedule(scheduleId);
         Concert concert = schedule.getConcert();
-        if (!concert.getUserId().equals(getUserId) || !role.equals("MANAGER")) {
-            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-        }
+        validateAuthorization(role, getUserId, concert.getUserId());
         schedule.delete(email);
     }
 
@@ -139,5 +136,11 @@ public class ScheduleService {
     private Stage getStage(Long stageId) {
         return stageRepository.findById(stageId)
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_STAGE));
+    }
+
+    private void validateAuthorization(String role, Long userId, Long targetUserId) {
+        if (!role.equals("ROLE_MANAGER") && !userId.equals(targetUserId)) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
     }
 }
