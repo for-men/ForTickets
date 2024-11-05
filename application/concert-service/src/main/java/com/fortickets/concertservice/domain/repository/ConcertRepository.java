@@ -8,4 +8,6 @@ public interface ConcertRepository extends JpaRepository<Concert, Long>, Concert
 
     List<Concert> findByUserId(Long userId);
 
+    List<Concert> findByIdIn(List<Long> concertIds);
+
 }

@@ -68,9 +68,7 @@ public class ConcertService {
     public GetConcertRes updateConcertById(Long userId, String role, Long concertId, UpdateConcertReq updateConcertReq) {
         Concert concert = getConcertUtil(concertId);
         // 관리자 또는 본인만 수정 가능
-        if (!concert.getUserId().equals(userId) || !role.equals("MANAGER")) {
-            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-        }
+        validateAuthorization(role, userId, concert.getUserId());
         changeConcert(updateConcertReq, concert);
         return concertMapper.toGetConcertRes(concert);
     }
@@ -82,9 +80,7 @@ public class ConcertService {
         Concert concert = getConcertUtil(concertId);
 
         // 관리자 또는 본인만 삭제 가능
-        if (!concert.getUserId().equals(userId) || !role.equals("MANAGER")) {
-            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-        }
+        validateAuthorization(role, userId, concert.getUserId());
 
         concert.delete(email);
     }
@@ -131,14 +127,26 @@ public class ConcertService {
     }
 
     // 특정 판매자가 등록한 콘서트 중 해당 문자를 제목에 포함한 콘서트 조회
-    public List<GetConcertDetailRes> searchConcert(Long userId, String concertName) {
+    public List<GetConcertRes> searchConcert(Long userId, String concertName) {
         List<Concert> concertList = concertRepository.findByUserIdAndConcertNameContaining(userId, concertName);
         return concertMapper.toGetConcertResList(concertList);
     }
 
     // 해당 문자를 포함한 콘서트 조회
-    public List<GetConcertDetailRes> searchConcertName(String concertName) {
+    public List<GetConcertRes> searchConcertName(String concertName) {
         List<Concert> concertList = concertRepository.findByConcertNameContaining(concertName);
         return concertMapper.toGetConcertResList(concertList);
+    }
+
+    public List<GetConcertDetailRes> getConcertsByIds(List<Long> concertIds) {
+        List<Concert> concertList = concertRepository.findByIdIn(concertIds);
+        return concertMapper.toGetConcertDetailResList(concertList);
+
+    }
+
+    private void validateAuthorization(String role, Long userId, Long targetUserId) {
+        if (!role.equals("ROLE_MANAGER") && !userId.equals(targetUserId)) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
     }
 }

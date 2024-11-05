@@ -187,11 +187,7 @@ public class BookingService {
     public Page<GetBookingRes> getBookingBySeller(Long sellerId, Long userId, String role, String nickname, String concertName,
         Pageable pageable) {
         // 판매자와 요청자가 같은지 확인
-        if (!role.equals("ROLE_MANAGER")) {
-            if (!userId.equals(sellerId)) {
-                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-            }
-        }
+        validateAuthorization(role, userId, sellerId);
         List<GetUserRes> userList = new ArrayList<>();
         List<GetConcertRes> concertList = new ArrayList<>();
         // 닉네임으로 사용자 조회
@@ -229,11 +225,7 @@ public class BookingService {
     // 사용자 예매 내역 조회
     public Page<GetBookingRes> getBookingByUser(Long getUserId, String role, Long userId, Pageable pageable) {
         // 요청 사용자와 예약 사용자가 같은지 확인
-        if (!role.equals("ROLE_MANAGER")) {
-            if (!getUserId.equals(userId)) {
-                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-            }
-        }
+        validateAuthorization(role, getUserId, userId);
         Page<Booking> bookingList = bookingRepository.findByUserId(userId, pageable);
 
         List<GetBookingRes> getBookingResList = bookingList.getContent().stream().map(booking -> {
@@ -247,11 +239,9 @@ public class BookingService {
     public GetConcertDetailRes getBookingById(Long getUserId, String role, Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
             .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
-        if (!role.equals("ROLE_MANAGER")) {
-            if (!getUserId.equals(booking.getUserId())) {
-                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-            }
-        }
+
+        validateAuthorization(role, getUserId, booking.getUserId());
+
         GetScheduleDetailRes getScheduleDetailRes = concertClient.getScheduleDetail(booking.getScheduleId());
 
         return bookingMapper.toGetConcertDetailRes(booking, getScheduleDetailRes);
@@ -264,11 +254,8 @@ public class BookingService {
         Booking booking = bookingRepository.findById(bookingId)
             .orElseThrow(() -> new GlobalException(ErrorCase.BOOKING_NOT_FOUND));
 
-        if (!role.equals("ROLE_MANAGER")) {
-            if (!getUserId.equals(booking.getUserId())) {
-                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-            }
-        }
+        validateAuthorization(role, getUserId, booking.getUserId());
+
         GetScheduleDetailRes scheduleRes = concertClient.getScheduleDetail(booking.getScheduleId());
 
         // 공연이 끝났는지 체크 필요
@@ -305,6 +292,12 @@ public class BookingService {
 
     private boolean possibleCancel(LocalDate localDate, LocalTime localTime) {
         return LocalDateTime.of(localDate, localTime).isAfter(LocalDateTime.now());
+    }
+
+    private void validateAuthorization(String role, Long userId, Long targetUserId) {
+        if (!role.equals("ROLE_MANAGER") && !userId.equals(targetUserId)) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
     }
 
 }
