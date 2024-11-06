@@ -40,6 +40,7 @@ public class PaymentService {
     private final PaymentMapper paymentMapper;
     private final UserClient userClient;
     private final ConcertClient concertClient;
+    private final TossPaymentsService tossPaymentsService;
 
     // 결제 생성 (예매 확정 시 결제 생성)
     @Transactional
@@ -174,6 +175,16 @@ public class PaymentService {
 
         if (!getUserId.equals(payment.getUserId())) {
             throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
+
+        // 토스페이먼츠에 결제 확인 요청
+        Map<String, Object> paymentResult = tossPaymentsService.requestPayment(
+            String.valueOf(requestPaymentReq.paymentId())
+        );
+
+        // 결제 성공 확인
+        if (!"DONE".equals(paymentResult.get("status"))) {
+            throw new GlobalException(ErrorCase.PAYMENT_FAILED);
         }
 
         try {

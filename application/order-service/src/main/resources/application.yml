@@ -1,6 +1,8 @@
 spring:
   application:
     name: order-service
+  config:
+    import: "classpath:application-toss-secret.yml"
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/fortickets
