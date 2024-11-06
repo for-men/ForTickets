@@ -4,7 +4,7 @@ public record CreatePaymentRes(
     Long paymentId,
     Long userId,
     Long concertId,
-    Long scheduleId
+    Long totalPrice
 ) {
 
 }
