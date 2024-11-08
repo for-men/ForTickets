@@ -170,7 +170,8 @@ public class PaymentService {
     @Transactional
     public void requestPayment(Long getUserId, RequestPaymentReq requestPaymentReq) {
         // 결제 요청 -> 결제 완료
-        Payment payment = paymentRepository.findById(requestPaymentReq.paymentId())
+        Long paymentId = Long.valueOf(requestPaymentReq.orderId().split("_")[0]);
+        Payment payment = paymentRepository.findById(paymentId)
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
 
         if (!getUserId.equals(payment.getUserId())) {
@@ -194,7 +195,7 @@ public class PaymentService {
         }
 
         // 결제 완료 시 예매 확정
-        List<Booking> bookingList = bookingRepository.findByPaymentId(requestPaymentReq.paymentId());
+        List<Booking> bookingList = bookingRepository.findByPaymentId(paymentId);
         bookingList.forEach(Booking::confirm);
 
     }

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png" />
-  <link rel="stylesheet" type="text/css" href="/style.css" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8"/>
+  <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png"/>
+  <link rel="stylesheet" type="text/css" href="/style.css"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>토스페이먼츠 샘플 프로젝트</title>
   <!-- SDK 추가 -->
   <script src="https://js.tosspayments.com/v2/standard"></script>
@@ -23,7 +23,7 @@
     <div style="padding-left: 30px">
       <div class="checkable typography--p">
         <label for="coupon-box" class="checkable__label typography--regular">
-          <input id="coupon-box" class="checkable__input" type="checkbox" aria-checked="true" />
+          <input id="coupon-box" class="checkable__input" type="checkbox" aria-checked="true"/>
           <span class="checkable__label-text">5,000원 쿠폰 적용</span>
         </label>
       </div>
@@ -31,12 +31,12 @@
     <!-- 결제하기 버튼 -->
     <button class="button" id="payment-button" style="margin-top: 30px">결제하기</button>
   </div>
-<!--  <div class="box_section" style="padding: 40px 30px 50px 30px; margin-top: 30px; margin-bottom: 50px">-->
-<!--    &lt;!&ndash; 브랜드페이만 연동하기 &ndash;&gt;-->
-<!--    <button class="button" id="brandpay-button" style="margin-top: 30px">위젯 없이 브랜드페이만 연동하기</button>-->
-<!--    &lt;!&ndash; 결제창만 연동하기 &ndash;&gt;-->
-<!--    <button class="button" id="payment-window-button" style="margin-top: 30px">위젯 없이 결제창만 연동하기</button>-->
-<!--  </div>-->
+  <!--  <div class="box_section" style="padding: 40px 30px 50px 30px; margin-top: 30px; margin-bottom: 50px">-->
+  <!--    &lt;!&ndash; 브랜드페이만 연동하기 &ndash;&gt;-->
+  <!--    <button class="button" id="brandpay-button" style="margin-top: 30px">위젯 없이 브랜드페이만 연동하기</button>-->
+  <!--    &lt;!&ndash; 결제창만 연동하기 &ndash;&gt;-->
+  <!--    <button class="button" id="payment-window-button" style="margin-top: 30px">위젯 없이 결제창만 연동하기</button>-->
+  <!--  </div>-->
 </div>
 <script>
   main();
@@ -45,12 +45,12 @@
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('orderId');
     const totalPrice = urlParams.get('totalPrice');
-    const orderName = urlParams.get('orderName');
+    const orderName = `${orderId} +  예매 상품`;
     const timestamp = new Date().getTime();
 
     // 주문 ID와 총 가격이 없으면 실패 페이지로 이동
     if (!orderId || !totalPrice) {
-      window.location.href = window.location.origin + "/fail.html";
+      window.location.href = window.location.origin + "/order-service/widget/fail.html";
       return;
     }
 
@@ -124,10 +124,10 @@
       // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
       // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
       await widgets.requestPayment({
-        orderId: generateRandomString(),
-        orderName: "토스 티셔츠 외 2건",
-        successUrl: window.location.origin + "/widget/success.html",
-        failUrl: window.location.origin + "/fail.html",
+        orderId: customerKey,
+        orderName: orderName,
+        successUrl: window.location.origin + "/order-service/widget/success.html?&token=" + urlParams.get('token'),
+        failUrl: window.location.origin + "/order-service/widget/fail.html",
         customerEmail: "customer123@gmail.com",
         customerName: "김토스",
         customerMobilePhone: "01012341234",

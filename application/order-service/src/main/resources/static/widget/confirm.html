@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>예매 확정 페이지</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h2 class="mb-4">예매 확정</h2>
+  <form id="bookingForm">
+    <div class="form-group">
+      <label for="token">JWT 토큰:</label>
+      <input type="text" class="form-control" id="token" name="token" placeholder="">
+    </div>
+    <div class="form-group">
+      <label for="userId">User ID:</label>
+      <input type="text" class="form-control" id="userId" name="userId" placeholder="예: 123">
+    </div>
+    <div class="form-group">
+      <label for="bookingIds">Booking ID 목록 (쉼표로 구분):</label>
+      <input type="text" class="form-control" id="bookingIds" name="bookingIds" placeholder="예: 111, 222, 333">
+    </div>
+    <button type="button" class="btn btn-primary" id="confirmButton">예매 확정하기</button>
+  </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  $(document).ready(function () {
+    console.log("Document is ready");
+
+    $('#confirmButton').click(function () {
+      console.log("Confirm button clicked");
+      var token = $('#token').val();
+      var userId = $('#userId').val();
+      var bookingIds = $('#bookingIds').val();
+
+      console.log("JWT Token: " + token);
+      console.log("User ID: " + userId);
+      console.log("Booking IDs: " + bookingIds);
+
+      $.ajax({
+        url: 'http://localhost:12011/order-service/bookings/confirm',
+        type: 'PATCH',
+        contentType: 'application/json',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        },
+        data: JSON.stringify({
+          userId: userId.trim(),
+          bookingIds: bookingIds.split(',').map(id => id.trim())
+        }),
+        beforeSend: function () {
+          console.log("Sending AJAX request with data: ", {
+            userId: userId.trim(),
+            bookingIds: bookingIds.split(',').map(id => id.trim())
+          });
+        },
+        success: function (response) {
+          console.log("AJAX request successful");
+          console.log("Response: ", response);
+          var responseData = response.data;
+          var orderId = responseData.paymentId;
+          var totalPrice = responseData.totalPrice;
+          alert('예매가 성공적으로 확정되었습니다!');
+          window.location.href = "http://localhost:12011/order-service/widget/checkout.html?orderId=" + orderId + "&totalPrice="
+              + totalPrice + "&token=" + token;
+        },
+        error: function (xhr, status, error) {
+          console.error("AJAX request failed");
+          console.error("Status: " + status);
+          console.error("Error: " + error);
+          alert('예매 확정 중 오류가 발생했습니다: ' + error);
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>
