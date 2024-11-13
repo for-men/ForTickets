@@ -34,16 +34,18 @@ public class PaymentController {
 
     // 결제 생성 내부에서 예매 생성 시 결제 생성
     @PostMapping
-    public CommonResponse<CreatePaymentRes> createPayment(@Valid @RequestBody CreatePaymentReq createPaymentReq) {
-        return CommonResponse.success(paymentService.createPayment(createPaymentReq));
+    public CommonResponse<CreatePaymentRes> createPayment(
+        @UseAuth CustomUser customUser,
+        @Valid @RequestBody CreatePaymentReq createPaymentReq) {
+        return CommonResponse.success(paymentService.createPayment(customUser.getUserId(), createPaymentReq));
     }
 
-    // 결제 요청
-    @PatchMapping("/request")
+    // 결제 완료
+    @PatchMapping("/complete")
     public CommonResponse<CommonEmptyRes> requestPayment(
         @UseAuth CustomUser customUser,
         @Valid @RequestBody RequestPaymentReq requestPaymentReq) {
-        paymentService.requestPayment(customUser.getUserId(), requestPaymentReq);
+        paymentService.completePayment(customUser.getUserId(), requestPaymentReq);
         return CommonResponse.success();
     }
 

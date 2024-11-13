@@ -1,6 +1,7 @@
 package com.fortickets.orderservice.application.service;
 
 import com.fortickets.common.exception.GlobalException;
+import com.fortickets.common.util.BookingStatus;
 import com.fortickets.common.util.ErrorCase;
 import com.fortickets.common.util.GlobalUtil;
 import com.fortickets.orderservice.application.client.ConcertClient;
@@ -44,15 +45,26 @@ public class PaymentService {
 
     // 결제 생성 (예매 확정 시 결제 생성)
     @Transactional
-    public CreatePaymentRes createPayment(CreatePaymentReq createPaymentReq) {
+    public CreatePaymentRes createPayment(Long getUserId, CreatePaymentReq createPaymentReq) {
+        // 요청 사용자와 예약 사용자가 같은지 확인
+        if (!getUserId.equals(createPaymentReq.userId())) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
+        // 예매 정보 조회
+        List<Booking> bookingList = bookingRepository.findAllByIdInAndStatusAndUserId(
+            createPaymentReq.bookingIds(), BookingStatus.PENDING,
+            createPaymentReq.userId());
+
+        // 예매 정보가 없으면 예외 발생
+        if (bookingList.isEmpty()) {
+            throw new GlobalException(ErrorCase.BOOKING_NOT_FOUND);
+        }
+
         // 결제 생성
         Payment payment = paymentMapper.toEntity(createPaymentReq);
         // 결제 대기 상태로 세팅
         payment.waiting();
         paymentRepository.save(payment);
-
-        // 받아온 예매 아이디로 예매 조회
-        List<Booking> bookingList = bookingRepository.findAllById(createPaymentReq.bookingIds());
 
         // 예매에 결제를 넣어줌
         bookingList.forEach(booking -> {
@@ -166,10 +178,11 @@ public class PaymentService {
         payment.delete(email);
     }
 
-    // 결제 요청
+    // 결제 완료
     @Transactional
-    public void requestPayment(Long getUserId, RequestPaymentReq requestPaymentReq) {
-        // 결제 요청 -> 결제 완료
+    public void completePayment(Long getUserId, RequestPaymentReq requestPaymentReq) {
+
+        // toss 로 부터 전달 받은 orderId를 잘라 paymentId를 가져옴
         Long paymentId = Long.valueOf(requestPaymentReq.orderId().split("_")[0]);
         Payment payment = paymentRepository.findById(paymentId)
             .orElseThrow(() -> new GlobalException(ErrorCase.NOT_FOUND_PAYMENT));
