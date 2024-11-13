@@ -53,7 +53,7 @@
       amount: parseInt(urlParams.get("amount")),
     };
 
-    const response = await fetch("/order-service/payments/request", {
+    const response = await fetch("/order-service/payments/complete", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
