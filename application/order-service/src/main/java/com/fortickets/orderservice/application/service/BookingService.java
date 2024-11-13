@@ -6,11 +6,8 @@ import com.fortickets.common.util.ErrorCase;
 import com.fortickets.common.util.GlobalUtil;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
-import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
-import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
-import com.fortickets.orderservice.application.dto.response.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertRes;
@@ -118,35 +115,6 @@ public class BookingService {
                 lock.unlock();
             }
         }
-    }
-
-    // 예매 확정 본인만 가능
-    @Transactional
-    public CreatePaymentRes confirmBooking(Long getUserId, ConfirmBookingReq confirmBookingReq) {
-        // 요청 사용자와 예약 사용자가 같은지 확인
-        if (!getUserId.equals(confirmBookingReq.userId())) {
-            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-        }
-        // 예매 정보 조회
-        List<Booking> bookingList = bookingRepository.findAllByIdInAndStatusAndUserId(
-            confirmBookingReq.bookingIds(), BookingStatus.PENDING,
-            confirmBookingReq.userId());
-
-        // 예매 정보가 없으면 예외 발생
-        if (bookingList.isEmpty()) {
-            throw new GlobalException(ErrorCase.BOOKING_NOT_FOUND);
-        }
-
-        CreatePaymentReq createPaymentReq = CreatePaymentReq.builder()
-            .userId(bookingList.get(0).getUserId())
-            .totalPrice(bookingList.stream().mapToLong(Booking::getPrice).sum())
-            .concertId(bookingList.get(0).getConcertId())
-            .scheduleId(bookingList.get(0).getScheduleId())
-            .bookingIds(confirmBookingReq.bookingIds())
-            .build();
-
-        // 결제 생성
-        return paymentService.createPayment(createPaymentReq);
     }
 
     // 관리자 예매 내역 조회
