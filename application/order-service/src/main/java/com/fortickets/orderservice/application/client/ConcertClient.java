@@ -8,6 +8,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "concert-service", configuration = FeignClientConfig.class)
 @Component
@@ -32,4 +34,8 @@ public interface ConcertClient {
     // userId로 Concert 정보 조회 o
     @GetMapping("/concerts/{userId}/seller")
     List<GetConcertRes> getConcertBySeller(@PathVariable(value = "userId") Long userId);
+
+    @PostMapping("/concerts/list")
+    List<GetConcertRes> getConcertsByIds(@RequestBody List<Long> concertIds);
 }
+

@@ -1,6 +1,8 @@
 spring:
   application:
     name: order-service
+  config:
+    import: "classpath:application-toss-secret.yml"
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/fortickets
@@ -13,7 +15,7 @@ spring:
     properties:
       hibernate:
         show_sql: true # sql 로깅
-        format_sql: true # SQL 문 정렬하여 출력
+        format_sql: false # SQL 문 정렬하여 출력
         highlight_sql: true # SQL 문 색 부여
   docker:
     compose:

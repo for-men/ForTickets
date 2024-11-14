@@ -59,6 +59,7 @@ public enum ErrorCase {
     NOT_FOUND_PAYMENT(HttpStatus.NOT_FOUND, 4003, "결제 내역을 찾을 수 없습니다."),
     DUPLICATE_SEAT(HttpStatus.BAD_REQUEST, 4004, "중복된 좌석이 존재합니다."),
     INVALID_SEAT_FORMAT(HttpStatus.BAD_REQUEST, 4005, "좌석 형식이 잘못되었습니다."),
+    PAYMENT_FAILED(HttpStatus.BAD_REQUEST, 4006, "결제에 실패했습니다.")
 
     ;
 
