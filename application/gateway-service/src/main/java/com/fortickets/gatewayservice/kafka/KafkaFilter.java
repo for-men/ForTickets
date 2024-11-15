@@ -41,9 +41,12 @@ public class KafkaFilter extends AbstractGatewayFilterFactory<KafkaFilter.Config
             if (resendHeader != null) {
                 log.info("Processing resend request with X-Resend-Request header: {}", resendHeader);
                 // 재전송된 요청을 처리
-                return chain.filter(exchange).doFinally(signalType -> kafkaMonitor.decrementRequestCount());
+                return chain.filter(exchange)
+                    .doFinally(signalType -> {
+                        kafkaMonitor.decrementRequestCount();
+                        log.info("Request count decremented after processing resend request.");
+                    });
             }
-
             // 트래픽이 임계치를 초과할 경우
             if (kafkaMonitor.isOverloaded()) {
                 // 대기표가 없으면 메시지를 발급
@@ -74,7 +77,7 @@ public class KafkaFilter extends AbstractGatewayFilterFactory<KafkaFilter.Config
 
     @Getter
     public static class Config {
-        private String topicName = "ticket-queue-topic"; // Kafka 토픽 이름
-        private int partition = 0; // 기본 파티션 번호
+        private String topicName = "ticket-queue-topic";
+        private int partition = 0;
     }
 }

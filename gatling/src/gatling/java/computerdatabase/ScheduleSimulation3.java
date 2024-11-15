@@ -31,7 +31,7 @@ public class ScheduleSimulation3 extends Simulation {
             // 1. 데이터 생성
             exec(session -> {
                 // JWT 토큰을 포스트맨에서 복사하여 입력
-                String jwtToken = " eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidXNlcjFAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyOTQwMjYzNywiZXhwIjoxNzI5NDA2MjM3fQ.9yhDzok69QIbqtQiotIkE8MGxBWyVR5kHk2RCh6ETuE";
+                String jwtToken = " eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsImVtYWlsIjoidXNlcjFAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyOTY3MzQ2NCwiZXhwIjoxNzI5Njc3MDY0fQ.gRnNQHnHaE5RHxg8HrSsgtVabbOZwFAdkvUTbPdUQKs";
                 Long scheduleId = getRandomScheduleId(); // 랜덤한 스케줄 ID 생성
                 return session.set("jwtToken", jwtToken).set("scheduleId", scheduleId); // 세션에 토큰과 스케줄 ID 저장
             })

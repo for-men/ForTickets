@@ -15,7 +15,7 @@ services:
       SPRING_PROFILES_ACTIVE: local
     ports:
       - '12001:12001'
-    restart: always
+    restart: no
     volumes:
       - ./log/eureka:/app/log/eureka
     networks:
@@ -35,7 +35,7 @@ services:
       SPRING_PROFILES_ACTIVE: local
     ports:
       - '12011:12011'
-    restart: always
+    restart: no
     volumes:
       - ./log/gateway:/app/log/gateway
     networks:
@@ -56,7 +56,7 @@ services:
       SPRING_REDIS_HOST: redis
     ports:
       - '12021'
-    restart: always
+    restart: no
     depends_on:
       - postgres-user
     volumes:
@@ -78,7 +78,7 @@ services:
       SPRING_REDIS_HOST: redis
     ports:
       - '12031'
-    restart: always
+    restart: no
     depends_on:
       - postgres-concert
     volumes:
@@ -100,7 +100,7 @@ services:
       SPRING_REDIS_HOST: redis
     ports:
       - '12041'
-    restart: always
+    restart: no
     depends_on:
       - postgres-order
     volumes:

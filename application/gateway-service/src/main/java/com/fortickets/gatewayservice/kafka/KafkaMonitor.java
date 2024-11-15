@@ -2,9 +2,18 @@ package com.fortickets.gatewayservice.kafka;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ListOffsetsResult;
+import org.apache.kafka.clients.admin.OffsetSpec;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.errors.TimeoutException;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -15,53 +24,39 @@ import org.springframework.web.server.ServerWebExchange;
 @Component
 public class KafkaMonitor {
 
-    private static final int REQUEST_THRESHOLD = 10; // 예제 임계치
+    private static final int REQUEST_THRESHOLD = 1; //임계치
     private final AtomicInteger currentRequestCount = new AtomicInteger(0);
+    private final AtomicInteger failedRequestCount = new AtomicInteger(0);
     private final Map<String, Long> waitingTickets = new ConcurrentHashMap<>(); // UUID와 offset 매핑
     private final Map<String, ServerWebExchange> exchangeMap = new ConcurrentHashMap<>(); // UUID와 exchange 매핑
-    private boolean wasOverloaded = false; // 이전 과부하 상태
-    private final KafkaConsumerManager consumerManager; // KafkaConsumerManager 객체 추가
-    private final ReentrantLock lock = new ReentrantLock();
+    private boolean wasOverloaded = false;
+    private final KafkaAdmin kafkaAdmin;
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1); // 스케줄러 생성
 
-    // 생성자 주입
-    public KafkaMonitor(KafkaConsumerManager consumerManager) {
-        this.consumerManager = consumerManager;
-    }
+    public KafkaMonitor(KafkaAdmin kafkaAdmin){
+        this.kafkaAdmin = kafkaAdmin;
+    };
 
     // 요청 수 증가
-    public void incrementRequestCount() {
+    public synchronized void incrementRequestCount() {
         int currentCount = currentRequestCount.incrementAndGet();
-        checkOverloaded(); // 과부하 체크
+        log.info("Request count incremented, current count: {}", currentCount);
+        checkOverloaded();
     }
 
     // 요청 수 감소
-    public void decrementRequestCount() {
+    public synchronized void decrementRequestCount() {
         int currentCount = currentRequestCount.decrementAndGet();
-        checkOverloaded(); // 과부하 체크
+        log.info("Request count decremented, current count: {}", currentCount);
+        checkOverloaded();
     }
 
-    // 동시성 제어를 위해 나중에 수정 예정
-//    // 요청 수 증가
-//    public void incrementRequestCount() {
-//        lock.lock();
-//        try {
-//            int currentCount = currentRequestCount.incrementAndGet();
-//            checkOverloaded(); // 과부하 체크
-//        } finally {
-//            lock.unlock();
-//        }
-//    }
-//
-//    // 요청 수 감소
-//    public void decrementRequestCount() {
-//        lock.lock();
-//        try {
-//            int currentCount = currentRequestCount.decrementAndGet();
-//            checkOverloaded(); // 과부하 체크
-//        } finally {
-//            lock.unlock();
-//        }
-//    }
+    // 최종 실패한 요청 수 증가
+    public synchronized void incrementFailedRequestCount() {
+        int failedCount = failedRequestCount.incrementAndGet();
+        decrementRequestCount();
+        log.info("Failed request count incremented, current failed count: {}", failedCount);
+    }
 
     // 과부하 체크
     private void checkOverloaded() {
@@ -94,17 +89,62 @@ public class KafkaMonitor {
     // 대기표 상태 확인
     private void checkWaitingTickets() {
         waitingTickets.forEach((uuid, offset) -> {
-            long currentOffset = consumerManager.getCurrentOffsetFromKafka(0); // 예: 파티션 0의 현재 오프셋 확인
+            long currentOffset = getCurrentOffsetFromKafka(0); // 파티션 0의 현재 오프셋 확인
             if (offset <= currentOffset) {
-                // 사용자의 차례가 되었을 때 재요청
-//                resendRequest(uuid);
-                waitingTickets.remove(uuid);
-                exchangeMap.remove(uuid); // 대기표에서 제거할 때 exchange도 함께 제거
-                decrementRequestCount(); // 요청 수 감소
+                // 사용자의 차례가 되었을 때 처리
+                // 3초 후에 대기표에서 삭제되도록 예약
+                scheduler.schedule(() -> {
+                    // 일정 시간이 지난 후 대기표에서 삭제
+                    waitingTickets.remove(uuid);
+                    exchangeMap.remove(uuid); // exchange도 함께 제거
+                    log.info("UUID {} removed from waiting tickets after delay", uuid);
+                }, 3, TimeUnit.SECONDS); // 3초 후 삭제
             }
         });
+
         log.info("Current request count after processing: {}", currentRequestCount.get());
         // 과부하 상태 체크
         checkOverloaded(); // 현재 요청 수로 과부하 상태 체크
+    }
+
+
+    // 현재 요청 수를 반환하는 메서드
+    public int getCurrentRequestCount() {
+        return currentRequestCount.get();
+    }
+
+    // KafkaAdmin을 사용하여 오프셋을 가져오는 방식으로 변경
+    public long getCurrentOffsetFromKafka(int partition) {
+        try {
+            // KafkaAdmin을 통해 AdminClient 생성
+            Map<String, Object> config = kafkaAdmin.getConfigurationProperties();
+            AdminClient adminClient = AdminClient.create(config);
+
+            // TopicPartition 정의
+            TopicPartition topicPartition = new TopicPartition("ticket-queue-topic", partition);
+
+            // ListOffsetsResult로 오프셋 요청
+            ListOffsetsResult offsetsResult = adminClient.listOffsets(
+                Map.of(topicPartition, OffsetSpec.latest())  // 최신 오프셋을 요청
+            );
+
+            // 오프셋을 가져오는 방식: all() 메서드 호출 후 해당 파티션의 오프셋을 조회
+            long currentOffset = offsetsResult.all().get().get(topicPartition).offset();
+
+            return currentOffset;
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            log.error("Error while getting current offset: {}", e.getMessage());
+            return -1; // 실패 시 -1 반환
+        }
+    }
+
+    // 요청 수를 0으로 초기화하는 메서드 추가
+    public void resetRequestCount() {
+        currentRequestCount.set(0); // AtomicInteger의 값을 0으로 초기화
+        log.info("Request count reset to 0");
+    }
+    // waitingTickets 반환
+    public Map<String, Long> getWaitingTickets() {
+        return waitingTickets;
     }
 }

@@ -22,14 +22,14 @@ import reactor.core.publisher.Mono;
 public class KafkaProducerManager {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
-    private final String topic = "ticket-queue-topic"; // 사용할 Kafka 토픽 이름
+    private final String topic = "ticket-queue-topic";
     private final KafkaMonitor kafkaMonitor;
     private final ObjectMapper objectMapper; // JSON 직렬화를 위한 ObjectMapper
 
     public KafkaProducerManager(KafkaTemplate<String, String> kafkaTemplate, KafkaMonitor kafkaMonitor, ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.kafkaMonitor = kafkaMonitor;
-        this.objectMapper = objectMapper; // ObjectMapper 초기화
+        this.objectMapper = objectMapper;
     }
 
     public Mono<Void> sendTicket(ServerWebExchange exchange) {
@@ -51,6 +51,7 @@ public class KafkaProducerManager {
                 RequestData requestData = new RequestData(requestMethod, requestPath, headers, requestBody, randomUUID);
 
                 String jsonMessage = objectMapper.writeValueAsString(requestData);
+
                 CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, jsonMessage);
 
                 return Mono.fromFuture(future)

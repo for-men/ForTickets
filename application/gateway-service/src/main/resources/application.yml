@@ -32,7 +32,8 @@ spring:
           filters:
             - RewritePath=/order-service/(?<segment>.*), /${segment}
   kafka:
-    bootstrap-servers: localhost:9092
+#    bootstrap-servers: kafka:29092
+    bootstrap-servers: localhost:9092,localhost:9093
 
 server:
   port: 12011
@@ -50,4 +51,6 @@ management:
 
 logging:
   level:
+    org.apache.kafka.clients.admin.AppInfoParser: ERROR
+    org.apache.kafka.clients.admin.AdminClientConfig: ERROR
     org.apache.kafka.clients.producer.ProducerConfig: WARN
