@@ -30,15 +30,13 @@ spring:
     redis:
       host: localhost
       port: 6379
-
-  # kafka
-#  kafka:
-#    bootstrap-servers: localhost:9094
-#    consumer:
-#      group-id: order-service-group
-#      auto-offset-reset: earliest
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  kafka:
+    bootstrap-servers: localhost:9092,localhost:9093
+    consumer:
+      group-id: booking-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 server:
   port: 12041

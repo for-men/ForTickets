@@ -140,19 +140,19 @@ services:
 #      - kafka
 #    networks:
 #      - service-network
-
-  postgres-order:
-    image: postgres:16.4
-    environment:
-      - POSTGRES_DB=fortickets
-      - POSTGRES_PASSWORD=1234
-      - POSTGRES_USER=forman
-    ports:
-      - '54324:5432'
-    volumes:
-      - ../db/order-service:/var/lib/postgresql/data
-    networks:
-      - service-network
+#
+#  postgres-order:
+#    image: postgres:16.4
+#    environment:
+#      - POSTGRES_DB=fortickets
+#      - POSTGRES_PASSWORD=1234
+#      - POSTGRES_USER=forman
+#    ports:
+#      - '54324:5432'
+#    volumes:
+#      - ../db/order-service:/var/lib/postgresql/data
+#    networks:
+#      - service-network
 
   zipkin:
     image: openzipkin/zipkin
@@ -200,6 +200,36 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - service-network
+
+#  kafka3:
+#    image: wurstmeister/kafka:latest
+#    ports:
+#      - "9094:9094"
+#    environment:
+#      - KAFKA_ADVERTISED_LISTENERS=INSIDE://kafka2:29094,OUTSIDE://localhost:9094
+#      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+#      - KAFKA_LISTENERS=INSIDE://0.0.0.0:29094,OUTSIDE://0.0.0.0:9094
+#      - KAFKA_INTER_BROKER_LISTENER_NAME=INSIDE
+#      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    networks:
+#      - service-network
+#
+#  kafka4:
+#    image: wurstmeister/kafka:latest
+#    ports:
+#      - "9095:9095"
+#    environment:
+#      - KAFKA_ADVERTISED_LISTENERS=INSIDE://kafka2:29095,OUTSIDE://localhost:9095
+#      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+#      - KAFKA_LISTENERS=INSIDE://0.0.0.0:29095,OUTSIDE://0.0.0.0:9095
+#      - KAFKA_INTER_BROKER_LISTENER_NAME=INSIDE
+#      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    networks:
+#      - service-network
 
   # Redis for caching
   redis:
