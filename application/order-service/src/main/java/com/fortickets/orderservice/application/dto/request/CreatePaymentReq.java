@@ -7,9 +7,6 @@ import lombok.Builder;
 @Builder
 public record CreatePaymentReq(
     @NotNull Long userId,
-    @NotNull Long concertId,
-    @NotNull Long scheduleId,
-    @NotNull Long totalPrice,
     @NotNull List<Long> bookingIds
 ) {
 

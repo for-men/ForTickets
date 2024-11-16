@@ -5,10 +5,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class KafakaViewController {
+public class KafkaViewController {
 
     @GetMapping("/waiting-queue")
-    public String mainpage() {
+    public String mainPage() {
         return "index";
     }
 }

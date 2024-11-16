@@ -1,23 +1,28 @@
 package com.fortickets.orderservice.application.service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONException;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
 public class TossPaymentsService {
 
-    private final RestTemplate restTemplate;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${toss.api-url}")
     private String apiUrl;
@@ -25,32 +30,54 @@ public class TossPaymentsService {
     @Value("${toss.secret-key}")
     private String secretKey;
 
-    // 결제 요청
-    public Map<String, Object> requestPayment(String paymentKey) {
-        String encodedAuth = Base64.getEncoder().encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8));
+    // 결제 요청 메서드
+    public JSONObject requestPayment(String paymentKey, String orderId, Long amount) throws JSONException {
+        // 요청 데이터를 JSON으로 구성
+        JSONObject requestData = new JSONObject();
+        requestData.put("paymentKey", paymentKey);
+        requestData.put("orderId", orderId);
+        requestData.put("amount", amount);
 
-        // Http Header 설정
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth(secretKey, ""); // 기본 인증 설정
-        headers.set("Content-Type", "application/json");
+        // 결제 확인 API 호출
+        String url = apiUrl + "/v1/payments/confirm";
+        JSONObject response;
+        try {
+            response = sendRequest(requestData, secretKey, url);
+        } catch (IOException e) {
+            logger.error("Error during payment confirmation request", e);
+            response = new JSONObject();
+            response.put("error", "Error during payment confirmation");
+        }
 
-        // Http Body 설정
-        Map<String, Object> body = Map.of(
-            "paymentKey", paymentKey
-        );
+        return response;
+    }
 
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+    private JSONObject sendRequest(JSONObject requestData, String secretKey, String urlString) throws IOException, JSONException {
+        HttpURLConnection connection = createConnection(secretKey, urlString);
+        try (OutputStream os = connection.getOutputStream()) {
+            os.write(requestData.toString().getBytes(StandardCharsets.UTF_8));
+        }
 
-        // API 호출
-        String requestUrl = apiUrl + "/v1/payments/confirm";
-        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-            requestUrl,
-            HttpMethod.POST,
-            entity,
-            new ParameterizedTypeReference<Map<String, Object>>() {}
-        );
+        try (InputStream responseStream = connection.getResponseCode() == 200 ? connection.getInputStream() : connection.getErrorStream();
+            Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8)) {
+            return (JSONObject) new JSONParser().parse(reader);
+        } catch (Exception e) {
+            logger.error("Error reading response", e);
+            JSONObject errorResponse = new JSONObject();
+            errorResponse.put("error", "Error reading response");
+            return errorResponse;
+        }
+    }
 
-        return response.getBody();
+    private HttpURLConnection createConnection(String secretKey, String urlString) throws IOException {
+        URL url = new URL(urlString);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestProperty("Authorization",
+            "Basic " + Base64.getEncoder().encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8)));
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        return connection;
     }
 
 }
