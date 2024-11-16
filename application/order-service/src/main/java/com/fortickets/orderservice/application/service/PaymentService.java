@@ -70,6 +70,8 @@ public class PaymentService {
         // 결제 객체 생성
         Payment payment = Payment.builder()
             .userId(createPaymentReq.userId())
+            .concertId(bookingList.get(0).getConcertId())
+            .scheduleId(bookingList.get(0).getScheduleId())
             .totalPrice(totalPrice)
             .status(PaymentStatus.WAITING) // 결제 대기 상태로 설정
             .build();
