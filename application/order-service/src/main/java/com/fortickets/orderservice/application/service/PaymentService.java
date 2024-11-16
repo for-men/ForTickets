@@ -3,7 +3,7 @@ package com.fortickets.orderservice.application.service;
 import com.fortickets.common.exception.GlobalException;
 import com.fortickets.common.util.BookingStatus;
 import com.fortickets.common.util.ErrorCase;
-import com.fortickets.common.util.GlobalUtil;
+import com.fortickets.common.util.PaymentStatus;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
 import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
@@ -18,19 +18,21 @@ import com.fortickets.orderservice.domain.entity.Payment;
 import com.fortickets.orderservice.domain.mapper.PaymentMapper;
 import com.fortickets.orderservice.domain.repository.BookingRepository;
 import com.fortickets.orderservice.domain.repository.PaymentRepository;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -60,10 +62,18 @@ public class PaymentService {
             throw new GlobalException(ErrorCase.BOOKING_NOT_FOUND);
         }
 
-        // 결제 생성
-        Payment payment = paymentMapper.toEntity(createPaymentReq);
-        // 결제 대기 상태로 세팅
-        payment.waiting();
+        // 모든 예매의 가격을 합산하여 결제 금액을 계산
+        Long totalPrice = bookingList.stream()
+            .mapToLong(Booking::getPrice)
+            .sum();
+
+        // 결제 객체 생성
+        Payment payment = Payment.builder()
+            .userId(createPaymentReq.userId())
+            .totalPrice(totalPrice)
+            .status(PaymentStatus.WAITING) // 결제 대기 상태로 설정
+            .build();
+
         paymentRepository.save(payment);
 
         // 예매에 결제를 넣어줌
@@ -192,19 +202,21 @@ public class PaymentService {
         }
 
         // 토스페이먼츠에 결제 확인 요청
-        Map<String, Object> paymentResult = tossPaymentsService.requestPayment(
-            String.valueOf(requestPaymentReq.paymentId())
+        JSONObject paymentResult = tossPaymentsService.requestPayment(
+            String.valueOf(requestPaymentReq.paymentId()),
+            requestPaymentReq.orderId(),
+            requestPaymentReq.amount()
         );
 
-        // 결제 성공 확인
-        if (!"DONE".equals(paymentResult.get("status"))) {
-            throw new GlobalException(ErrorCase.PAYMENT_FAILED);
-        }
-
-        try {
-            payment.complete(GlobalUtil.hash(requestPaymentReq.card()));
-        } catch (NoSuchAlgorithmException e) {
-            throw new GlobalException(ErrorCase.INVALID_INPUT);
+        // 결제 상태를 COMPLETED로 변경
+        // response의 method가 '카드'일 경우 -> 'card' 'number'(카드 번호)를 card 컬럼에 저장
+        // response의 method가 '간편결제'일 경우 -> 'easyPay' 'provider'(카카오페이)를 card 컬럼에 저장
+        if (paymentResult.get("method").equals("카드")) {
+            JSONObject card = (JSONObject) paymentResult.get("card");
+            String cardNum = card.get("number").toString();
+            payment.complete(cardNum);
+        } else if (paymentResult.get("method").equals("간편결제")) {
+            payment.complete("카카오페이");
         }
 
         // 결제 완료 시 예매 확정
