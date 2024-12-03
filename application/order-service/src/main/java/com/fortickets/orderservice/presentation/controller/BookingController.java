@@ -4,10 +4,8 @@ import com.fortickets.common.security.CustomUser;
 import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
-import com.fortickets.orderservice.application.dto.request.ConfirmBookingReq;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
-import com.fortickets.orderservice.application.dto.response.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.service.BookingService;
@@ -45,14 +43,6 @@ public class BookingController {
         return CommonResponse.success(createBookingRes);
     }
 
-    // 예매 확정 본인만 가능
-    @PatchMapping("/confirm")
-    public CommonResponse<CreatePaymentRes> confirmBooking(
-        @UseAuth CustomUser customUser,
-        @Valid @RequestBody ConfirmBookingReq confirmBookingReq) {
-
-        return CommonResponse.success(bookingService.confirmBooking(customUser.getUserId(), confirmBookingReq));
-    }
 
     // 관리자 예매 내역 조회
     @PreAuthorize("hasRole('MANAGER')")

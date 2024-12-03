@@ -19,6 +19,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class CustomPreFilter extends OncePerRequestFilter {
 
+//    private static final List<RequestMatcher> whiteList =
+//        List.of(new AntPathRequestMatcher("/auth", HttpMethod.POST.name()),
+//            new AntPathRequestMatcher("/toss", HttpMethod.GET.name())
+//        );
+
     // 필터가 실행되지 않도록 할 경로 지정
     @Override
     protected void doFilterInternal(HttpServletRequest req,
@@ -29,7 +34,10 @@ public class CustomPreFilter extends OncePerRequestFilter {
         String requestURI = req.getRequestURI();
 
         // 토큰이 없이 통과시켜야 할 경로에 대해서는 필터를 타지 않고 바로 통과시킴 ex) /auth/**
-        if (requestURI.startsWith("/auth") || requestURI.startsWith("/actuator")) {
+        if (requestURI.startsWith("/auth")
+            || requestURI.startsWith("/actuator")
+            || requestURI.startsWith("/widget")
+            || requestURI.startsWith("/orders/html")) {
             filterChain.doFilter(req, res);
             return;
         }
@@ -79,4 +87,14 @@ public class CustomPreFilter extends OncePerRequestFilter {
         // Authentication 객체 생성
         return new UsernamePasswordAuthenticationToken(userId, email, authorities);
     }
+
+//    /**
+//     * shouldNotFilter 는 true 를 반환하면 필터링 통과시키는 메서드.
+//     */
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) {
+//        // 현재 URL 이 화이트 리스트에 존재하는지 체크
+//        return whiteList.stream().anyMatch(whitePath -> whitePath.matches(request));
+//    }
+
 }

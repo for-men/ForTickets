@@ -6,6 +6,8 @@ jar { enabled = false }
 dependencies {
     implementation project(":component:jpa")
     implementation project(":component:security")
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'org.json:json:20200518'
     // postgresql
     runtimeOnly 'org.postgresql:postgresql'
 

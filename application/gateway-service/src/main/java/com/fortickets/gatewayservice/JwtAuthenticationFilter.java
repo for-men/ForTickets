@@ -77,7 +77,8 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 
     // 회원가입 및 로그인 필터 통과
     private boolean isAuthorizationPassRequest(String path) {
-        return path.startsWith("/auth/login") || path.startsWith("/auth/sign-up");
+        return path.startsWith("/auth/login") || path.startsWith("/auth/sign-up") || path.startsWith("/orders/html") || path.startsWith(
+            "/widget/");
     }
 
     // 시크릿키 생성

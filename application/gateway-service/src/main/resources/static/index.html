@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>대기 순번 조회</title>
+  <style>
+    /* 기본 스타일 설정 */
+    body { font-family: Arial, sans-serif; background-color: #f7f7f7; color: #333; }
+    .container { text-align: center; margin-top: 50px; }
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #333;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      width: 300px;
+      text-align: center;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+    .close-btn { margin-top: 10px; cursor: pointer; }
+
+    /* 로딩 스피너 스타일 */
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #333;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      margin: 10px auto;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>대기 순번 조회</h2>
+  <label for="uuidInput">UUID 입력: </label>
+  <input type="text" id="uuidInput" placeholder="UUID 입력">
+  <button onclick="startQueueRefresh()">조회 시작</button>
+</div>
+
+<!-- 팝업 창 -->
+<div id="popup" class="popup">
+  <h3>대기 순번</h3>
+  <div id="spinner" class="spinner"></div> <!-- 로딩 스피너 -->
+  <p id="queueNumber">Loading...</p>
+  <button class="close-btn" onclick="stopQueueRefresh()">닫기</button>
+</div>
+<div id="overlay" class="overlay"></div>
+
+<script>
+  let refreshInterval;
+
+  // 대기 순번을 가져와서 팝업을 띄우는 함수
+  function fetchQueueCount(uuid) {
+    fetch(`/monitor/waiting-count/${uuid}`)
+    .then(response => response.text())
+    .then(data => {
+      const waitingCount = parseInt(data.split(": ")[1]);
+
+      if (waitingCount === 0) {
+        // 대기 순번이 0이 되면 로딩 스피너를 숨기고 메시지 변경, 새로고침 중지
+        document.getElementById("spinner").style.display = "none";
+        document.getElementById("queueNumber").innerText = "요청이 처리됐습니다.";
+        clearInterval(refreshInterval);
+      } else {
+        // 대기 순번이 0이 아닌 경우
+        document.getElementById("queueNumber").innerText = data;
+        document.getElementById("spinner").style.display = "block";
+      }
+    })
+    .catch(error => {
+      document.getElementById("queueNumber").innerText = "대기 순번 조회 실패";
+      console.error(error);
+    });
+
+    document.getElementById("popup").style.display = "block";
+    document.getElementById("overlay").style.display = "block";
+  }
+
+  // 대기 순번 새로고침 시작
+  function startQueueRefresh() {
+    const uuid = document.getElementById("uuidInput").value;
+    if (!uuid) {
+      alert("UUID를 입력해주세요.");
+      return;
+    }
+
+    // 즉시 조회 및 3초마다 자동 새로고침
+    fetchQueueCount(uuid);
+    refreshInterval = setInterval(() => fetchQueueCount(uuid), 3000);
+  }
+
+  // 대기 순번 새로고침 중지
+  function stopQueueRefresh() {
+    clearInterval(refreshInterval);
+    document.getElementById("popup").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+  }
+</script>
+
+</body>
+</html>

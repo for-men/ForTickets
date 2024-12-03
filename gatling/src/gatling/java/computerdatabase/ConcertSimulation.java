@@ -23,7 +23,7 @@ public class ConcertSimulation extends Simulation {
 
     // 랜덤 공연 아이디 생성
     private Long getRandomConcertId() {
-        return (long) ThreadLocalRandom.current().nextInt(1, 21); // 1부터 10까지의 랜덤 Long 값 생성
+        return (long) ThreadLocalRandom.current().nextInt(42, 61); // 1부터 10까지의 랜덤 Long 값 생성
     }
 
     // 시나리오 정의
@@ -31,7 +31,7 @@ public class ConcertSimulation extends Simulation {
             // 1. 데이터 생성
             .exec(session -> {
                 // JWT 토큰을 포스트맨에서 복사하여 입력
-                String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjUsImVtYWlsIjoibWFuYWdlcjNAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfTUFOQUdFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyOTQzMDAzOCwiZXhwIjoxNzI5NDMzNjM4fQ.jSYZW26tbCJQX18zLDdjt-QhtJOuytUZxZrTxWchI54"; // 포스트맨에서 받은 JWT 토큰
+                String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjMsImVtYWlsIjoibWFuYWdlcjFAZW1haWwuY29tIiwicm9sZSI6IlJPTEVfTUFOQUdFUiIsImlzcyI6InVzZXItc2VydmljZSIsImlhdCI6MTcyOTc0ODIwNCwiZXhwIjoxNzI5NzUxODA0fQ.UWZFKq405j0-PkpFnOBXdSqoY6EZd3MILZwXcKUUHGw"; // 포스트맨에서 받은 JWT 토큰
                 Long concertId = getRandomConcertId(); // 랜덤한 스케줄 ID 생성
                 return session.set("jwtToken", jwtToken).set("concertId", concertId); // 세션에 토큰과 콘서트 ID 저장
             })
@@ -46,6 +46,6 @@ public class ConcertSimulation extends Simulation {
 
     {
         // 시뮬레이션 설정: 한 번에 1000명의 사용자가 콘서트 조회 시도
-        setUp(scn.injectOpen(rampUsers(3000).during(1))).protocols(httpProtocol);
+        setUp(scn.injectOpen(rampUsers(50).during(1))).protocols(httpProtocol);
     }
 }
