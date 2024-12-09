@@ -11,7 +11,7 @@ public record GetScheduleDetailRes(
     String stageName,
     String location,
     LocalDate concertDate,
-    LocalTime concertTime
-) {
+    LocalTime concertTime,
+    int remainingSeats) {
 
 }

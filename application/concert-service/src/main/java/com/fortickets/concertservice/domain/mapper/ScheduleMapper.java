@@ -21,6 +21,7 @@ public interface ScheduleMapper {
     @Mapping(target = "location", source = "schedule.stage.location")
     @Mapping(target = "stageName", source = "schedule.stage.name")
     @Mapping(target = "concertId", source = "schedule.concert.id")
+    @Mapping(target = "remainingSeats", source = "schedule.remainingSeats")
     GetScheduleDetailRes toGetScheduleDetailRes(Schedule schedule);
 
 }

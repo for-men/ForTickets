@@ -48,6 +48,9 @@ public class Schedule extends BaseEntity {
     @Column(name = "concert_time", nullable = false)
     private LocalTime concertTime;
 
+    @Column(name = "remaining_seats" ,nullable= false)
+    private int remainingSeats;
+
 
     public static Schedule of(Concert concert, Stage stage, LocalDate concertDate, LocalTime concertTime) {
         return new Schedule(concert, stage, concertDate, concertTime);
@@ -66,6 +69,7 @@ public class Schedule extends BaseEntity {
         this.stage = stage;
         this.concertDate = concertDate;
         this.concertTime = concertTime;
+        this.remainingSeats = stage.getCol() * stage.getRow();
     }
 
     public void changeStage(Stage stage) {
