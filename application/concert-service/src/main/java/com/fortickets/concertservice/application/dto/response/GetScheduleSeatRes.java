@@ -10,6 +10,8 @@ public record GetScheduleSeatRes(
     GetStageSeatRes stage,
     List<String> seatList,
     LocalDate concertDate,
-    LocalTime concertTime) {
+    LocalTime concertTime,
+    int remainingSeats
+) {
 
 }
