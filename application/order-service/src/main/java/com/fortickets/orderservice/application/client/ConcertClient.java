@@ -1,6 +1,7 @@
 package com.fortickets.orderservice.application.client;
 
 import com.fortickets.common.security.FeignClientConfig;
+import com.fortickets.orderservice.application.dto.request.DecrementScheduleReq;
 import com.fortickets.orderservice.application.dto.response.DecrementScheduleRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertRes;
 import com.fortickets.orderservice.application.dto.response.GetScheduleDetailRes;
@@ -41,6 +42,7 @@ public interface ConcertClient {
     List<GetConcertRes> getConcertsByIds(@RequestBody List<Long> concertIds);
 
     @PatchMapping("/schedules/{scheduleId}/decrement")
-    DecrementScheduleRes decrementSeats(@PathVariable(value = "scheduleId") Long scheduleId);
+    DecrementScheduleRes decrementSeats(@RequestBody DecrementScheduleReq decrementScheduleReq,
+        @PathVariable(value = "scheduleId") Long scheduleId);
 }
 

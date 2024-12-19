@@ -8,6 +8,7 @@ import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
+import com.fortickets.orderservice.application.dto.response.DecrementScheduleRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertRes;
@@ -56,6 +57,8 @@ public class BookingService {
     private final RedissonClient redissonClient;
 
     private final KafkaProducer kafkaProducer;
+
+    private final ProcessService processService;
 
     // 예매 생성 본인만 가능
     @Transactional
@@ -109,6 +112,50 @@ public class BookingService {
 
             return bookings.stream().map(bookingMapper::toCreateBookingRes).toList();
 
+        } finally {
+            // 락 해제
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
+        }
+    }
+
+    // 예매 생성 본인만 가능 (보상 트랜잭션 적용)
+    public List<CreateBookingRes> createBookingAndPayment(Long userId, CreateBookingReq createBookingReq) {
+
+        log.info("createBookingReq : {}", createBookingReq);
+
+        // 1. 중복 좌석 예약 확인
+        if (createBookingReq.seat().size() >= 2) {
+            Set<String> set = new HashSet<>();
+            if (createBookingReq.seat().stream().anyMatch(e -> !set.add(e))) {
+                throw new GlobalException(ErrorCase.DUPLICATE_SEAT);
+            }
+        }
+
+        // 요청 사용자와 예약 사용자가 같은지 확인
+        if (!userId.equals(createBookingReq.userId())) {
+            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+        }
+
+        // 분산 락 이름 정의 (예약 스케줄 ID 기반)
+        String lockKey = "bookingLock:" + createBookingReq.scheduleId();
+        RLock lock = redissonClient.getLock(lockKey); // 락 객체 생성
+
+        // 락을 획득하고, 예외 발생 시 락 해제
+        try {
+            lock.lock(); // 락 획득
+
+            // 2. 좌석 개수 차감
+            DecrementScheduleRes scheduleRes = processService.decrementSeats(createBookingReq.seat().size(), createBookingReq.scheduleId());
+
+            // 3. 예매 생성
+            List<CreateBookingRes> bookingRes = processService.createBooking(createBookingReq, scheduleRes);
+
+            // 4. 결제 생성
+            processService.createPayment(createBookingReq, bookingRes);
+
+            return bookingRes;
         } finally {
             // 락 해제
             if (lock.isHeldByCurrentThread()) {
