@@ -39,7 +39,7 @@ public class BookingController {
     public CommonResponse<List<CreateBookingRes>> createBooking(
         @UseAuth CustomUser customUser,
         @Valid @RequestBody CreateBookingReq createBookingReq) {
-        var createBookingRes = bookingService.createBooking(customUser.getUserId(), createBookingReq);
+        var createBookingRes = bookingService.createBookingAndPayment(customUser.getUserId(), createBookingReq);
         return CommonResponse.success(createBookingRes);
     }
 
