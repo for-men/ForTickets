@@ -4,6 +4,7 @@ import com.fortickets.common.exception.GlobalException;
 import com.fortickets.common.util.ErrorCase;
 import com.fortickets.concertservice.application.client.BookingClient;
 import com.fortickets.concertservice.application.dto.request.CreateScheduleReq;
+import com.fortickets.concertservice.application.dto.request.DecrementScheduleReq;
 import com.fortickets.concertservice.application.dto.request.UpdateScheduleReq;
 import com.fortickets.concertservice.application.dto.response.CreateScheduleRes;
 import com.fortickets.concertservice.application.dto.response.GetScheduleDetailRes;
@@ -142,5 +143,17 @@ public class ScheduleService {
         if (!role.equals("ROLE_MANAGER") && !userId.equals(targetUserId)) {
             throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
         }
+    }
+
+    // 스케줄 좌석 감소
+    @Transactional
+    public GetScheduleDetailRes decrementSchedule(DecrementScheduleReq decrementScheduleReq, Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(() -> new GlobalException(ErrorCase.NOT_EXIST_SCHEDULE));
+        if (decrementScheduleReq.quantity() > schedule.getRemainingSeats()) {
+            throw new GlobalException(ErrorCase.NOT_ENOUGH_SEATS);
+        }
+        schedule.decrementSeats(decrementScheduleReq.quantity());
+        return scheduleMapper.toGetScheduleDetailRes(schedule);
     }
 }

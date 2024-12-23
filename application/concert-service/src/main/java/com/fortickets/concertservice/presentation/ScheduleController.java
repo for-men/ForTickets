@@ -5,6 +5,7 @@ import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
 import com.fortickets.concertservice.application.dto.request.CreateScheduleReq;
+import com.fortickets.concertservice.application.dto.request.DecrementScheduleReq;
 import com.fortickets.concertservice.application.dto.request.UpdateScheduleReq;
 import com.fortickets.concertservice.application.dto.response.CreateScheduleRes;
 import com.fortickets.concertservice.application.dto.response.GetScheduleDetailRes;
@@ -69,5 +70,11 @@ public class ScheduleController {
     @GetMapping("/{scheduleId}/detail")
     public GetScheduleDetailRes getScheduleDetail(@PathVariable Long scheduleId) {
         return scheduleService.getScheduleDetail(scheduleId);
+    }
+
+    @PostMapping("/{scheduleId}/decrement")
+    public GetScheduleDetailRes decrementSchedule(@RequestBody DecrementScheduleReq decrementScheduleReq,
+        @PathVariable(value = "scheduleId") Long scheduleId) {
+        return scheduleService.decrementSchedule(decrementScheduleReq, scheduleId);
     }
 }

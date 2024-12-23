@@ -48,7 +48,7 @@ public class Schedule extends BaseEntity {
     @Column(name = "concert_time", nullable = false)
     private LocalTime concertTime;
 
-    @Column(name = "remaining_seats" ,nullable= false)
+    @Column(name = "remaining_seats", nullable = false)
     private int remainingSeats;
 
 
@@ -84,4 +84,7 @@ public class Schedule extends BaseEntity {
         this.concertTime = localTime;
     }
 
+    public void decrementSeats(Integer quantity) {
+        this.remainingSeats -= quantity;
+    }
 }
