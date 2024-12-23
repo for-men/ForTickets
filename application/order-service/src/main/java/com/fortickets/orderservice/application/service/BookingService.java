@@ -122,6 +122,7 @@ public class BookingService {
 //    }
 
     // 예매 생성 본인만 가능 (보상 트랜잭션 적용)
+    @Transactional
     public CreateBookingAndPaymentRes createBookingAndPayment(Long userId, CreateBookingReq createBookingReq) {
 
         log.info("createBookingReq : {}", createBookingReq);

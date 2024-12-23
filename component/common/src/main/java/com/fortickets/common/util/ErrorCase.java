@@ -46,10 +46,9 @@ public enum ErrorCase {
     NOT_EXIST_STAGE(HttpStatus.NOT_FOUND, 3001, "존재하지 않는 공연장입니다."),
     NOT_EXIST_CONCERT(HttpStatus.NOT_FOUND, 3002, "존재하지 않는 공연입니다."),
     NOT_PERMITTED_TO_ADD_SCHEDULE(HttpStatus.FORBIDDEN, 3003, "해당 공연에 대한 스케줄을 추가할 권한이 없습니다."),
-    // 400
     SCHEDULE_START_DATE_TOO_EARLY(HttpStatus.BAD_REQUEST, 3004, "스케줄은 공연 시작 날짜보다 빠를 수 없습니다."),
-    // 400
     SCHEDULE_START_DATE_TOO_LATE(HttpStatus.BAD_REQUEST, 3005, "스케줄은 공연 종료 날짜보다 늦을 수 없습니다."),
+    NOT_ENOUGH_SEATS(HttpStatus.BAD_REQUEST, 3006, "남은 좌석이 충분하지 않습니다."),
 
     /* Order 4000번대 */
 
@@ -59,9 +58,10 @@ public enum ErrorCase {
     NOT_FOUND_PAYMENT(HttpStatus.NOT_FOUND, 4003, "결제 내역을 찾을 수 없습니다."),
     DUPLICATE_SEAT(HttpStatus.BAD_REQUEST, 4004, "중복된 좌석이 존재합니다."),
     INVALID_SEAT_FORMAT(HttpStatus.BAD_REQUEST, 4005, "좌석 형식이 잘못되었습니다."),
-    PAYMENT_FAILED(HttpStatus.BAD_REQUEST, 4006, "결제에 실패했습니다.")
+    PAYMENT_FAILED(HttpStatus.BAD_REQUEST, 4006, "결제에 실패했습니다."),
 
     ;
+
 
     private final HttpStatus httpStatus; // 응답 상태 코드
     private final Integer code; // 응답 코드. 도메인에 따라 1000번대로 나뉨

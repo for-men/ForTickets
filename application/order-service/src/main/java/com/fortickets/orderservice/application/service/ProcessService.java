@@ -47,6 +47,7 @@ public class ProcessService {
     }
 
     // 예매 생성
+    @Transactional
     public List<CreateBookingRes> createBooking(CreateBookingReq createBookingReq, GetScheduleDetailRes scheduleRes,
         BookingRollbackContext context) {
         try {
@@ -78,10 +79,10 @@ public class ProcessService {
 
             return bookings.stream().map(bookingMapper::toCreateBookingRes).toList();
 
-        } catch (Exception e) {
+        } catch (GlobalException e) {
             log.error("[Booking Service] createBooking error : {}", e.getMessage());
             rollbackService.decrementSeatsRollback(context);
-            throw new GlobalException(ErrorCase.SYSTEM_ERROR);
+            throw new GlobalException(e.getErrorCase());
         }
     }
 
@@ -90,11 +91,11 @@ public class ProcessService {
         try {
             List<Long> bookingIds = createBookingResList.stream().map(CreateBookingRes::id).toList();
             return paymentService.createPayment(new CreatePaymentReq(userId, bookingIds));
-        } catch (Exception e) {
+        } catch (GlobalException e) {
             log.error("[Booking Service] createPayment error : {}", e.getMessage());
             rollbackService.decrementSeatsRollback(context);
             rollbackService.createBookingRollback(context);
-            throw new GlobalException(ErrorCase.SYSTEM_ERROR);
+            throw new GlobalException(e.getErrorCase());
         }
     }
 }
