@@ -4,10 +4,13 @@ import com.fortickets.common.exception.GlobalException;
 import com.fortickets.common.util.ErrorCase;
 import com.fortickets.common.util.GlobalUtil;
 import com.fortickets.orderservice.application.client.ConcertClient;
+import com.fortickets.orderservice.application.context.BookingRollbackContext;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
+import com.fortickets.orderservice.application.dto.request.CreatePaymentReq;
 import com.fortickets.orderservice.application.dto.request.DecrementScheduleReq;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
-import com.fortickets.orderservice.application.dto.response.DecrementScheduleRes;
+import com.fortickets.orderservice.application.dto.response.CreatePaymentRes;
+import com.fortickets.orderservice.application.dto.response.GetScheduleDetailRes;
 import com.fortickets.orderservice.domain.entity.Booking;
 import com.fortickets.orderservice.domain.mapper.BookingMapper;
 import com.fortickets.orderservice.domain.repository.BookingRepository;
@@ -29,22 +32,26 @@ public class ProcessService {
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
     private final RollbackService rollbackService;
+    private final PaymentService paymentService;
 
-    public DecrementScheduleRes decrementSeats(Integer quantity, Long scheduleId) {
+    // 스케줄 좌석 감소
+    public GetScheduleDetailRes decrementSeats(Integer quantity, Long scheduleId, BookingRollbackContext context) {
         try {
-            return concertClient.decrementSeats(new DecrementScheduleReq(quantity), scheduleId);
+            GetScheduleDetailRes scheduleRes = concertClient.decrementSeats(new DecrementScheduleReq(quantity), scheduleId);
+            context.addDecrementSchedule(quantity, scheduleId);
+            return scheduleRes;
         } catch (FeignException e) {
             log.error("[Booking Service FeignException] decrementSeats error : {}", e.getMessage());
             throw new GlobalException(ErrorCase.SYSTEM_ERROR);
         }
     }
 
-    // 예매 생성 본인만 가능
-    public List<CreateBookingRes> createBooking(CreateBookingReq createBookingReq, DecrementScheduleRes scheduleRes) {
-
-        log.info("createBookingReq : {}", createBookingReq);
-
+    // 예매 생성
+    public List<CreateBookingRes> createBooking(CreateBookingReq createBookingReq, GetScheduleDetailRes scheduleRes,
+        BookingRollbackContext context) {
         try {
+            log.info("createBookingReq : {}", createBookingReq);
+
             // 이미 예약된 좌석인지 확인
             List<Booking> bookings = new ArrayList<>();
             createBookingReq.seat().forEach(seat -> {
@@ -66,15 +73,28 @@ public class ProcessService {
             // 예매 정보 저장
             bookingRepository.saveAll(bookings);
 
+            // 롤백 정보 저장
+            context.addCreateBooking(bookings.stream().map(Booking::getId).toList());
+
             return bookings.stream().map(bookingMapper::toCreateBookingRes).toList();
-        } catch (GlobalException e) {
-            log.error("[Booking Service GlobalException] createBooking error : {}", e.getMessage());
-            rollbackService.decrementSeatsRollback(createBookingReq.seat().size(), scheduleRes.id());
-            throw e;
+
+        } catch (Exception e) {
+            log.error("[Booking Service] createBooking error : {}", e.getMessage());
+            rollbackService.decrementSeatsRollback(context);
+            throw new GlobalException(ErrorCase.SYSTEM_ERROR);
         }
     }
 
-    public void createPayment(CreateBookingReq createBookingReq, List<CreateBookingRes> bookingRes) {
-
+    // 결제 생성
+    public CreatePaymentRes createPayment(Long userId, List<CreateBookingRes> createBookingResList, BookingRollbackContext context) {
+        try {
+            List<Long> bookingIds = createBookingResList.stream().map(CreateBookingRes::id).toList();
+            return paymentService.createPayment(new CreatePaymentReq(userId, bookingIds));
+        } catch (Exception e) {
+            log.error("[Booking Service] createPayment error : {}", e.getMessage());
+            rollbackService.decrementSeatsRollback(context);
+            rollbackService.createBookingRollback(context);
+            throw new GlobalException(ErrorCase.SYSTEM_ERROR);
+        }
     }
 }

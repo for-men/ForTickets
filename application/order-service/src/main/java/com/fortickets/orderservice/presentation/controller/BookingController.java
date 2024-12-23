@@ -5,7 +5,7 @@ import com.fortickets.common.security.UseAuth;
 import com.fortickets.common.util.CommonResponse;
 import com.fortickets.common.util.CommonResponse.CommonEmptyRes;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
-import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
+import com.fortickets.orderservice.application.dto.response.CreateBookingAndPaymentRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.service.BookingService;
@@ -34,9 +34,9 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    // 예매 생성 본인만 가능
+    // 예매 생성 및 결제 생성 본인만 가능
     @PostMapping
-    public CommonResponse<List<CreateBookingRes>> createBooking(
+    public CommonResponse<CreateBookingAndPaymentRes> createBooking(
         @UseAuth CustomUser customUser,
         @Valid @RequestBody CreateBookingReq createBookingReq) {
         var createBookingRes = bookingService.createBookingAndPayment(customUser.getUserId(), createBookingReq);

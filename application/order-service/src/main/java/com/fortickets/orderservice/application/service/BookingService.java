@@ -3,12 +3,13 @@ package com.fortickets.orderservice.application.service;
 import com.fortickets.common.exception.GlobalException;
 import com.fortickets.common.util.BookingStatus;
 import com.fortickets.common.util.ErrorCase;
-import com.fortickets.common.util.GlobalUtil;
 import com.fortickets.orderservice.application.client.ConcertClient;
 import com.fortickets.orderservice.application.client.UserClient;
+import com.fortickets.orderservice.application.context.BookingRollbackContext;
 import com.fortickets.orderservice.application.dto.request.CreateBookingReq;
+import com.fortickets.orderservice.application.dto.response.CreateBookingAndPaymentRes;
 import com.fortickets.orderservice.application.dto.response.CreateBookingRes;
-import com.fortickets.orderservice.application.dto.response.DecrementScheduleRes;
+import com.fortickets.orderservice.application.dto.response.CreatePaymentRes;
 import com.fortickets.orderservice.application.dto.response.GetBookingRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertDetailRes;
 import com.fortickets.orderservice.application.dto.response.GetConcertRes;
@@ -61,67 +62,67 @@ public class BookingService {
     private final ProcessService processService;
 
     // 예매 생성 본인만 가능
-    @Transactional
-    public List<CreateBookingRes> createBooking(Long userId, CreateBookingReq createBookingReq) {
-
-        log.info("createBookingReq : {}", createBookingReq);
-
-        // 중복 좌석 예약 확인
-        if (createBookingReq.seat().size() >= 2) {
-            Set<String> set = new HashSet<>();
-            if (createBookingReq.seat().stream().anyMatch(e -> !set.add(e))) {
-                throw new GlobalException(ErrorCase.DUPLICATE_SEAT);
-            }
-        }
-        // 분산 락 이름 정의 (예약 스케줄 ID 기반)
-        String lockKey = "bookingLock:" + createBookingReq.scheduleId();
-        RLock lock = redissonClient.getLock(lockKey); // 락 객체 생성
-
-        // 락을 획득하고, 예외 발생 시 락 해제
-        try {
-            lock.lock(); // 락 획득
-
-            // 요청 사용자와 예약 사용자가 같은지 확인
-            if (!userId.equals(createBookingReq.userId())) {
-                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-            }
-
-            // 스케줄 정보 조회
-            GetScheduleDetailRes scheduleRes = concertClient.getScheduleDetail(createBookingReq.scheduleId());
-
-            // 이미 예약된 좌석인지 확인
-            List<Booking> bookings = new ArrayList<>();
-            createBookingReq.seat().forEach(seat -> {
-                // 좌석 형식 확인
-                if (!GlobalUtil.isValidSeatFormat(seat)) {
-                    throw new GlobalException(ErrorCase.INVALID_SEAT_FORMAT);
-                }
-                // 이미 예약된 좌석인지 확인
-                bookingRepository.findByScheduleIdAndSeat(createBookingReq.scheduleId(), seat)
-                    .ifPresent(booking -> {
-                        throw new GlobalException(ErrorCase.ALREADY_BOOKED_SEAT);
-                    });
-
-                Booking booking = createBookingReq.toEntity(seat);
-                booking.setConcertId(scheduleRes.concertId());
-                bookings.add(booking);
-            });
-
-            // 예매 정보 저장
-            bookingRepository.saveAll(bookings);
-
-            return bookings.stream().map(bookingMapper::toCreateBookingRes).toList();
-
-        } finally {
-            // 락 해제
-            if (lock.isHeldByCurrentThread()) {
-                lock.unlock();
-            }
-        }
-    }
+//    @Transactional
+//    public List<CreateBookingRes> createBookings(Long userId, CreateBookingReq createBookingReq) {
+//
+//        log.info("createBookingReq : {}", createBookingReq);
+//
+//        // 중복 좌석 예약 확인
+//        if (createBookingReq.seat().size() >= 2) {
+//            Set<String> set = new HashSet<>();
+//            if (createBookingReq.seat().stream().anyMatch(e -> !set.add(e))) {
+//                throw new GlobalException(ErrorCase.DUPLICATE_SEAT);
+//            }
+//        }
+//        // 분산 락 이름 정의 (예약 스케줄 ID 기반)
+//        String lockKey = "bookingLock:" + createBookingReq.scheduleId();
+//        RLock lock = redissonClient.getLock(lockKey); // 락 객체 생성
+//
+//        // 락을 획득하고, 예외 발생 시 락 해제
+//        try {
+//            lock.lock(); // 락 획득
+//
+//            // 요청 사용자와 예약 사용자가 같은지 확인
+//            if (!userId.equals(createBookingReq.userId())) {
+//                throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+//            }
+//
+//            // 스케줄 정보 조회
+//            GetScheduleDetailRes scheduleRes = concertClient.getScheduleDetail(createBookingReq.scheduleId());
+//
+//            // 이미 예약된 좌석인지 확인
+//            List<Booking> bookings = new ArrayList<>();
+//            createBookingReq.seat().forEach(seat -> {
+//                // 좌석 형식 확인
+//                if (!GlobalUtil.isValidSeatFormat(seat)) {
+//                    throw new GlobalException(ErrorCase.INVALID_SEAT_FORMAT);
+//                }
+//                // 이미 예약된 좌석인지 확인
+//                bookingRepository.findByScheduleIdAndSeat(createBookingReq.scheduleId(), seat)
+//                    .ifPresent(booking -> {
+//                        throw new GlobalException(ErrorCase.ALREADY_BOOKED_SEAT);
+//                    });
+//
+//                Booking booking = createBookingReq.toEntity(seat);
+//                booking.setConcertId(scheduleRes.concertId());
+//                bookings.add(booking);
+//            });
+//
+//            // 예매 정보 저장
+//            bookingRepository.saveAll(bookings);
+//
+//            return bookings.stream().map(bookingMapper::toCreateBookingRes).toList();
+//
+//        } finally {
+//            // 락 해제
+//            if (lock.isHeldByCurrentThread()) {
+//                lock.unlock();
+//            }
+//        }
+//    }
 
     // 예매 생성 본인만 가능 (보상 트랜잭션 적용)
-    public List<CreateBookingRes> createBookingAndPayment(Long userId, CreateBookingReq createBookingReq) {
+    public CreateBookingAndPaymentRes createBookingAndPayment(Long userId, CreateBookingReq createBookingReq) {
 
         log.info("createBookingReq : {}", createBookingReq);
 
@@ -142,20 +143,22 @@ public class BookingService {
         String lockKey = "bookingLock:" + createBookingReq.scheduleId();
         RLock lock = redissonClient.getLock(lockKey); // 락 객체 생성
 
+        BookingRollbackContext rollbackContext = new BookingRollbackContext();
         // 락을 획득하고, 예외 발생 시 락 해제
         try {
             lock.lock(); // 락 획득
 
             // 2. 좌석 개수 차감
-            DecrementScheduleRes scheduleRes = processService.decrementSeats(createBookingReq.seat().size(), createBookingReq.scheduleId());
+            GetScheduleDetailRes scheduleRes = processService.decrementSeats(createBookingReq.seat().size(),
+                createBookingReq.scheduleId(), rollbackContext);
 
             // 3. 예매 생성
-            List<CreateBookingRes> bookingRes = processService.createBooking(createBookingReq, scheduleRes);
+            List<CreateBookingRes> bookingResList = processService.createBooking(createBookingReq, scheduleRes, rollbackContext);
 
             // 4. 결제 생성
-            processService.createPayment(createBookingReq, bookingRes);
+            CreatePaymentRes paymentRes = processService.createPayment(createBookingReq.userId(), bookingResList, rollbackContext);
 
-            return bookingRes;
+            return new CreateBookingAndPaymentRes(bookingResList, paymentRes);
         } finally {
             // 락 해제
             if (lock.isHeldByCurrentThread()) {

@@ -45,13 +45,52 @@ public class PaymentService {
     private final ConcertClient concertClient;
     private final TossPaymentsService tossPaymentsService;
 
-    // 결제 생성 (예매 확정 시 결제 생성)
+//    // 결제 생성 (예매 확정 시 결제 생성)
+//    @Transactional
+//    public CreatePaymentRes createPayment(Long getUserId, CreatePaymentReq createPaymentReq) {
+//        // 요청 사용자와 예약 사용자가 같은지 확인
+//        if (!getUserId.equals(createPaymentReq.userId())) {
+//            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
+//        }
+//        // 예매 정보 조회
+//        List<Booking> bookingList = bookingRepository.findAllByIdInAndStatusAndUserId(
+//            createPaymentReq.bookingIds(), BookingStatus.PENDING,
+//            createPaymentReq.userId());
+//
+//        // 예매 정보가 없으면 예외 발생
+//        if (bookingList.isEmpty()) {
+//            throw new GlobalException(ErrorCase.BOOKING_NOT_FOUND);
+//        }
+//
+//        // 모든 예매의 가격을 합산하여 결제 금액을 계산
+//        Long totalPrice = bookingList.stream()
+//            .mapToLong(Booking::getPrice)
+//            .sum();
+//
+//        // 결제 객체 생성
+//        Payment payment = Payment.builder()
+//            .userId(createPaymentReq.userId())
+//            .concertId(bookingList.get(0).getConcertId())
+//            .scheduleId(bookingList.get(0).getScheduleId())
+//            .totalPrice(totalPrice)
+//            .status(PaymentStatus.WAITING) // 결제 대기 상태로 설정
+//            .build();
+//
+//        paymentRepository.save(payment);
+//
+//        // 예매에 결제를 넣어줌
+//        bookingList.forEach(booking -> {
+//            booking.setPayment(payment);
+//        });
+//
+//        // 예매 저장
+//        bookingRepository.saveAll(bookingList);
+//
+//        return paymentMapper.toCreatePaymentRes(payment);
+//    }
+
     @Transactional
-    public CreatePaymentRes createPayment(Long getUserId, CreatePaymentReq createPaymentReq) {
-        // 요청 사용자와 예약 사용자가 같은지 확인
-        if (!getUserId.equals(createPaymentReq.userId())) {
-            throw new GlobalException(ErrorCase.NOT_AUTHORIZED);
-        }
+    public CreatePaymentRes createPayment(CreatePaymentReq createPaymentReq) {
         // 예매 정보 조회
         List<Booking> bookingList = bookingRepository.findAllByIdInAndStatusAndUserId(
             createPaymentReq.bookingIds(), BookingStatus.PENDING,
@@ -88,6 +127,7 @@ public class PaymentService {
 
         return paymentMapper.toCreatePaymentRes(payment);
     }
+
 
     // 결제 내역 전체 조회 (Manager)
     public Page<GetPaymentRes> getPayments(String nickname, Pageable pageable) {
