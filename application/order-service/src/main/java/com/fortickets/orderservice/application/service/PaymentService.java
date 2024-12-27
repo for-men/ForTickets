@@ -125,6 +125,7 @@ public class PaymentService {
         // 예매 저장
         bookingRepository.saveAll(bookingList);
 
+        // TODO : 기존 결제 생성 후 결제 창 띄워줘야 하는데 예매 생성 시 띄워주는 것으로 변경해야 함
         return paymentMapper.toCreatePaymentRes(payment);
     }
 

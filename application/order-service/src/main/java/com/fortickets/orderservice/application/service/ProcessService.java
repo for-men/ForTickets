@@ -38,6 +38,7 @@ public class ProcessService {
     public GetScheduleDetailRes decrementSeats(Integer quantity, Long scheduleId, BookingRollbackContext context) {
         try {
             GetScheduleDetailRes scheduleRes = concertClient.decrementSeats(new DecrementScheduleReq(quantity), scheduleId);
+            // 롤백 정보 저장
             context.addDecrementSchedule(quantity, scheduleId);
             return scheduleRes;
         } catch (FeignException e) {
@@ -81,6 +82,7 @@ public class ProcessService {
 
         } catch (GlobalException e) {
             log.error("[Booking Service] createBooking error : {}", e.getMessage());
+            // 좌석 감소 롤백
             rollbackService.decrementSeatsRollback(context);
             throw new GlobalException(e.getErrorCase());
         }
@@ -90,10 +92,13 @@ public class ProcessService {
     public CreatePaymentRes createPayment(Long userId, List<CreateBookingRes> createBookingResList, BookingRollbackContext context) {
         try {
             List<Long> bookingIds = createBookingResList.stream().map(CreateBookingRes::id).toList();
+            // 결제 생성
             return paymentService.createPayment(new CreatePaymentReq(userId, bookingIds));
         } catch (GlobalException e) {
             log.error("[Booking Service] createPayment error : {}", e.getMessage());
+            // 좌석 감소 롤백
             rollbackService.decrementSeatsRollback(context);
+            // 예매 롤백
             rollbackService.createBookingRollback(context);
             throw new GlobalException(e.getErrorCase());
         }
